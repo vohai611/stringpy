@@ -1,12 +1,14 @@
 use crate::arrow_in;
-use arrow2::array::Utf8Array;
+use arrow2::array::{Utf8Array, BooleanArray};
+use regex::Regex;
 use pyo3::{prelude::*, types::PyTuple};
+use unidecode::unidecode;
 
 #[pyfunction]
-fn str_c(ob: PyObject,  collapse: Option<&str>) -> PyResult<String> {
+fn str_c(array: PyObject,  collapse: Option<&str>) -> PyResult<String> {
     let collapse = collapse.unwrap_or(""); 
     let mut result = Python::with_gil(|py| {
-        let array = arrow_in::to_rust_array(ob, py).unwrap();
+        let array = arrow_in::to_rust_array(array, py).unwrap();
         let array = array.as_any();
         let array = array
             .downcast_ref::<Utf8Array<i32>>()
@@ -22,9 +24,6 @@ fn str_c(ob: PyObject,  collapse: Option<&str>) -> PyResult<String> {
             .unwrap()
     
     });
-    // let result_len = result.len();
-    // let end =  result_len - sep.len();
-    // let result = result[0..end].to_owned();
     let len = collapse.len();
     for _ in 0..len {
         result.pop();
@@ -78,9 +77,165 @@ fn str_combine(py_args : &PyTuple, sep: Option<&str>) -> PyResult<Vec<String>> {
 
 }
 
+#[pyfunction]
+fn str_count(array: PyObject, pattern: &str) -> PyResult<PyObject> {
+    let pat = Regex::new(pattern)
+    .unwrap_or_else(|_|  panic!("not a valid regex"));
+
+    fn count(x: &str, pat: &Regex) -> Option<i32> {
+        Option::Some(pat.find_iter(x).count() as i32)
+    }
+
+    let result = Python::with_gil(|py| {
+        let array = arrow_in::to_rust_array(array, py).unwrap();
+        let rs_cap = array.len();
+
+        let mut rs: Vec<Option<i32>> = Vec::with_capacity(rs_cap);
+        let array = array
+            .as_any()
+            .downcast_ref::<Utf8Array<i32>>()
+            .unwrap_or_else(|| panic!("Not a string array"))
+            .values_iter();
+
+        for i in array {
+             rs.push(count(i, &pat));
+        };
+
+        let result = arrow2::array::Int32Array::from(rs);
+        arrow_in::to_py_array(result.boxed(), py)
+    });
+
+    return result;
+}
+
+#[pyfunction]
+fn str_replace(array: PyObject, pattern: &str, replace: &str) -> PyResult<PyObject> {
+    let pat = Regex::new(pattern).unwrap();
+
+    fn replace_one(x: &str, pat: &Regex, replace: &str) -> Option<String> {
+        Option::Some(pat.replace(x, replace).to_string())
+    }
+
+    let result = Python::with_gil(|py| {
+        let array = arrow_in::to_rust_array(array, py).unwrap();
+        let array: Vec<Option<String>> = array
+            .as_any()
+            .downcast_ref::<Utf8Array<i32>>()
+            .unwrap()
+            .values_iter()
+            .map(|i| replace_one(i, &pat, &replace))
+            .collect();
+
+        let result = arrow2::array::Utf8Array::<i32>::from(array);
+        let result = Box::new(result);
+        arrow_in::to_py_array(result, py)
+    });
+
+    return result;
+}
+
+#[pyfunction]
+fn str_replace_all(array: PyObject, pattern: &str, replace: &str) -> PyResult<PyObject> {
+    let pat = &Regex::new(pattern).unwrap();
+
+    let result = Python::with_gil(|py| {
+        let array = arrow_in::to_rust_array(array, py).unwrap();
+        let mut rs: Vec<Option<String>> = Vec::with_capacity(array.len());
+
+        let array = array 
+            .as_any()
+            .downcast_ref::<Utf8Array<i32>>()
+            .unwrap();
+
+        array.values_iter().for_each(|i| rs.push( Some(pat.replace_all(i, replace).into_owned())));
+
+        let result = arrow2::array::Utf8Array::<i32>::from(rs);
+        arrow_in::to_py_array(result.boxed(), py)
+    });
+
+    return result;
+}
+
+#[pyfunction]
+fn str_squish(ob: PyObject) -> PyResult<PyObject> {
+    fn squish(x: &str) -> Option<String> {
+        let a: Vec<_> = x.split_whitespace().collect();
+        Option::Some(a.join(" "))
+    }
+
+    let result = Python::with_gil(|py| {
+        let array = arrow_in::to_rust_array(ob, py).unwrap();
+        let array = array.as_any();
+        let array: Vec<Option<String>> = array
+            .downcast_ref::<Utf8Array<i32>>()
+            .unwrap()
+            .iter()
+            .map(|i| squish(i.unwrap()))
+            .collect();
+
+        let result = arrow2::array::Utf8Array::<i32>::from(array);
+        let result = Box::new(result);
+        arrow_in::to_py_array(result, py)
+    });
+
+    // let a = x.to_vec();
+    // let b = a.iter().map(|i| squish(i)).collect();
+    return result;
+}
+
+#[pyfunction]
+fn str_detect(array: PyObject, pattern : &str) -> PyResult<PyObject> {
+
+
+    let rs = Python::with_gil(|py| {
+        let array = arrow_in::to_rust_array(array, py).unwrap();
+        let array = array.as_any();
+        let array: Vec<Option<bool>> = array
+            .downcast_ref::<Utf8Array<i32>>()
+            .unwrap()
+            .iter()
+            .map(|x| Some(Regex::new(pattern).unwrap().is_match(x.unwrap())))
+            .collect();
+
+
+    let rs = BooleanArray::from(array).boxed(); 
+
+    //let result = arrow2::array::BooleanArray::from(array);
+    arrow_in::to_py_array(rs, py)
+    });
+
+    rs
+}
+
+#[pyfunction]
+fn str_remove_ascent(array: PyObject) -> PyResult<Vec<String>>{
+    let rs = Python::with_gil(|py| {
+        let array = arrow_in::to_rust_array(array, py).unwrap();
+        let array = array.as_any();
+        let array: Vec<String> = array
+            .downcast_ref::<Utf8Array<i32>>()
+            .unwrap()
+            .iter()
+            .map(|x| unidecode(x.unwrap()))
+            .collect();
+        array
+        });
+
+    Ok(rs)
+
+}
+
+
+
 #[pymodule]
 fn _stringpy(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(str_c, m)?)?;
     m.add_function(wrap_pyfunction!(str_combine, m)?)?;
+    m.add_function(wrap_pyfunction!(str_count, m)?)?;
+    m.add_function(wrap_pyfunction!(str_replace, m)?)?;
+    m.add_function(wrap_pyfunction!(str_replace_all, m)?)?;
+    m.add_function(wrap_pyfunction!(str_remove_ascent, m)?)?;
+    m.add_function(wrap_pyfunction!(str_squish, m)?)?;
+    m.add_function(wrap_pyfunction!(str_detect, m)?)?;
     Ok(())
 }
