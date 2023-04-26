@@ -3,6 +3,7 @@ use arrow2::array::{Utf8Array, BooleanArray};
 use regex::Regex;
 use pyo3::{prelude::*, types::PyTuple};
 use unidecode::unidecode;
+use crate::utils;
 
 #[pyfunction]
 fn str_c(array: PyObject,  collapse: Option<&str>) -> PyResult<String> {
@@ -36,22 +37,13 @@ fn str_c(array: PyObject,  collapse: Option<&str>) -> PyResult<String> {
 #[pyo3(signature = (*py_args, sep))]
 fn str_combine(py_args : &PyTuple, sep: Option<&str>) -> PyResult<Vec<String>> {
     let sep = sep.unwrap_or(""); 
+    println!("sep: {}", sep);
 
-        fn list_array(ob: PyObject, py: Python) -> Utf8Array<i32> {
-
-            let array = arrow_in::to_rust_array(ob, py).unwrap();
-            let array = array.as_any();
-            let array = array
-                .downcast_ref::<Utf8Array<i32>>()
-                .unwrap();
-            array.to_owned()
-
-        }
-
+        // FIXME  consider using a macro to avoid this boilerplate
         let mut a: Vec<Utf8Array<i32>> = Python::with_gil(|py| {
          py_args
         .into_iter()
-        .map(|ob| list_array(ob.to_object(py), py))
+        .map(|ob| utils::list_array(ob.to_object(py), py))
         .collect()
         });
 
