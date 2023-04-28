@@ -175,3 +175,16 @@ def str_detect(array: Array, pattern: str=None) -> Array:
     -------
     Array
     """
+
+@exporter
+def str_trim(array: Array, side = 'both') -> Array:
+    """Remove all leading and trailing whitespace from each string
+
+    Parameters
+    ----------
+    array : Array
+
+    Returns
+    -------
+    Array
+    """

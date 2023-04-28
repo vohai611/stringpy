@@ -38,3 +38,16 @@ def test_str_replace_all():
     expect = ['bb', 'bb', 'cc']
     assert actual == expect
 
+
+def test_str_trim():
+    actual = sp.str_trim(['  aa ', ' bb  ', '  cc  ']).to_pylist()
+    expect = ['aa', 'bb', 'cc']
+    assert actual == expect
+
+    actual = sp.str_trim(['  aa ', ' bb  ', '  cc  '], side = 'left').to_pylist()
+    expect = ['aa ', 'bb  ', 'cc  ']
+    assert actual == expect
+
+    actual = sp.str_trim(['  aa ', ' bb  ', '  cc  '], side = 'right').to_pylist()
+    expect = ['  aa', ' bb', '  cc']
+    assert actual == expect
