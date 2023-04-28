@@ -15,16 +15,16 @@ def test_str_combine():
 
 
 def test_str_count():
-    actual = sp.str_count(pa.array(['aa', 'bb', 'cc']), pattern = '\\w').to_pylist()
-    expect = [2, 2, 2]
+    actual = sp.str_count(['aa', 'bb', ' cc', None], pattern = '\\w').to_pylist()
+    expect = [2, 2, 2, None]
     assert actual == expect
-    actual = sp.str_count(pa.array([None, 'a', 'b']), pattern='a').to_pylist()
-    expect = [0, 1, 0]
+    actual = sp.str_count([None, 'a', 'b'], pattern='a').to_pylist()
+    expect = [None, 1, 0]
     assert actual == expect
 
 def test_str_remove_ascent():
-    actual = sp.str_remove_ascent(['tôi thấy mệt mỏi', 'hôm nay trời nắng'])
-    expect = ['toi thay met moi', 'hom nay troi nang']
+    actual = sp.str_remove_ascent(['tôi thấy mệt mỏi', 'hôm nay trời nắng', None]).to_pylist()
+    expect = ['toi thay met moi', 'hom nay troi nang', None]
     assert actual == expect
 
 def test_str_replace():
@@ -34,8 +34,8 @@ def test_str_replace():
 
 
 def test_str_replace_all():
-    actual = sp.str_replace_all(pa.array(['aa', 'bb', 'cc']), pattern='a', replace= 'b').to_pylist()
-    expect = ['bb', 'bb', 'cc']
+    actual = sp.str_replace_all(['aa', 'bb', 'cc', None], pattern='a', replace= 'b').to_pylist()
+    expect = ['bb', 'bb', 'cc', None]
     assert actual == expect
 
 
@@ -51,3 +51,9 @@ def test_str_trim():
     actual = sp.str_trim(['  aa ', ' bb  ', '  cc  '], side = 'right').to_pylist()
     expect = ['  aa', ' bb', '  cc']
     assert actual == expect
+
+def test_str_detect():
+    actual = sp.str_detect(['aa', 'bb', 'cc', None], pattern='a').to_pylist()
+    expect = [True, False, False, None]
+    assert actual == expect
+

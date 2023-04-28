@@ -8,7 +8,7 @@ import inspect
 def check_same_length(lists: List[Array]):
     it = iter(lists)
     the_len = len(next(it))
-    if not all(len(l) == the_len for l in it):
+    if not all(len(i) == the_len for i in it):
      raise ValueError('Not all array have same length!')
     
 def sync_kw(kwargs, kw_with_defaults):
