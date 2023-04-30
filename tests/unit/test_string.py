@@ -57,3 +57,11 @@ def test_str_detect():
     expect = [True, False, False, None]
     assert actual == expect
 
+
+def test_str_trunc():
+    actual = sp.str_trunc(['toi muon mot giac ngu',
+                           'doi bung qua roi nhi',
+                           None], width=8).to_pylist()
+    expect = ['toi muon...','doi bung...', None]
+
+    assert actual == expect

@@ -117,6 +117,33 @@ def str_replace(array: Array, pattern: str=None, replace: str=None) -> Array:
     Array
     """
 
+@exporter
+def str_remove(array: Array, pattern: str=None) -> Array:
+    """Remove a first matching pattern in string array 
+
+    Parameters
+    ----------
+    array : Array
+    pattern : str
+
+    Returns
+    -------
+    Array
+    """
+
+@exporter
+def str_remove_all(array: Array, pattern: str=None) -> Array:
+    """Remove all matching pattern in string array 
+
+    Parameters
+    ----------
+    array : Array
+    pattern : str
+
+    Returns
+    -------
+    Array
+    """
 
 @exporter
 def str_replace_all(array: Array, pattern: str=None, replace: str=None) -> Array:
@@ -183,6 +210,24 @@ def str_trim(array: Array, side = 'both') -> Array:
     Parameters
     ----------
     array : Array
+
+    Returns
+    -------
+    Array
+    """
+
+@exporter
+def str_trunc(array: Array, width: int = None, side = 'left', ellipsis = '...') -> Array:
+    """Truncate each string to a given width, note that this function does NOT support non-ascii characters yet.
+
+    Parameters
+    ----------
+    array : Array
+    width : int
+    side : str
+        One of 'left', 'right', 'center'
+    ellipsis : str
+        Content of ellipsis that indicates content has been removed.
 
     Returns
     -------

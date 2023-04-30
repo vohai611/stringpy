@@ -268,6 +268,64 @@ fn str_remove_ascent(array: PyObject) -> PyResult<PyObject> {
     rs
 }
 
+/// "abcde" -> trunc left 2 -> "de"
+/// -> trunc center 2 -> "a..e"
+#[pyfunction]
+fn str_trunc(array: PyObject, width: usize, side: &str, ellipsis: &str) -> PyResult<PyObject> {
+    fn truncate(x: Option<&str>, width: usize, side: &str, ellipsis: &str) -> Option<String> {
+        if let Some(x) = x {
+            let len_x = x.len();
+            if len_x < width {
+                return Some(x.to_string());
+            }
+
+            let a = match side {
+                "left" => format!("{}{}", &x[..width], ellipsis),
+                "right" => format!("{}{}", ellipsis, &x[(len_x - width)..]),
+                "center" => {
+                    let middle = (width / 2) as f32;
+                    let first = middle.round() as usize;
+                    let tail = width - middle as usize;
+                    let first = &x[..first];
+                    let tail = &x[(len_x - tail)..];
+                    format!("{}{}{}", first, ellipsis, tail)
+                }
+                _ => panic!("Not a valid side, side must be ['left', 'right', 'center']"),
+            };
+            Some(a)
+        } else {
+            None
+        }
+    }
+
+    let rs = Python::with_gil(|py| {
+        let array = arrow_in::to_rust_array(array, py).unwrap();
+        let array = array.as_any();
+        let array: Vec<Option<String>> = array
+            .downcast_ref::<Utf8Array<i32>>()
+            .unwrap()
+            .iter()
+            .map(|x| truncate(x, width, side, ellipsis))
+            .collect();
+
+        let rs = Utf8Array::<i32>::from(array).boxed();
+
+        arrow_in::to_py_array(rs, py)
+    });
+
+    rs
+}
+
+#[pyfunction]
+fn str_remove(array: PyObject, pattern: &str) -> PyResult<PyObject> {
+   str_replace(array, pattern, "")
+}
+
+#[pyfunction]
+fn str_remove_all(array: PyObject, pattern: &str) -> PyResult<PyObject> {
+   str_replace_all(array, pattern, "")
+}
+
 #[pymodule]
 fn _stringpy(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(str_c, m)?)?;
@@ -275,9 +333,12 @@ fn _stringpy(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(str_count, m)?)?;
     m.add_function(wrap_pyfunction!(str_replace, m)?)?;
     m.add_function(wrap_pyfunction!(str_replace_all, m)?)?;
+    m.add_function(wrap_pyfunction!(str_remove, m)?)?;
+    m.add_function(wrap_pyfunction!(str_remove_all, m)?)?;
     m.add_function(wrap_pyfunction!(str_remove_ascent, m)?)?;
     m.add_function(wrap_pyfunction!(str_squish, m)?)?;
     m.add_function(wrap_pyfunction!(str_trim, m)?)?;
     m.add_function(wrap_pyfunction!(str_detect, m)?)?;
+    m.add_function(wrap_pyfunction!(str_trunc, m)?)?;
     Ok(())
 }
