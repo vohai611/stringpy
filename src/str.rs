@@ -245,28 +245,44 @@ fn str_detect(array: PyObject, pattern: &str) -> PyResult<PyObject> {
     rs
 }
 
-#[pyfunction]
-fn str_remove_ascent(array: PyObject) -> PyResult<PyObject> {
+
+use std::borrow::Cow;
+
+fn apply_utf8(array: PyObject, func:  fn(Option<&str>) -> Option<Cow<str>>) -> Result<Py<PyAny>, PyErr> {
+
+
     let rs = Python::with_gil(|py| {
         let array = arrow_in::to_rust_array(array, py).unwrap();
         let array = array.as_any();
-        let array: Vec<Option<String>> = array
+        let array: Vec<Option<Cow<str>>> = array
             .downcast_ref::<Utf8Array<i32>>()
             .unwrap()
             .iter()
-            .map(|x| {
-                if let Some(x) = x {
-                    Some(unidecode(x))
-                } else {
-                    None
-                }
-            })
+            .map(|x| func(x))
             .collect();
+
         let rs = Utf8Array::<i32>::from(array).boxed();
         arrow_in::to_py_array(rs, py)
     });
+
     rs
 }
+
+#[pyfunction]
+fn str_remove_ascent(array: PyObject) -> PyResult<PyObject> {
+
+    fn  func(x : Option<&str>) -> Option<Cow<str>> {
+        if let Some(x) = x {
+            Some(Cow::from(unidecode(x)))
+        } else {
+            None
+        }
+    }
+
+    apply_utf8(array, func)
+}
+
+
 
 /// "abcde" -> trunc left 2 -> "de"
 /// -> trunc center 2 -> "a..e"
