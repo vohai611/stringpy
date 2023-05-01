@@ -3,7 +3,7 @@ use crate::utils;
 use arrow2::array::{BooleanArray, Utf8Array};
 use pyo3::{prelude::*, types::PyTuple};
 use regex::Regex;
-use unidecode::unidecode;
+use std::borrow::Cow;
 
 #[pyfunction]
 fn str_c(array: PyObject, collapse: Option<&str>) -> PyResult<String> {
@@ -155,62 +155,36 @@ fn str_replace_all(array: PyObject, pattern: &str, replace: &str) -> PyResult<Py
 
 #[pyfunction]
 fn str_squish(ob: PyObject) -> PyResult<PyObject> {
-    fn squish(x: Option<&str>) -> Option<String> {
+    fn squish(x: Option<&str>) -> Option<Cow<str>> {
         if let Some(x) = x {
             let a: Vec<_> = x.split_whitespace().collect();
-            return Option::Some(a.join(" "));
+            return Option::Some(Cow::from(a.join(" ")));
         } else {
             None
         }
     }
-
-    let result = Python::with_gil(|py| {
-        let array = arrow_in::to_rust_array(ob, py).unwrap();
-        let array = array.as_any();
-        let array: Vec<Option<String>> = array
-            .downcast_ref::<Utf8Array<i32>>()
-            .unwrap()
-            .iter()
-            .map(|i| squish(i))
-            .collect();
-
-        let result = arrow2::array::Utf8Array::<i32>::from(array);
-        let result = Box::new(result);
-        arrow_in::to_py_array(result, py)
-    });
+    let result = utils::apply_utf8!(ob, squish,);
 
     return result;
 }
 
 #[pyfunction]
 fn str_trim(array: PyObject, side: &str) -> PyResult<PyObject> {
-    fn func<'a>(x: Option<&'a str>, side: &str) -> Option<&'a str> {
+    fn trim<'a>(x: Option<&'a str>, side: &str) -> Option<Cow<'a, str>> {
         if let Some(i) = x {
-            return Some(match side {
+            let out = match side {
                 "left" => i.trim_start(),
                 "right" => i.trim_end(),
                 "both" => i.trim(),
                 _ => panic!("Not a valid side, side must be ['left', 'right', 'both'] "),
-            });
+            };
+            return Some(Cow::from(out));
         } else {
             None
         }
     }
 
-    let rs = Python::with_gil(|py| {
-        let array = arrow_in::to_rust_array(array, py).unwrap();
-        let array = array.as_any();
-        let array: Vec<Option<&str>> = array
-            .downcast_ref::<Utf8Array<i32>>()
-            .unwrap()
-            .iter()
-            .map(|x| func(x, side))
-            .collect();
-
-        let rs = Utf8Array::<i32>::from(array).boxed();
-
-        arrow_in::to_py_array(rs, py)
-    });
+    let rs = utils::apply_utf8!(array, trim, side,);
 
     rs
 }
@@ -247,25 +221,14 @@ fn str_detect(array: PyObject, pattern: &str) -> PyResult<PyObject> {
 
 #[pyfunction]
 fn str_remove_ascent(array: PyObject) -> PyResult<PyObject> {
-    let rs = Python::with_gil(|py| {
-        let array = arrow_in::to_rust_array(array, py).unwrap();
-        let array = array.as_any();
-        let array: Vec<Option<String>> = array
-            .downcast_ref::<Utf8Array<i32>>()
-            .unwrap()
-            .iter()
-            .map(|x| {
-                if let Some(x) = x {
-                    Some(unidecode(x))
-                } else {
-                    None
-                }
-            })
-            .collect();
-        let rs = Utf8Array::<i32>::from(array).boxed();
-        arrow_in::to_py_array(rs, py)
-    });
-    rs
+    let remove_ascent = |x: Option<&str>| {
+        if let Some(x) = x {
+            Some(Cow::from(unidecode::unidecode(x)))
+        } else {
+            None
+        }
+    };
+    utils::apply_utf8!(array, remove_ascent,)
 }
 
 /// "abcde" -> trunc left 2 -> "de"
@@ -318,12 +281,12 @@ fn str_trunc(array: PyObject, width: usize, side: &str, ellipsis: &str) -> PyRes
 
 #[pyfunction]
 fn str_remove(array: PyObject, pattern: &str) -> PyResult<PyObject> {
-   str_replace(array, pattern, "")
+    str_replace(array, pattern, "")
 }
 
 #[pyfunction]
 fn str_remove_all(array: PyObject, pattern: &str) -> PyResult<PyObject> {
-   str_replace_all(array, pattern, "")
+    str_replace_all(array, pattern, "")
 }
 
 #[pymodule]
