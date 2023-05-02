@@ -1,22 +1,18 @@
 use crate::arrow_in;
-use pyo3::prelude::*;
 use arrow2::array::Utf8Array;
+use pyo3::prelude::*;
 
 /// Converts a Python list of strings to a Utf8Array
 pub fn list_array(ob: PyObject, py: Python) -> Utf8Array<i32> {
-
     let array = arrow_in::to_rust_array(ob, py).unwrap();
     let array = array.as_any();
-    let array = array
-        .downcast_ref::<Utf8Array<i32>>()
-        .unwrap();
+    let array = array.downcast_ref::<Utf8Array<i32>>().unwrap();
     array.to_owned()
-
 }
 
 #[macro_export]
 macro_rules! apply_utf8 {
-    ($ob:expr, $func:expr, $($args:expr,)* ) => {
+    ($ob:expr; $func:expr; $($args:expr,)* ) => {
         {
 
     let result = Python::with_gil(|py| {
@@ -26,7 +22,7 @@ macro_rules! apply_utf8 {
             .downcast_ref::<Utf8Array<i32>>()
             .unwrap()
             .iter()
-            .map(|i| $func(i, $($args)*))
+            .map(|i| $func(i, $($args),*))
             .collect();
 
         let result = arrow2::array::Utf8Array::<i32>::from(array);
@@ -34,7 +30,7 @@ macro_rules! apply_utf8 {
         arrow_in::to_py_array(result, py)
     });
     result
-        
+
     }
 }
 }
