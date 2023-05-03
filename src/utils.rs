@@ -10,6 +10,8 @@ pub fn list_array(ob: PyObject, py: Python) -> Utf8Array<i32> {
     array.to_owned()
 }
 
+/// Apply a function to a Utf8Array and return a new Utf8Array.
+/// This function must take one element of input and return one element of output
 #[macro_export]
 macro_rules! apply_utf8 {
     ($ob:expr; $func:expr; $($args:expr,)* ) => {

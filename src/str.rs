@@ -200,7 +200,12 @@ fn str_remove_ascent(array: PyObject) -> PyResult<PyObject> {
 
 #[pyfunction]
 fn str_trunc(array: PyObject, width: usize, side: &str, ellipsis: &str) -> PyResult<PyObject> {
-    fn truncate<'a>( x: Option<&'a str>, width: usize, side: &str, ellipsis: &str,) -> Option<Cow<'a, str>> {
+    fn truncate<'a>(
+        x: Option<&'a str>,
+        width: usize,
+        side: &str,
+        ellipsis: &str,
+    ) -> Option<Cow<'a, str>> {
         if let Some(x) = x {
             let len_x = x.len();
             if len_x < width {
@@ -239,6 +244,78 @@ fn str_remove_all(array: PyObject, pattern: &str) -> PyResult<PyObject> {
     str_replace_all(array, pattern, "")
 }
 
+#[pyfunction]
+fn str_extract(array: PyObject, pattern: &str, group: Option<usize>) -> PyResult<PyObject> {
+    let pat = Regex::new(pattern).unwrap_or_else(|_| panic!("Invalid regex pattern: {}", pattern));
+
+    fn extract<'a>(x: Option<&'a str>, pat: &Regex, group: Option<usize>) -> Option<Cow<'a, str>> {
+        if let Some(grp) = group {
+            if let Some(x) = x {
+                return pat
+                    .captures(x)
+                    .map(|x| Cow::from(x.get(grp).unwrap().as_str()));
+            }
+        } else {
+            if let Some(x) = x {
+                return pat.find(x).map(|x| Cow::from(x.as_str()));
+            }
+        }
+        None
+    }
+
+    apply_utf8!(array; extract; &pat, group,)
+}
+//
+#[pyfunction]
+fn str_extract_all(
+    array: PyObject,
+    pattern: &str,
+    group: Option<usize>,
+) -> Vec<Option<Vec<Option<String>>>> {
+    let pat = Regex::new(pattern).unwrap_or_else(|_| panic!("Invalid regex pattern: {}", pattern));
+
+    fn extract_all<'a>(
+        x: Option<&'a str>,
+        pat: &Regex,
+        group: Option<usize>,
+    ) -> Option<Vec<Option<String>>> {
+        if let Some(grp) = group {
+            if let Some(x) = x {
+                return pat
+                    .captures_iter(x)
+                    .map(|x| Some(x.get(grp).unwrap().as_str().to_string()))
+                    .collect::<Vec<_>>()
+                    .into();
+            }
+        } else {
+            if let Some(x) = x {
+                return pat
+                    .find_iter(x)
+                    .map(|x| Some(x.as_str().to_string()))
+                    .collect::<Vec<_>>()
+                    .into();
+            }
+        }
+        None
+    }
+
+    let result = Python::with_gil(|py| {
+        let array = arrow_in::to_rust_array(array, py).unwrap();
+        let array = array.as_any();
+        let array: Vec<Option<Vec<Option<String>>>> = array
+            .downcast_ref::<Utf8Array<i32>>()
+            .unwrap()
+            .iter()
+            .map(|i| extract_all(i, &pat, group))
+            //.map(|x| arrow2::array::Utf8Array::<i32>::from(x.unwrap()))
+            //.map(|x| arrow_in::to_py_array(x.boxed(), py))
+            .collect();
+        array
+    });
+
+    result
+}
+
 #[pymodule]
 fn _stringpy(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(str_c, m)?)?;
@@ -253,5 +330,7 @@ fn _stringpy(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(str_trim, m)?)?;
     m.add_function(wrap_pyfunction!(str_detect, m)?)?;
     m.add_function(wrap_pyfunction!(str_trunc, m)?)?;
+    m.add_function(wrap_pyfunction!(str_extract, m)?)?;
+    m.add_function(wrap_pyfunction!(str_extract_all, m)?)?;
     Ok(())
 }

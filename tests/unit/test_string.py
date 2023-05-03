@@ -65,3 +65,12 @@ def test_str_trunc():
     expect = ['toi muon...','doi bung...', None]
 
     assert actual == expect
+
+def test_str_extract():
+    actual = sp.str_extract(["apples x4", "bag of flour", "bag of sugar", "nevermind2"], pattern = '\\d').to_pylist()
+    expect = ['4', None, None, "2"]
+    assert actual == expect 
+
+    actual = sp.str_extract(["apples x4x", "bag of flour", "bag of sugar", "nevermind2"], pattern = '\\d(.)', group = 1).to_pylist()
+    expect = ['x', None, None, None]
+    assert actual == expect 

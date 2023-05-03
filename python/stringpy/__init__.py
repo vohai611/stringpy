@@ -233,3 +233,19 @@ def str_trunc(array: Array, width: int = None, side = 'left', ellipsis = '...') 
     -------
     Array
     """
+
+@exporter
+def str_extract(array: Array, pattern: str = None, group: int = None) -> Array:
+    """Extract a first matching pattern in string array 
+
+    Parameters
+    ----------
+    array : Array
+    pattern : str
+    group : int
+        Group number to extract, by default not use
+
+    Returns
+    -------
+    Array
+    """
