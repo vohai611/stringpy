@@ -311,17 +311,25 @@ fn str_extract_all(array: PyObject, pattern: &str, group: Option<usize>) -> PyRe
 
         let length_each: Vec<usize> = array
             .iter()
-            .map(|x| if let Some(x) = x { x.len() } else { 1 })
+            .map(|x| if let Some(x) = x { x.len() } else { 1 }) // None still take length 1
             .collect();
 
         let array2 = array
             .iter_mut()
             .reduce(|x, y| {
-                if let Some(x) = x {
+                if let Some(x_in) = x {
                     if let Some(y) = y {
-                        x.append(y);
-                    } else{
-                        x.push(None)
+                        x_in.append(y);
+                    } else {
+                        x_in.push(None)
+                    }  
+                } else {
+                    if let Some(y) = y {
+                        let mut tmp = vec![None];
+                        tmp.append(y);
+                        *x = Some(tmp);
+                    } else {
+                        *x = Some(vec![None, None])
                     }
                 }
                 x

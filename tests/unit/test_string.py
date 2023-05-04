@@ -81,3 +81,7 @@ def test_str_extract_all():
     actual
     expect = [['4', '6'], ['3'], ['1'], [], [None]]
     assert actual == expect
+
+    actual = sp.str_extract_all([None, None, None, '123'], pattern = '\\d').to_pylist()
+    actual
+    expect = [[None], [None], [None], ['1', '2', '3']]
