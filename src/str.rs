@@ -1,7 +1,10 @@
 use crate::apply_utf8;
 use crate::arrow_in;
 use crate::utils;
+use arrow2::array::ListArray;
 use arrow2::array::{BooleanArray, Utf8Array};
+use arrow2::datatypes::{DataType, Field};
+use arrow2::offset::{Offsets, OffsetsBuffer};
 use pyo3::{prelude::*, types::PyTuple};
 use regex::Regex;
 use std::borrow::Cow;
@@ -265,13 +268,10 @@ fn str_extract(array: PyObject, pattern: &str, group: Option<usize>) -> PyResult
 
     apply_utf8!(array; extract; &pat, group,)
 }
-//
+
+//Vec<Option<Vec<Option<String>>>>
 #[pyfunction]
-fn str_extract_all(
-    array: PyObject,
-    pattern: &str,
-    group: Option<usize>,
-) -> Vec<Option<Vec<Option<String>>>> {
+fn str_extract_all(array: PyObject, pattern: &str, group: Option<usize>) -> PyResult<PyObject> {
     let pat = Regex::new(pattern).unwrap_or_else(|_| panic!("Invalid regex pattern: {}", pattern));
 
     fn extract_all<'a>(
@@ -302,15 +302,42 @@ fn str_extract_all(
     let result = Python::with_gil(|py| {
         let array = arrow_in::to_rust_array(array, py).unwrap();
         let array = array.as_any();
-        let array: Vec<Option<Vec<Option<String>>>> = array
+        let mut array: Vec<Option<Vec<Option<String>>>> = array
             .downcast_ref::<Utf8Array<i32>>()
             .unwrap()
             .iter()
             .map(|i| extract_all(i, &pat, group))
-            //.map(|x| arrow2::array::Utf8Array::<i32>::from(x.unwrap()))
-            //.map(|x| arrow_in::to_py_array(x.boxed(), py))
             .collect();
-        array
+
+        let length_each: Vec<usize> = array
+            .iter()
+            .map(|x| if let Some(x) = x { x.len() } else { 1 })
+            .collect();
+
+        let array2 = array
+            .iter_mut()
+            .reduce(|x, y| {
+                if let Some(x) = x {
+                    if let Some(y) = y {
+                        x.append(y);
+                    } else{
+                        x.push(None)
+                    }
+                }
+                x
+            })
+            .unwrap()
+            .as_ref()
+            .unwrap();
+
+        let _field = Box::new(Field::new("_", DataType::Utf8, true));
+        let _list = DataType::List(_field);
+
+        let offset = Offsets::try_from_iter(length_each.into_iter()).unwrap();
+        let offset_buf = OffsetsBuffer::from(offset);
+        let ar2 = Utf8Array::<i32>::from(array2);
+        let b2: ListArray<i32> = ListArray::new(_list, offset_buf, Box::new(ar2), None);
+        arrow_in::to_py_array(b2.boxed(), py)
     });
 
     result

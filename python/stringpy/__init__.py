@@ -1,5 +1,5 @@
 from stringpy import _stringpy
-from pyarrow import Array
+from pyarrow import Array, ListArray
 import pyarrow as pa
 from typing import Callable, List
 import inspect
@@ -248,4 +248,20 @@ def str_extract(array: Array, pattern: str = None, group: int = None) -> Array:
     Returns
     -------
     Array
+    """
+
+@exporter
+def str_extract_all(array: Array, pattern: str = None, group: int = None) -> ListArray:
+    """Extract all matching pattern in string array, for each string input return list of matching output
+
+    Parameters
+    ----------
+    array : Array
+    pattern : str
+    group : int
+        Group number to extract, by default not use
+
+    Returns
+    -------
+    ListArray
     """

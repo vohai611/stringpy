@@ -74,3 +74,10 @@ def test_str_extract():
     actual = sp.str_extract(["apples x4x", "bag of flour", "bag of sugar", "nevermind2"], pattern = '\\d(.)', group = 1).to_pylist()
     expect = ['x', None, None, None]
     assert actual == expect 
+
+def test_str_extract_all():
+
+    actual = sp.str_extract_all(["apples x4 t6", "bag 3of flour",  "1", "ads", None], pattern = '\\d').to_pylist()
+    actual
+    expect = [['4', '6'], ['3'], ['1'], [], [None]]
+    assert actual == expect
