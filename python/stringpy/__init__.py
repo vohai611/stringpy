@@ -265,3 +265,10 @@ def str_extract_all(array: Array, pattern: str = None, group: int = None) -> Lis
     -------
     ListArray
     """
+
+@exporter
+def str_split(array: Array, pattern: str=None) -> ListArray:
+    """
+    """
+
+

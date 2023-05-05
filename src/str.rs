@@ -9,6 +9,8 @@ use pyo3::{prelude::*, types::PyTuple};
 use regex::Regex;
 use std::borrow::Cow;
 
+
+
 #[pyfunction]
 fn str_c(array: PyObject, collapse: Option<&str>) -> PyResult<String> {
     let collapse = collapse.unwrap_or("");
@@ -351,6 +353,78 @@ fn str_extract_all(array: PyObject, pattern: &str, group: Option<usize>) -> PyRe
     result
 }
 
+#[pyfunction]
+fn str_split(array: PyObject, pattern: &str) -> PyResult<PyObject> {
+    let pat = Regex::new(pattern).unwrap_or_else(|_| panic!("Invalid regex pattern: {}", pattern));
+
+    fn split<'a>(
+        x: Option<&'a str>,
+        pat: &Regex,
+        ) -> Option<Vec<Option<String>>> {
+
+        if let Some(x) = x {
+            let a =  pat.split(x)
+                .map(|i| Some(i.to_string()))
+                .collect();
+           Some(a)
+        } else { None }
+    }
+
+    let result = Python::with_gil(|py| {
+        let array = arrow_in::to_rust_array(array, py).unwrap();
+        let array = array.as_any();
+        let mut array: Vec<Option<Vec<Option<String>>>> = array
+            .downcast_ref::<Utf8Array<i32>>()
+            .unwrap()
+            .iter()
+            .map(|i| split(i, &pat))
+            .collect();
+
+        let length_each: Vec<usize> = array
+            .iter()
+            .map(|x| if let Some(x) = x { x.len() } else { 1 }) // None still take length 1
+            .collect();
+
+        let array2 = array
+            .iter_mut()
+            .reduce(|x, y| {
+                if let Some(x_in) = x {
+                    if let Some(y) = y {
+                        x_in.append(y);
+                    } else {
+                        x_in.push(None)
+                    }  
+                } else {
+                    if let Some(y) = y {
+                        let mut tmp = vec![None];
+                        tmp.append(y);
+                        *x = Some(tmp);
+                    } else {
+                        *x = Some(vec![None, None])
+                    }
+                }
+                x
+            })
+            .unwrap()
+            .as_ref()
+            .unwrap();
+
+
+        let _field = Box::new(Field::new("_", DataType::Utf8, true));
+        let _list = DataType::List(_field);
+
+        let offset = Offsets::try_from_iter(length_each.into_iter()).unwrap();
+        let offset_buf = OffsetsBuffer::from(offset);
+        let ar2 = Utf8Array::<i32>::from(array2);
+        let b2: ListArray<i32> = ListArray::new(_list, offset_buf, Box::new(ar2), None);
+        arrow_in::to_py_array(b2.boxed(), py)
+    });
+
+    result
+
+
+}
+
 #[pymodule]
 fn _stringpy(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(str_c, m)?)?;
@@ -367,5 +441,6 @@ fn _stringpy(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(str_trunc, m)?)?;
     m.add_function(wrap_pyfunction!(str_extract, m)?)?;
     m.add_function(wrap_pyfunction!(str_extract_all, m)?)?;
+    m.add_function(wrap_pyfunction!(str_split, m)?)?;
     Ok(())
 }
