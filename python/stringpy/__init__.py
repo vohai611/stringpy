@@ -3,6 +3,7 @@ from pyarrow import Array, ListArray
 import pyarrow as pa
 from typing import Callable, List
 import inspect
+from functools import wraps
 
 
 def check_same_length(lists: List[Array]):
@@ -21,6 +22,7 @@ def sync_kw(kwargs, kw_with_defaults):
 
 def exporter(func: Callable):
     """Use this when accepting only one array as argument"""
+    @wraps(func)
     def inner(array, **kwargs):
         rust_func = func.__name__
         # use default kwargs in python function
@@ -35,6 +37,7 @@ def exporter(func: Callable):
 
 def exporter2(func: Callable):
     """Use this when accepting multiple arrays as arguments"""
+    @wraps(func)
     def inner(*args, **kwargs):
         rust_func = func.__name__
         # use default kwargs in python function
@@ -69,6 +72,7 @@ def str_c(array: Array, collapse: str = None) -> str:
     -------
     str
     """
+    pass
 
 
 @exporter2
