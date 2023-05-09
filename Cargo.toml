@@ -11,6 +11,6 @@ crate-type = ["cdylib"]
 
 [dependencies]
 pyo3 = "0.18.1"
-arrow2 = {version =  "0.17.0", features = ["compute_regex_match", "compute_utf8", "compute_concatenate"]}
+arrow2 = "0.17.1"
 regex = "1.7.3"
 unidecode = "0.3.0"

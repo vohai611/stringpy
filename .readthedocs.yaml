@@ -9,9 +9,14 @@ build:
   os: "ubuntu-22.04"
   tools:
     python: "3.9"
-    rust: "1.65"
+    rust: "1.64"
+  jobs:
+    pre_create_environment:
+     - rustup install 1.65
+     - rustup default 1.65
 
 python:
   install:
+    - requirements: docs/requirements.txt
     - method: pip
       path: .
