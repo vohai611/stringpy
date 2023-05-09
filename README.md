@@ -1,7 +1,28 @@
-# stringpy
-Python package to mimic r::stringr
+[![Documentation Status](https://readthedocs.org/projects/stringpy/badge/?version=latest)](https://stringpy.readthedocs.io/en/latest/?badge=latest)
 
-# TODO
+# Introduction
+
+This project is a python package to mimic r::stringr
+
+# Installation
+
+This package is not on Pipy yet, so you need to compile from source. 
+
+First you need rust compiler:
+```
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+```
+
+Then install this package as normal python package:
+```
+git clone https://github.com/vohai611/stringpy.git
+pip3 install ./stringpy
+```
+
+# Usage example
+
+# Speed comparison
+# Implement list
 - [x] str_count
 - [x] str_detect
 - [] str_extract /str_extract_all
