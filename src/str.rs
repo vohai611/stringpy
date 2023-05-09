@@ -10,7 +10,6 @@ use regex::Regex;
 use std::borrow::Cow;
 
 
-
 #[pyfunction]
 fn str_c(array: PyObject, collapse: Option<&str>) -> PyResult<String> {
     let collapse = collapse.unwrap_or("");
@@ -354,16 +353,18 @@ fn str_extract_all(array: PyObject, pattern: &str, group: Option<usize>) -> PyRe
 }
 
 #[pyfunction]
-fn str_split(array: PyObject, pattern: &str) -> PyResult<PyObject> {
+fn str_split(array: PyObject, pattern: &str, n: Option<usize>) -> PyResult<PyObject> {
     let pat = Regex::new(pattern).unwrap_or_else(|_| panic!("Invalid regex pattern: {}", pattern));
+    let n = n.unwrap_or(usize::MAX);
 
     fn split<'a>(
         x: Option<&'a str>,
         pat: &Regex,
+        n : usize,
         ) -> Option<Vec<Option<String>>> {
 
         if let Some(x) = x {
-            let a =  pat.split(x)
+            let a =  pat.splitn(x, n)
                 .map(|i| Some(i.to_string()))
                 .collect();
            Some(a)
@@ -377,7 +378,7 @@ fn str_split(array: PyObject, pattern: &str) -> PyResult<PyObject> {
             .downcast_ref::<Utf8Array<i32>>()
             .unwrap()
             .iter()
-            .map(|i| split(i, &pat))
+            .map(|i| split(i, &pat, n ))
             .collect();
 
         let length_each: Vec<usize> = array
