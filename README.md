@@ -29,3 +29,31 @@ Python package to mimic r::stringr
 - [] str_to_upper() str_to_lower() str_to_title() str_to_sentence()
 - [] str_unique()
 - [x] str_remove_ascent()
+
+# Different type of i/o
+
+## Python
+- `@export`: one array in, one array out
+
+- `@export2`: multiple array in, one array out
+
+## Rust
+- `apply_utf8!()`   
+- `apply_utf8_bool!()`
+- `apply_utf8_lst!()`
+
+1. vec<str> in vec<str> out
+- Use apply_utf8!() macro
+- @export
+
+2. vec<str>+ in vec<str> out
+- Use apply_utf8!() macro
+- @export2
+
+3. vec<str> in vec<bool> out
+- Use apply_utf8_bool!() macro
+- @export
+
+4. vec<str> in vec<vec<str>> out
+- Use apply_utf8_lst!() macro
+- @export

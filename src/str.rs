@@ -1,9 +1,14 @@
+use crate::apply_utf8;
 use crate::arrow_in;
 use crate::utils;
+use arrow2::array::ListArray;
 use arrow2::array::{BooleanArray, Utf8Array};
+use arrow2::datatypes::{DataType, Field};
+use arrow2::offset::{Offsets, OffsetsBuffer};
 use pyo3::{prelude::*, types::PyTuple};
 use regex::Regex;
-use unidecode::unidecode;
+use std::borrow::Cow;
+
 
 #[pyfunction]
 fn str_c(array: PyObject, collapse: Option<&str>) -> PyResult<String> {
@@ -100,119 +105,59 @@ fn str_count(array: PyObject, pattern: &str) -> PyResult<PyObject> {
 fn str_replace(array: PyObject, pattern: &str, replace: &str) -> PyResult<PyObject> {
     let pat = Regex::new(pattern).unwrap();
 
-    fn replace_one(x: Option<&str>, pat: &Regex, replace: &str) -> Option<String> {
+    fn replace_one<'a>(x: Option<&'a str>, pat: &Regex, replace: &str) -> Option<Cow<'a, str>> {
         if let Some(x) = x {
-            return Some(pat.replace(x, replace).to_string());
+            return Some(Cow::from(pat.replace(x, replace)));
         }
         None
     }
 
-    let result = Python::with_gil(|py| {
-        let array = arrow_in::to_rust_array(array, py).unwrap();
-        let array: Vec<Option<String>> = array
-            .as_any()
-            .downcast_ref::<Utf8Array<i32>>()
-            .unwrap()
-            .iter()
-            .map(|i| replace_one(i, &pat, &replace))
-            .collect();
-
-        let result = arrow2::array::Utf8Array::<i32>::from(array);
-        let result = Box::new(result);
-        arrow_in::to_py_array(result, py)
-    });
-
-    return result;
+    apply_utf8!(array; replace_one; &pat, replace,)
 }
 
 #[pyfunction]
 fn str_replace_all(array: PyObject, pattern: &str, replace: &str) -> PyResult<PyObject> {
     let pat = &Regex::new(pattern).unwrap();
 
-    fn replace_all(x: Option<&str>, pat: &Regex, replace: &str) -> Option<String> {
+    fn replace_all<'a>(x: Option<&'a str>, pat: &Regex, replace: &str) -> Option<Cow<'a, str>> {
         if let Some(x) = x {
-            return Some(pat.replace_all(x, replace).to_string());
+            return Some(Cow::from(pat.replace_all(x, replace)));
         }
         None
     }
 
-    let result = Python::with_gil(|py| {
-        let array = arrow_in::to_rust_array(array, py).unwrap();
-        let mut rs: Vec<Option<String>> = Vec::with_capacity(array.len());
-
-        let array = array.as_any().downcast_ref::<Utf8Array<i32>>().unwrap();
-
-        array
-            .iter()
-            .for_each(|i| rs.push(replace_all(i, pat, replace)));
-
-        let result = arrow2::array::Utf8Array::<i32>::from(rs);
-        arrow_in::to_py_array(result.boxed(), py)
-    });
-
-    return result;
+    apply_utf8!(array; replace_all; &pat, replace,)
 }
 
 #[pyfunction]
 fn str_squish(ob: PyObject) -> PyResult<PyObject> {
-    fn squish(x: Option<&str>) -> Option<String> {
+    fn squish(x: Option<&str>) -> Option<Cow<str>> {
         if let Some(x) = x {
             let a: Vec<_> = x.split_whitespace().collect();
-            return Option::Some(a.join(" "));
+            return Option::Some(Cow::from(a.join(" ")));
         } else {
             None
         }
     }
-
-    let result = Python::with_gil(|py| {
-        let array = arrow_in::to_rust_array(ob, py).unwrap();
-        let array = array.as_any();
-        let array: Vec<Option<String>> = array
-            .downcast_ref::<Utf8Array<i32>>()
-            .unwrap()
-            .iter()
-            .map(|i| squish(i))
-            .collect();
-
-        let result = arrow2::array::Utf8Array::<i32>::from(array);
-        let result = Box::new(result);
-        arrow_in::to_py_array(result, py)
-    });
-
-    return result;
+    utils::apply_utf8!(ob; squish;)
 }
 
 #[pyfunction]
 fn str_trim(array: PyObject, side: &str) -> PyResult<PyObject> {
-    fn func<'a>(x: Option<&'a str>, side: &str) -> Option<&'a str> {
+    fn trim<'a>(x: Option<&'a str>, side: &str) -> Option<Cow<'a, str>> {
         if let Some(i) = x {
-            return Some(match side {
+            let out = match side {
                 "left" => i.trim_start(),
                 "right" => i.trim_end(),
                 "both" => i.trim(),
                 _ => panic!("Not a valid side, side must be ['left', 'right', 'both'] "),
-            });
+            };
+            return Some(Cow::from(out));
         } else {
             None
         }
     }
-
-    let rs = Python::with_gil(|py| {
-        let array = arrow_in::to_rust_array(array, py).unwrap();
-        let array = array.as_any();
-        let array: Vec<Option<&str>> = array
-            .downcast_ref::<Utf8Array<i32>>()
-            .unwrap()
-            .iter()
-            .map(|x| func(x, side))
-            .collect();
-
-        let rs = Utf8Array::<i32>::from(array).boxed();
-
-        arrow_in::to_py_array(rs, py)
-    });
-
-    rs
+    apply_utf8!(array; trim; side,)
 }
 
 #[pyfunction]
@@ -245,54 +190,30 @@ fn str_detect(array: PyObject, pattern: &str) -> PyResult<PyObject> {
     rs
 }
 
-
-use std::borrow::Cow;
-
-fn apply_utf8(array: PyObject, func:  fn(Option<&str>) -> Option<Cow<str>>) -> Result<Py<PyAny>, PyErr> {
-
-
-    let rs = Python::with_gil(|py| {
-        let array = arrow_in::to_rust_array(array, py).unwrap();
-        let array = array.as_any();
-        let array: Vec<Option<Cow<str>>> = array
-            .downcast_ref::<Utf8Array<i32>>()
-            .unwrap()
-            .iter()
-            .map(|x| func(x))
-            .collect();
-
-        let rs = Utf8Array::<i32>::from(array).boxed();
-        arrow_in::to_py_array(rs, py)
-    });
-
-    rs
-}
-
 #[pyfunction]
 fn str_remove_ascent(array: PyObject) -> PyResult<PyObject> {
-
-    fn  func(x : Option<&str>) -> Option<Cow<str>> {
+    let remove_ascent = |x: Option<&str>| {
         if let Some(x) = x {
-            Some(Cow::from(unidecode(x)))
+            Some(Cow::from(unidecode::unidecode(x)))
         } else {
             None
         }
-    }
-
-    apply_utf8(array, func)
+    };
+    utils::apply_utf8!(array; remove_ascent;)
 }
 
-
-
-/// "abcde" -> trunc left 2 -> "de"
-/// -> trunc center 2 -> "a..e"
 #[pyfunction]
 fn str_trunc(array: PyObject, width: usize, side: &str, ellipsis: &str) -> PyResult<PyObject> {
-    fn truncate(x: Option<&str>, width: usize, side: &str, ellipsis: &str) -> Option<String> {
+    fn truncate<'a>(
+        x: Option<&'a str>,
+        width: usize,
+        side: &str,
+        ellipsis: &str,
+    ) -> Option<Cow<'a, str>> {
         if let Some(x) = x {
             let len_x = x.len();
             if len_x < width {
-                return Some(x.to_string());
+                return Some(Cow::from(x));
             }
 
             let a = match side {
@@ -308,38 +229,201 @@ fn str_trunc(array: PyObject, width: usize, side: &str, ellipsis: &str) -> PyRes
                 }
                 _ => panic!("Not a valid side, side must be ['left', 'right', 'center']"),
             };
-            Some(a)
+            Some(Cow::from(a))
         } else {
             None
         }
     }
 
-    let rs = Python::with_gil(|py| {
-        let array = arrow_in::to_rust_array(array, py).unwrap();
-        let array = array.as_any();
-        let array: Vec<Option<String>> = array
-            .downcast_ref::<Utf8Array<i32>>()
-            .unwrap()
-            .iter()
-            .map(|x| truncate(x, width, side, ellipsis))
-            .collect();
-
-        let rs = Utf8Array::<i32>::from(array).boxed();
-
-        arrow_in::to_py_array(rs, py)
-    });
-
-    rs
+    apply_utf8!(array; truncate; width, side, ellipsis,)
 }
 
 #[pyfunction]
 fn str_remove(array: PyObject, pattern: &str) -> PyResult<PyObject> {
-   str_replace(array, pattern, "")
+    str_replace(array, pattern, "")
 }
 
 #[pyfunction]
 fn str_remove_all(array: PyObject, pattern: &str) -> PyResult<PyObject> {
-   str_replace_all(array, pattern, "")
+    str_replace_all(array, pattern, "")
+}
+
+#[pyfunction]
+fn str_extract(array: PyObject, pattern: &str, group: Option<usize>) -> PyResult<PyObject> {
+    let pat = Regex::new(pattern).unwrap_or_else(|_| panic!("Invalid regex pattern: {}", pattern));
+
+    fn extract<'a>(x: Option<&'a str>, pat: &Regex, group: Option<usize>) -> Option<Cow<'a, str>> {
+        if let Some(grp) = group {
+            if let Some(x) = x {
+                return pat
+                    .captures(x)
+                    .map(|x| Cow::from(x.get(grp).unwrap().as_str()));
+            }
+        } else {
+            if let Some(x) = x {
+                return pat.find(x).map(|x| Cow::from(x.as_str()));
+            }
+        }
+        None
+    }
+
+    apply_utf8!(array; extract; &pat, group,)
+}
+
+//Vec<Option<Vec<Option<String>>>>
+#[pyfunction]
+fn str_extract_all(array: PyObject, pattern: &str, group: Option<usize>) -> PyResult<PyObject> {
+    let pat = Regex::new(pattern).unwrap_or_else(|_| panic!("Invalid regex pattern: {}", pattern));
+
+    fn extract_all<'a>(
+        x: Option<&'a str>,
+        pat: &Regex,
+        group: Option<usize>,
+    ) -> Option<Vec<Option<String>>> {
+        if let Some(grp) = group {
+            if let Some(x) = x {
+                return pat
+                    .captures_iter(x)
+                    .map(|x| Some(x.get(grp).unwrap().as_str().to_string()))
+                    .collect::<Vec<_>>()
+                    .into();
+            }
+        } else {
+            if let Some(x) = x {
+                return pat
+                    .find_iter(x)
+                    .map(|x| Some(x.as_str().to_string()))
+                    .collect::<Vec<_>>()
+                    .into();
+            }
+        }
+        None
+    }
+
+    let result = Python::with_gil(|py| {
+        let array = arrow_in::to_rust_array(array, py).unwrap();
+        let array = array.as_any();
+        let mut array: Vec<Option<Vec<Option<String>>>> = array
+            .downcast_ref::<Utf8Array<i32>>()
+            .unwrap()
+            .iter()
+            .map(|i| extract_all(i, &pat, group))
+            .collect();
+
+        let length_each: Vec<usize> = array
+            .iter()
+            .map(|x| if let Some(x) = x { x.len() } else { 1 }) // None still take length 1
+            .collect();
+
+        let array2 = array
+            .iter_mut()
+            .reduce(|x, y| {
+                if let Some(x_in) = x {
+                    if let Some(y) = y {
+                        x_in.append(y);
+                    } else {
+                        x_in.push(None)
+                    }  
+                } else {
+                    if let Some(y) = y {
+                        let mut tmp = vec![None];
+                        tmp.append(y);
+                        *x = Some(tmp);
+                    } else {
+                        *x = Some(vec![None, None])
+                    }
+                }
+                x
+            })
+            .unwrap()
+            .as_ref()
+            .unwrap();
+
+        let _field = Box::new(Field::new("_", DataType::Utf8, true));
+        let _list = DataType::List(_field);
+
+        let offset = Offsets::try_from_iter(length_each.into_iter()).unwrap();
+        let offset_buf = OffsetsBuffer::from(offset);
+        let ar2 = Utf8Array::<i32>::from(array2);
+        let b2: ListArray<i32> = ListArray::new(_list, offset_buf, Box::new(ar2), None);
+        arrow_in::to_py_array(b2.boxed(), py)
+    });
+
+    result
+}
+
+#[pyfunction]
+fn str_split(array: PyObject, pattern: &str, n: Option<usize>) -> PyResult<PyObject> {
+    let pat = Regex::new(pattern).unwrap_or_else(|_| panic!("Invalid regex pattern: {}", pattern));
+    let n = n.unwrap_or(usize::MAX);
+
+    fn split<'a>(
+        x: Option<&'a str>,
+        pat: &Regex,
+        n : usize,
+        ) -> Option<Vec<Option<String>>> {
+
+        if let Some(x) = x {
+            let a =  pat.splitn(x, n)
+                .map(|i| Some(i.to_string()))
+                .collect();
+           Some(a)
+        } else { None }
+    }
+
+    let result = Python::with_gil(|py| {
+        let array = arrow_in::to_rust_array(array, py).unwrap();
+        let array = array.as_any();
+        let mut array: Vec<Option<Vec<Option<String>>>> = array
+            .downcast_ref::<Utf8Array<i32>>()
+            .unwrap()
+            .iter()
+            .map(|i| split(i, &pat, n ))
+            .collect();
+
+        let length_each: Vec<usize> = array
+            .iter()
+            .map(|x| if let Some(x) = x { x.len() } else { 1 }) // None still take length 1
+            .collect();
+
+        let array2 = array
+            .iter_mut()
+            .reduce(|x, y| {
+                if let Some(x_in) = x {
+                    if let Some(y) = y {
+                        x_in.append(y);
+                    } else {
+                        x_in.push(None)
+                    }  
+                } else {
+                    if let Some(y) = y {
+                        let mut tmp = vec![None];
+                        tmp.append(y);
+                        *x = Some(tmp);
+                    } else {
+                        *x = Some(vec![None, None])
+                    }
+                }
+                x
+            })
+            .unwrap()
+            .as_ref()
+            .unwrap();
+
+
+        let _field = Box::new(Field::new("_", DataType::Utf8, true));
+        let _list = DataType::List(_field);
+
+        let offset = Offsets::try_from_iter(length_each.into_iter()).unwrap();
+        let offset_buf = OffsetsBuffer::from(offset);
+        let ar2 = Utf8Array::<i32>::from(array2);
+        let b2: ListArray<i32> = ListArray::new(_list, offset_buf, Box::new(ar2), None);
+        arrow_in::to_py_array(b2.boxed(), py)
+    });
+
+    result
+
+
 }
 
 #[pymodule]
@@ -356,5 +440,8 @@ fn _stringpy(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(str_trim, m)?)?;
     m.add_function(wrap_pyfunction!(str_detect, m)?)?;
     m.add_function(wrap_pyfunction!(str_trunc, m)?)?;
+    m.add_function(wrap_pyfunction!(str_extract, m)?)?;
+    m.add_function(wrap_pyfunction!(str_extract_all, m)?)?;
+    m.add_function(wrap_pyfunction!(str_split, m)?)?;
     Ok(())
 }
