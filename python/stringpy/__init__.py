@@ -1,3 +1,6 @@
+'''This module provide a set of vectorized function to manipulate string, mostly mimic the main functionality of stringr package in R.
+As this package use pyarrow as a bridge to communicate with Rust, it ONLY work for any input that can convert to pyarray. And the resust is also a pyarry in most of cases.'''
+
 from stringpy import _stringpy
 from pyarrow import Array, ListArray
 import pyarrow as pa
@@ -67,12 +70,18 @@ def str_c(array: Array, collapse: str = None) -> str:
         _description_
     collapse : str
 
+    Examples
+    --------
+    >>> str_c(['abc', 'def', 'ghi'])
+    'abcdefghi'
+
+    >>> str_c(['abc', 'def', 'ghi'], collapse = '-')
+    'abc-def-ghi'
 
     Returns
     -------
     str
     """
-    pass
 
 
 @exporter2
@@ -84,6 +93,11 @@ def str_combine(*args, sep: str = None) -> List:
     args: Array to combine
     sep : str
         separator
+    
+    Examples
+    --------
+    >>> str_combine(['a', 'b', 'c'], ['d', 'e', 'f'], sep = '-')
+    ['a-d', 'b-e', 'c-f']
 
     Returns
     -------
@@ -99,6 +113,11 @@ def str_count(array: Array, pattern: str=None) -> Array:
     ----------
     array : Array
     pattern : str
+
+    Examples
+    --------
+    >>> str_count(['abc', 'def', 'ghi'], pattern = 'a').to_pylist()
+    [1, 0, 0]
 
     Returns
     -------
@@ -116,6 +135,11 @@ def str_replace(array: Array, pattern: str=None, replace: str=None) -> Array:
     pattern : str
     replace : str
 
+    Examples
+    --------
+    >>> str_replace(['abc', 'def', 'ghi'], pattern = '\w', replace = 'x').to_pylist()
+    ['xbc', 'xef', 'xhi']
+
     Returns
     -------
     Array
@@ -130,6 +154,11 @@ def str_remove(array: Array, pattern: str=None) -> Array:
     array : Array
     pattern : str
 
+    Examples
+    --------
+    >>> str_remove(['abc 12', 'def 23', 'ghi 34'], pattern = '\d').to_pylist()
+    ['abc 2', 'def 3', 'ghi 4']
+
     Returns
     -------
     Array
@@ -143,6 +172,11 @@ def str_remove_all(array: Array, pattern: str=None) -> Array:
     ----------
     array : Array
     pattern : str
+
+    Examples
+    --------
+    >>> str_remove_all(['abc 1', 'def 2', 'ghi 3'], pattern = '\d').to_pylist()
+    ['abc ', 'def ', 'ghi ']
 
     Returns
     -------
@@ -159,6 +193,12 @@ def str_replace_all(array: Array, pattern: str=None, replace: str=None) -> Array
     pattern : str
     replace : str
 
+    Examples
+    --------
+    >>> str_replace_all(['abc 122', 'def 233', 'ghi 344'], pattern = '\d', replace = 'x').to_pylist()
+    ['abc xxx', 'def xxx', 'ghi xxx']
+
+    
     Returns
     -------
     Array
@@ -167,11 +207,16 @@ def str_replace_all(array: Array, pattern: str=None, replace: str=None) -> Array
 
 @exporter
 def str_squish(array: Array) -> Array:
-    """Remove all leading and trailing whitespace from each string
+    """Remove all leading, trailing and in between word whitespace from each string
 
     Parameters
     ----------
     array : Array
+
+    Examples
+    --------
+    >>> str_squish([' abc  def', ' def    ghi', 'ijk row  ']).to_pylist()
+    ['abc def', 'def ghi', 'ijk row']
 
     Returns
     -------
@@ -186,6 +231,11 @@ def str_remove_ascent(array: List) -> Array:
     Parameters
     ----------
     array : Array
+
+    Examples
+    --------
+    >>> str_remove_ascent(['sài gòn', 'thời tiết', 'cảm lạnh']).to_pylist()
+    ['sai gon', 'thoi tiet', 'cam lanh']
 
     Returns
     -------
@@ -202,6 +252,11 @@ def str_detect(array: Array, pattern: str=None) -> Array:
     array : Array
     pattern : str
 
+    Examples
+    --------
+    >>> str_detect(['abc', 'def', 'ghi'], pattern = 'a').to_pylist()
+    [True, False, False]
+    
     Returns
     -------
     Array
@@ -209,12 +264,18 @@ def str_detect(array: Array, pattern: str=None) -> Array:
 
 @exporter
 def str_trim(array: Array, side = 'both') -> Array:
-    """Remove all leading and trailing whitespace from each string
+    """Remove leading and trailing whitespace from each string
 
     Parameters
     ----------
     array : Array
 
+    Examples
+    --------
+    >>> str_trim([' abc  def', ' def    ghi', 'ijk row  ']).to_pylist()
+    ['abc  def', 'def    ghi', 'ijk row']
+    
+    
     Returns
     -------
     Array
@@ -232,6 +293,11 @@ def str_trunc(array: Array, width: int = None, side = 'left', ellipsis = '...') 
         One of 'left', 'right', 'center'
     ellipsis : str
         Content of ellipsis that indicates content has been removed.
+    
+    Examples
+    --------
+    >>> str_trunc(['abc def', 'def ghi', 'ijk row'], width = 5).to_pylist()
+    ['abc d...', 'def g...', 'ijk r...']
 
     Returns
     -------
@@ -249,6 +315,11 @@ def str_extract(array: Array, pattern: str = None, group: int = None) -> Array:
     group : int
         Group number to extract, by default not use
 
+    Examples
+    --------
+    >>> str_extract(['abc', 'def', 'ghi'], pattern = '\w').to_pylist()
+    ['a', 'd', 'g']
+
     Returns
     -------
     Array
@@ -264,6 +335,11 @@ def str_extract_all(array: Array, pattern: str = None, group: int = None) -> Lis
     pattern : str
     group : int
         Group number to extract, by default not use
+    
+    Examples
+    --------
+    >>> str_extract_all(['abc12', 'd13ef', 'gh23i'], pattern = '\d').to_pylist()
+    [['1', '2'], ['1', '3'], ['2', '3']]
 
     Returns
     -------
@@ -272,7 +348,10 @@ def str_extract_all(array: Array, pattern: str = None, group: int = None) -> Lis
 
 @exporter
 def str_split(array: Array, pattern: str=None) -> ListArray:
-    """
+    """TODO
     """
 
 
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod(verbose=True)

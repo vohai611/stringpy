@@ -1,4 +1,5 @@
 [![Documentation Status](https://readthedocs.org/projects/stringpy/badge/?version=latest)](https://stringpy.readthedocs.io/en/latest/?badge=latest)
+[![CI](https://github.com/vohai611/stringpy/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/vohai611/stringpy/actions/workflows/CI.yml)
 
 # Introduction
 
