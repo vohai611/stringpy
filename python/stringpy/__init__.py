@@ -348,7 +348,16 @@ def str_extract_all(array: Array, pattern: str = None, group: int = None) -> Lis
 
 @exporter
 def str_split(array: Array, pattern: str=None) -> ListArray:
-    """TODO
+    """Split each string by a pattern, return a list[array], each array in the list is correspond to a string in input array
+
+    Parameters
+    ----------
+    array : Array
+    pattern : str
+
+    Returns
+    -------
+    ListArray
     """
 
 
