@@ -1,12 +1,22 @@
 ---
-title: "Stringpy"
-author: "Hai Vo "
+title: "README"
+author: "Hai Vo"
 date: "2023/5/1"
 format: 
+  rst: 
+    toc: false
+    output-file: README.rst
   gfm:
     code-fold: true
-toc: true
-toc-depth: 1
+    toc-location: right
+    toc: true
+    toc-depth: 1
+  # html: 
+  #   self-contained: true
+  #   code-fold: true
+  #   toc: true
+  #   toc-location: body
+  #   toc-depth: 1
 ---
 
 
@@ -34,18 +44,46 @@ pip3 install ./stringpy
 
 # Usage example
 
-# Speed comparison
+```{python}
+# setup
+import stringpy as sp
+import pandas as pd
+import numpy as np
+import random
+import string
+```
+
+## Combine string within group
+```{python}
+df = pd.DataFrame({'group': ['a', 'b', 'a', 'b', 'a', 'b', 'a', 'b', 'a', 'b'],
+              'value': ['one', 'two', 'three', 'four',None, 'six', 'seven', 'eight', 'nine', 'ten']})
+
+df2 = df.groupby('group').agg(lambda x: sp.str_c(x, collapse='->'))
+
+df2
+```
+
+## Split string
+
+```{python}
+sp.str_split(df2['value'], pattern='->')
+```
+
+## Remove accent
+
+```{python}
+vietnam = ['Hà Nội', 'Hồ Chí Minh', 'Đà Nẵng', 'Hải Phòng', 'Cần Thơ', 'Biên Hòa', 'Nha Trang', 'BMT', 'Huế', 'Buôn Ma Thuột', 'Bắc Giang', 'Bắc Ninh', 'Bến Tre', 'Bình Dương', 'Bình Phước', 'Bình Thuận', 'Cà Mau', 'Cao Bằng', 'Đắk Lắk', 'Đắk Nông', 'Điện Biên', 'Đồng Nai', 'Đồng Tháp', 'Gia Lai', 'Hà Giang', 'Hà Nam', 'Hà Tĩnh', 'Hải Dương', 'Hậu Giang', 'Hòa Bình', 'Hưng Yên', 'Khánh Hòa', 'Kiên Giang', 'Kon Tum', 'Lai Châu', 'Lâm Đồng', 'Lạng Sơn', 'Lào Cai', 'Long An', 'Nam Định', 'Nghệ An', 'Ninh Bình', 'Ninh Thuận', 'Phú Thọ', 'Phú Yên', 'Quảng Bình', 'Quảng Nam', 'Quảng Ngãi', 'Quảng Ninh', 'Quảng Trị', 'Sóc Trăng', 'Sơn La'] 
+
+sp.str_remove_ascent(vietnam)
+```
+
+# Random speed comparison
 
 Although this package is not aim to speed optimization, but in most case, it still get a decent speed up compare with pandas, thank to Rust!
 
 Below are some of random comparison between `stringpy` and `pandas`:
 
 ```{python}
-import stringpy as sp
-import pandas as pd
-import numpy as np
-import random
-import string
 
 letters = string.ascii_lowercase
 a = [''.join(random.choice(letters) for i in range(10))  for i in range(600_000)]

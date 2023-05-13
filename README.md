@@ -1,4 +1,4 @@
-Stringpy
+README
 ================
 Hai Vo
 5/1/23
@@ -6,8 +6,8 @@ Hai Vo
 - <a href="#introduction" id="toc-introduction">Introduction</a>
 - <a href="#installation" id="toc-installation">Installation</a>
 - <a href="#usage-example" id="toc-usage-example">Usage example</a>
-- <a href="#speed-comparison" id="toc-speed-comparison">Speed
-  comparison</a>
+- <a href="#random-speed-comparison"
+  id="toc-random-speed-comparison">Random speed comparison</a>
 - <a href="#implement-list" id="toc-implement-list">Implement list</a>
 - <a href="#different-type-of-io" id="toc-different-type-of-io">Different
   type of i/o</a>
@@ -39,7 +39,141 @@ Then install this package as normal python package:
 
 # Usage example
 
-# Speed comparison
+<details>
+<summary>Code</summary>
+
+``` python
+# setup
+import stringpy as sp
+import pandas as pd
+import numpy as np
+import random
+import string
+```
+
+</details>
+
+## Combine string within group
+
+<details>
+<summary>Code</summary>
+
+``` python
+df = pd.DataFrame({'group': ['a', 'b', 'a', 'b', 'a', 'b', 'a', 'b', 'a', 'b'],
+              'value': ['one', 'two', 'three', 'four',None, 'six', 'seven', 'eight', 'nine', 'ten']})
+
+df2 = df.groupby('group').agg(lambda x: sp.str_c(x, collapse='->'))
+
+df2
+```
+
+</details>
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>value</th>
+    </tr>
+    <tr>
+      <th>group</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>a</th>
+      <td>one-&gt;three-&gt;-&gt;seven-&gt;nine</td>
+    </tr>
+    <tr>
+      <th>b</th>
+      <td>two-&gt;four-&gt;six-&gt;eight-&gt;ten</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+## Split string
+
+<details>
+<summary>Code</summary>
+
+``` python
+sp.str_split(df2['value'], pattern='->')
+```
+
+</details>
+
+    <pyarrow.lib.ListArray object at 0x1289ae3e0>
+    [
+      [
+        "one",
+        "three",
+        "",
+        "seven",
+        "nine"
+      ],
+      [
+        "two",
+        "four",
+        "six",
+        "eight",
+        "ten"
+      ]
+    ]
+
+## Remove accent
+
+<details>
+<summary>Code</summary>
+
+``` python
+vietnam = ['Hà Nội', 'Hồ Chí Minh', 'Đà Nẵng', 'Hải Phòng', 'Cần Thơ', 'Biên Hòa', 'Nha Trang', 'BMT', 'Huế', 'Buôn Ma Thuột', 'Bắc Giang', 'Bắc Ninh', 'Bến Tre', 'Bình Dương', 'Bình Phước', 'Bình Thuận', 'Cà Mau', 'Cao Bằng', 'Đắk Lắk', 'Đắk Nông', 'Điện Biên', 'Đồng Nai', 'Đồng Tháp', 'Gia Lai', 'Hà Giang', 'Hà Nam', 'Hà Tĩnh', 'Hải Dương', 'Hậu Giang', 'Hòa Bình', 'Hưng Yên', 'Khánh Hòa', 'Kiên Giang', 'Kon Tum', 'Lai Châu', 'Lâm Đồng', 'Lạng Sơn', 'Lào Cai', 'Long An', 'Nam Định', 'Nghệ An', 'Ninh Bình', 'Ninh Thuận', 'Phú Thọ', 'Phú Yên', 'Quảng Bình', 'Quảng Nam', 'Quảng Ngãi', 'Quảng Ninh', 'Quảng Trị', 'Sóc Trăng', 'Sơn La'] 
+
+sp.str_remove_ascent(vietnam)
+```
+
+</details>
+
+    <pyarrow.lib.StringArray object at 0x12ad28220>
+    [
+      "Ha Noi",
+      "Ho Chi Minh",
+      "Da Nang",
+      "Hai Phong",
+      "Can Tho",
+      "Bien Hoa",
+      "Nha Trang",
+      "BMT",
+      "Hue",
+      "Buon Ma Thuot",
+      ...
+      "Ninh Thuan",
+      "Phu Tho",
+      "Phu Yen",
+      "Quang Binh",
+      "Quang Nam",
+      "Quang Ngai",
+      "Quang Ninh",
+      "Quang Tri",
+      "Soc Trang",
+      "Son La"
+    ]
+
+# Random speed comparison
 
 Although this package is not aim to speed optimization, but in most
 case, it still get a decent speed up compare with pandas, thank to Rust!
@@ -50,12 +184,6 @@ Below are some of random comparison between `stringpy` and `pandas`:
 <summary>Code</summary>
 
 ``` python
-import stringpy as sp
-import pandas as pd
-import numpy as np
-import random
-import string
-
 letters = string.ascii_lowercase
 a = [''.join(random.choice(letters) for i in range(10))  for i in range(600_000)]
 
@@ -76,8 +204,8 @@ a_sr.str.replace('\w', 'b', regex=True)
 
 </details>
 
-    CPU times: user 439 ms, sys: 11.8 ms, total: 451 ms
-    Wall time: 462 ms
+    CPU times: user 434 ms, sys: 9.08 ms, total: 443 ms
+    Wall time: 452 ms
 
     0         bbbbbbbbbb
     1         bbbbbbbbbb
@@ -102,10 +230,10 @@ sp.str_replace_all(a, pattern='\w', replace= 'b')
 
 </details>
 
-    CPU times: user 254 ms, sys: 10.7 ms, total: 265 ms
-    Wall time: 274 ms
+    CPU times: user 253 ms, sys: 3.95 ms, total: 256 ms
+    Wall time: 257 ms
 
-    <pyarrow.lib.StringArray object at 0x1170973a0>
+    <pyarrow.lib.StringArray object at 0x128a297e0>
     [
       "bbbbbbbbbb",
       "bbbbbbbbbb",
@@ -142,14 +270,14 @@ a_sr.str.count('a')
 
 </details>
 
-    CPU times: user 141 ms, sys: 6.63 ms, total: 148 ms
-    Wall time: 161 ms
+    CPU times: user 137 ms, sys: 3.39 ms, total: 141 ms
+    Wall time: 141 ms
 
     0         0
     1         0
     2         0
-    3         1
-    4         1
+    3         0
+    4         0
              ..
     599995    1
     599996    0
@@ -168,29 +296,27 @@ sp.str_count(a, pattern='a')
 
 </details>
 
-    CPU times: user 24.7 ms, sys: 1.94 ms, total: 26.6 ms
+    CPU times: user 23.7 ms, sys: 712 µs, total: 24.4 ms
+    Wall time: 24.3 ms
 
-
-    Wall time: 28.3 ms
-
-    <pyarrow.lib.Int32Array object at 0x117097460>
+    <pyarrow.lib.Int32Array object at 0x12ad2a140>
     [
       0,
       0,
       0,
-      1,
-      1,
-      1,
-      0,
       0,
       0,
       1,
+      1,
+      0,
+      1,
+      0,
       ...
-      1,
+      0,
+      0,
       0,
       1,
       0,
-      1,
       1,
       0,
       0,
