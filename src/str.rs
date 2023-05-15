@@ -6,10 +6,9 @@ use arrow2::array::Utf8Array;
 use arrow2::datatypes::{DataType, Field};
 use arrow2::offset::{Offsets, OffsetsBuffer};
 use pyo3::{prelude::*, types::PyTuple};
-use regex::Regex;
 use regex::escape;
+use regex::Regex;
 use std::borrow::Cow;
-
 
 #[pyfunction]
 fn str_c(array: PyObject, collapse: Option<&str>) -> PyResult<String> {
@@ -73,11 +72,8 @@ fn str_count(array: PyObject, pattern: &str) -> PyResult<PyObject> {
     let pat = Regex::new(pattern).unwrap_or_else(|_| panic!("not a valid regex"));
 
     fn count(x: Option<&str>, pat: &Regex) -> Option<i32> {
-        if let Some(x) = x {
-            return Option::Some(pat.find_iter(x).count() as i32);
-        } else {
-            None
-        }
+        let x = x?;
+        return Option::Some(pat.find_iter(x).count() as i32);
     }
 
     let result = Python::with_gil(|py| {
@@ -107,10 +103,8 @@ fn str_replace(array: PyObject, pattern: &str, replace: &str) -> PyResult<PyObje
     let pat = Regex::new(pattern).unwrap();
 
     fn replace_one<'a>(x: Option<&'a str>, pat: &Regex, replace: &str) -> Option<Cow<'a, str>> {
-        if let Some(x) = x {
-            return Some(Cow::from(pat.replace(x, replace)));
-        }
-        None
+        let x = x?;
+        return Some(Cow::from(pat.replace(x, replace)));
     }
 
     apply_utf8!(array; replace_one; &pat, replace,)
@@ -121,10 +115,8 @@ fn str_replace_all(array: PyObject, pattern: &str, replace: &str) -> PyResult<Py
     let pat = &Regex::new(pattern).unwrap();
 
     fn replace_all<'a>(x: Option<&'a str>, pat: &Regex, replace: &str) -> Option<Cow<'a, str>> {
-        if let Some(x) = x {
-            return Some(Cow::from(pat.replace_all(x, replace)));
-        }
-        None
+        let x = x?;
+        return Some(Cow::from(pat.replace_all(x, replace)));
     }
 
     apply_utf8!(array; replace_all; &pat, replace,)
@@ -133,12 +125,9 @@ fn str_replace_all(array: PyObject, pattern: &str, replace: &str) -> PyResult<Py
 #[pyfunction]
 fn str_squish(ob: PyObject) -> PyResult<PyObject> {
     fn squish(x: Option<&str>) -> Option<Cow<str>> {
-        if let Some(x) = x {
-            let a: Vec<_> = x.split_whitespace().collect();
-            return Option::Some(Cow::from(a.join(" ")));
-        } else {
-            None
-        }
+        let x = x?;
+        let a: Vec<_> = x.split_whitespace().collect();
+        return Option::Some(Cow::from(a.join(" ")));
     }
     utils::apply_utf8!(ob; squish;)
 }
@@ -146,17 +135,14 @@ fn str_squish(ob: PyObject) -> PyResult<PyObject> {
 #[pyfunction]
 fn str_trim(array: PyObject, side: &str) -> PyResult<PyObject> {
     fn trim<'a>(x: Option<&'a str>, side: &str) -> Option<Cow<'a, str>> {
-        if let Some(i) = x {
-            let out = match side {
-                "left" => i.trim_start(),
-                "right" => i.trim_end(),
-                "both" => i.trim(),
-                _ => panic!("Not a valid side, side must be ['left', 'right', 'both'] "),
-            };
-            return Some(Cow::from(out));
-        } else {
-            None
-        }
+        let x = x?;
+        let out = match side {
+            "left" => x.trim_start(),
+            "right" => x.trim_end(),
+            "both" => x.trim(),
+            _ => panic!("Not a valid side, side must be ['left', 'right', 'both'] "),
+        };
+        return Some(Cow::from(out));
     }
     apply_utf8!(array; trim; side,)
 }
@@ -166,15 +152,11 @@ fn str_detect(array: PyObject, pattern: &str) -> PyResult<PyObject> {
     let pat = Regex::new(pattern).unwrap();
 
     fn detect(x: Option<&str>, pat: &Regex) -> Option<bool> {
-        if let Some(x) = x {
-            return Some(pat.is_match(x));
-        } else {
-            None
-        }
+        let x = x?;
+        return Some(pat.is_match(x));
     }
 
     utils::apply_utf8_bool!(array; detect; &pat,)
-
 }
 
 #[pyfunction]
@@ -197,29 +179,26 @@ fn str_trunc(array: PyObject, width: usize, side: &str, ellipsis: &str) -> PyRes
         side: &str,
         ellipsis: &str,
     ) -> Option<Cow<'a, str>> {
-        if let Some(x) = x {
-            let len_x = x.len();
-            if len_x < width {
-                return Some(Cow::from(x));
-            }
-
-            let a = match side {
-                "left" => format!("{}{}", &x[..width], ellipsis),
-                "right" => format!("{}{}", ellipsis, &x[(len_x - width)..]),
-                "center" => {
-                    let middle = (width / 2) as f32;
-                    let first = middle.round() as usize;
-                    let tail = width - middle as usize;
-                    let first = &x[..first];
-                    let tail = &x[(len_x - tail)..];
-                    format!("{}{}{}", first, ellipsis, tail)
-                }
-                _ => panic!("Not a valid side, side must be ['left', 'right', 'center']"),
-            };
-            Some(Cow::from(a))
-        } else {
-            None
+        let x = x?;
+        let len_x = x.len();
+        if len_x < width {
+            return Some(Cow::from(x));
         }
+
+        let a = match side {
+            "left" => format!("{}{}", &x[..width], ellipsis),
+            "right" => format!("{}{}", ellipsis, &x[(len_x - width)..]),
+            "center" => {
+                let middle = (width / 2) as f32;
+                let first = middle.round() as usize;
+                let tail = width - middle as usize;
+                let first = &x[..first];
+                let tail = &x[(len_x - tail)..];
+                format!("{}{}{}", first, ellipsis, tail)
+            }
+            _ => panic!("Not a valid side, side must be ['left', 'right', 'center']"),
+        };
+        Some(Cow::from(a))
     }
 
     apply_utf8!(array; truncate; width, side, ellipsis,)
@@ -240,18 +219,14 @@ fn str_extract(array: PyObject, pattern: &str, group: Option<usize>) -> PyResult
     let pat = Regex::new(pattern).unwrap_or_else(|_| panic!("Invalid regex pattern: {}", pattern));
 
     fn extract<'a>(x: Option<&'a str>, pat: &Regex, group: Option<usize>) -> Option<Cow<'a, str>> {
+        let x = x?;
         if let Some(grp) = group {
-            if let Some(x) = x {
-                return pat
-                    .captures(x)
-                    .map(|x| Cow::from(x.get(grp).unwrap().as_str()));
-            }
+            return pat
+                .captures(x)
+                .map(|x| Cow::from(x.get(grp).unwrap().as_str()));
         } else {
-            if let Some(x) = x {
-                return pat.find(x).map(|x| Cow::from(x.as_str()));
-            }
+            return pat.find(x).map(|x| Cow::from(x.as_str()));
         }
-        None
     }
 
     apply_utf8!(array; extract; &pat, group,)
@@ -310,7 +285,7 @@ fn str_extract_all(array: PyObject, pattern: &str, group: Option<usize>) -> PyRe
                         x_in.append(y);
                     } else {
                         x_in.push(None)
-                    }  
+                    }
                 } else {
                     if let Some(y) = y {
                         let mut tmp = vec![None];
@@ -344,18 +319,10 @@ fn str_split(array: PyObject, pattern: &str, n: Option<usize>) -> PyResult<PyObj
     let pat = Regex::new(pattern).unwrap_or_else(|_| panic!("Invalid regex pattern: {}", pattern));
     let n = n.unwrap_or(usize::MAX);
 
-    fn split<'a>(
-        x: Option<&'a str>,
-        pat: &Regex,
-        n : usize,
-        ) -> Option<Vec<Option<String>>> {
-
-        if let Some(x) = x {
-            let a =  pat.splitn(x, n)
-                .map(|i| Some(i.to_string()))
-                .collect();
-           Some(a)
-        } else { None }
+    fn split<'a>(x: Option<&'a str>, pat: &Regex, n: usize) -> Option<Vec<Option<String>>> {
+        let x = x?;
+        let a = pat.splitn(x, n).map(|i| Some(i.to_string())).collect();
+        Some(a)
     }
 
     let result = Python::with_gil(|py| {
@@ -365,7 +332,7 @@ fn str_split(array: PyObject, pattern: &str, n: Option<usize>) -> PyResult<PyObj
             .downcast_ref::<Utf8Array<i32>>()
             .unwrap()
             .iter()
-            .map(|i| split(i, &pat, n ))
+            .map(|i| split(i, &pat, n))
             .collect();
 
         let length_each: Vec<usize> = array
@@ -381,7 +348,7 @@ fn str_split(array: PyObject, pattern: &str, n: Option<usize>) -> PyResult<PyObj
                         x_in.append(y);
                     } else {
                         x_in.push(None)
-                    }  
+                    }
                 } else {
                     if let Some(y) = y {
                         let mut tmp = vec![None];
@@ -397,7 +364,6 @@ fn str_split(array: PyObject, pattern: &str, n: Option<usize>) -> PyResult<PyObj
             .as_ref()
             .unwrap();
 
-
         let _field = Box::new(Field::new("_", DataType::Utf8, true));
         let _list = DataType::List(_field);
 
@@ -409,26 +375,19 @@ fn str_split(array: PyObject, pattern: &str, n: Option<usize>) -> PyResult<PyObj
     });
 
     result
-
-
 }
 
 #[pyfunction]
 fn str_starts(array: PyObject, pattern: &str, negate: bool) -> PyResult<PyObject> {
     let pattern = escape(pattern);
     let pattern = format!("^{}", pattern);
-    let pat = Regex::new(pattern.as_str()).unwrap_or_else(|_| panic!("Invalid regex pattern: {}", pattern));
+    let pat = Regex::new(pattern.as_str())
+        .unwrap_or_else(|_| panic!("Invalid regex pattern: {}", pattern));
 
-    fn starts<'a>(
-        x: Option<&'a str>,
-        pat: &Regex,
-        negate: bool,
-        ) -> Option<bool> {
-
-        if let Some(x) = x {
-            let a =  pat.is_match(x);
-            if negate { Some(!a) } else { Some(a) }
-        } else { None }
+    fn starts<'a>(x: Option<&'a str>, pat: &Regex, negate: bool) -> Option<bool> {
+        let x = x?;
+        let a = pat.is_match(x);
+        negate.then(|| !a).or(Some(a))
     }
 
     utils::apply_utf8_bool!(array; starts; &pat, negate,)
@@ -438,23 +397,17 @@ fn str_starts(array: PyObject, pattern: &str, negate: bool) -> PyResult<PyObject
 fn str_ends(array: PyObject, pattern: &str, negate: bool) -> PyResult<PyObject> {
     let pattern = escape(pattern);
     let pattern = format!("{}$", pattern);
-    let pat = Regex::new(pattern.as_str()).unwrap_or_else(|_| panic!("Invalid regex pattern: {}", pattern));
+    let pat = Regex::new(pattern.as_str())
+        .unwrap_or_else(|_| panic!("Invalid regex pattern: {}", pattern));
 
-    fn ends<'a>(
-        x: Option<&'a str>,
-        pat: &Regex,
-        negate: bool,
-        ) -> Option<bool> {
-
-        if let Some(x) = x {
-            let a =  pat.is_match(x);
-            if negate { Some(!a) } else { Some(a) }
-        } else { None }
+    fn ends<'a>(x: Option<&'a str>, pat: &Regex, negate: bool) -> Option<bool> {
+        let x = x?;
+        let a = pat.is_match(x);
+        negate.then(|| !a).or(Some(a))
     }
 
     utils::apply_utf8_bool!(array; ends; &pat, negate,)
 }
-
 
 #[pymodule]
 fn _stringpy(_py: Python, m: &PyModule) -> PyResult<()> {
