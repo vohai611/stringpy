@@ -7,7 +7,9 @@ README
    Hai Vo
 :Date: 5/1/23
 
-|Documentation Status| |CI|
+.. container::
+
+   |image1|
 
 Introduction
 ============
@@ -87,7 +89,7 @@ Split string
 
       ::
 
-         <pyarrow.lib.ListArray object at 0x106877dc0>
+         <pyarrow.lib.ListArray object at 0x122354e20>
          [
            [
              "one",
@@ -120,7 +122,7 @@ Remove accent
 
       ::
 
-         <pyarrow.lib.StringArray object at 0x12ad2b100>
+         <pyarrow.lib.StringArray object at 0x113794ee0>
          [
            "Ha Noi",
            "Ho Chi Minh",
@@ -176,8 +178,8 @@ Replace pattern
 
       ::
 
-         CPU times: user 435 ms, sys: 9.58 ms, total: 445 ms
-         Wall time: 455 ms
+         CPU times: user 442 ms, sys: 12.5 ms, total: 454 ms
+         Wall time: 476 ms
 
    .. container:: cell-output cell-output-display
 
@@ -207,14 +209,14 @@ Replace pattern
 
       ::
 
-         CPU times: user 253 ms, sys: 5.04 ms, total: 258 ms
-         Wall time: 260 ms
+         CPU times: user 265 ms, sys: 13.3 ms, total: 278 ms
+         Wall time: 326 ms
 
    .. container:: cell-output cell-output-display
 
       ::
 
-         <pyarrow.lib.StringArray object at 0x128a2ab00>
+         <pyarrow.lib.StringArray object at 0x105e77a00>
          [
            "bbbbbbbbbb",
            "bbbbbbbbbb",
@@ -253,8 +255,8 @@ Counting
 
       ::
 
-         CPU times: user 137 ms, sys: 2.86 ms, total: 140 ms
-         Wall time: 140 ms
+         CPU times: user 141 ms, sys: 4.55 ms, total: 145 ms
+         Wall time: 146 ms
 
    .. container:: cell-output cell-output-display
 
@@ -262,14 +264,14 @@ Counting
 
          0         0
          1         0
-         2         1
-         3         1
+         2         0
+         3         2
          4         0
                   ..
-         599995    1
+         599995    2
          599996    0
          599997    1
-         599998    0
+         599998    3
          599999    0
          Length: 600000, dtype: int64
 
@@ -284,35 +286,35 @@ Counting
 
       ::
 
-         CPU times: user 24 ms, sys: 1.76 ms, total: 25.8 ms
-         Wall time: 28.9 ms
+         CPU times: user 25.4 ms, sys: 1.53 ms, total: 26.9 ms
+         Wall time: 29.9 ms
 
    .. container:: cell-output cell-output-display
 
       ::
 
-         <pyarrow.lib.Int32Array object at 0x12ad2a560>
+         <pyarrow.lib.Int32Array object at 0x105e76080>
          [
            0,
            0,
-           1,
-           1,
            0,
-           1,
+           2,
            0,
            0,
            0,
-           1,
+           0,
+           0,
+           2,
            ...
-           0,
-           0,
-           0,
-           0,
-           0,
            1,
            0,
            1,
            0,
+           0,
+           2,
+           0,
+           1,
+           3,
            0
          ]
 
@@ -323,7 +325,7 @@ Implement list
 
 -  ☒ str_detect
 
--  [] str_extract /str_extract_all
+-  ☒ str_extract /str_extract_all
 
 -  [] str_locate() str_locate_all()
 
@@ -335,7 +337,7 @@ Implement list
 
 -  [] str_split() str_split_1() str_split_fixed() str_split_i()
 
--  [] str_starts() str_ends()
+-  ☒ str_starts() str_ends()
 
 -  [] str_subset()
 
@@ -402,7 +404,5 @@ Rust
 -  Use apply_utf8_lst!() macro
 -  @export
 
-.. |Documentation Status| image:: https://readthedocs.org/projects/stringpy/badge/?version=latest.png
-   :target: https://stringpy.readthedocs.io/en/latest/?badge=latest
-.. |CI| image:: https://github.com/vohai611/stringpy/actions/workflows/CI.yml/badge.svg?branch=main
+.. |image1| image:: https://github.com/vohai611/stringpy/actions/workflows/CI.yml/badge.svg?branch=main
    :target: https://github.com/vohai611/stringpy/actions/workflows/CI.yml

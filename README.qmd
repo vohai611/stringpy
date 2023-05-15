@@ -20,8 +20,11 @@ format:
 ---
 
 
-[![Documentation Status](https://readthedocs.org/projects/stringpy/badge/?version=latest)](https://stringpy.readthedocs.io/en/latest/?badge=latest)
-[![CI](https://github.com/vohai611/stringpy/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/vohai611/stringpy/actions/workflows/CI.yml)
+<a href='https://stringpy.readthedocs.io/en/latest/?badge=latest'>
+    <img src='https://readthedocs.org/projects/stringpy/badge/?version=latest' alt='Documentation Status' />
+</a>
+
+[![](https://github.com/vohai611/stringpy/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/vohai611/stringpy/actions/workflows/CI.yml)
 
 # Introduction
 
