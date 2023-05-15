@@ -360,6 +360,54 @@ def str_split(array: Array, pattern: str=None) -> ListArray:
     ListArray
     """
 
+@exporter
+def str_starts(array: Array, pattern: str=None, negate:bool=False) -> Array:
+    """Detect if each string starts with a pattern, return a boolean array
+
+    Parameters
+    ----------
+    array : Array
+    pattern : str
+        Expect a literal string, not a regex, all regex special characters will be escaped
+    negate : bool
+        Negate the result
+    Examples
+    --------
+    >>> str_starts(['abc', 'def', 'ghi'], pattern = 'a').to_pylist()
+    [True, False, False]
+
+    >>> str_starts(['a.bc', 'adef', 'aghi'], pattern = 'a.').to_pylist()
+    [True, False, False]
+
+    Returns
+    -------
+    Array
+    """
+
+
+@exporter
+def str_ends(array: Array, pattern: str=None, negate:bool=False) -> Array:
+    """Detect if each string ends with a pattern, return a boolean array
+
+    Parameters
+    ----------
+    array : Array
+    pattern : str
+        Expect a literal string, not a regex, all regex special characters will be escaped
+    negate : bool
+        Negate the result
+    Examples
+    --------
+    >>> str_ends(['abc', 'def', 'ghi'], pattern = 'c').to_pylist()
+    [True, False, False]
+
+    >>> str_ends(['ab.c', 'defc', 'ghic'], pattern = '.c').to_pylist()
+    [True, False, False]
+
+    Returns
+    -------
+    Array
+    """
 
 if __name__ == "__main__":
     import doctest

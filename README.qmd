@@ -118,13 +118,13 @@ sp.str_count(a, pattern='a')
 # Implement list
 - [x] str_count
 - [x] str_detect
-- [] str_extract /str_extract_all
+- [x] str_extract /str_extract_all
 - [] str_locate() str_locate_all()
 - [] str_match() str_match_all()
 - [x] str_replace() str_replace_all()
 - [x] str_remove() str_remove_all()
 - [] str_split() str_split_1() str_split_fixed() str_split_i()
-- [] str_starts() str_ends()
+- [x] str_starts() str_ends()
 
 - [] str_subset()
 - [] str_which()

@@ -2,11 +2,12 @@ use crate::apply_utf8;
 use crate::arrow_in;
 use crate::utils;
 use arrow2::array::ListArray;
-use arrow2::array::{BooleanArray, Utf8Array};
+use arrow2::array::Utf8Array;
 use arrow2::datatypes::{DataType, Field};
 use arrow2::offset::{Offsets, OffsetsBuffer};
 use pyo3::{prelude::*, types::PyTuple};
 use regex::Regex;
+use regex::escape;
 use std::borrow::Cow;
 
 
@@ -172,22 +173,8 @@ fn str_detect(array: PyObject, pattern: &str) -> PyResult<PyObject> {
         }
     }
 
-    let rs = Python::with_gil(|py| {
-        let array = arrow_in::to_rust_array(array, py).unwrap();
-        let array = array.as_any();
-        let array: Vec<Option<bool>> = array
-            .downcast_ref::<Utf8Array<i32>>()
-            .unwrap()
-            .iter()
-            .map(|x| detect(x, &pat))
-            .collect();
+    utils::apply_utf8_bool!(array; detect; &pat,)
 
-        let rs = BooleanArray::from(array).boxed();
-
-        arrow_in::to_py_array(rs, py)
-    });
-
-    rs
 }
 
 #[pyfunction]
@@ -426,6 +413,49 @@ fn str_split(array: PyObject, pattern: &str, n: Option<usize>) -> PyResult<PyObj
 
 }
 
+#[pyfunction]
+fn str_starts(array: PyObject, pattern: &str, negate: bool) -> PyResult<PyObject> {
+    let pattern = escape(pattern);
+    let pattern = format!("^{}", pattern);
+    let pat = Regex::new(pattern.as_str()).unwrap_or_else(|_| panic!("Invalid regex pattern: {}", pattern));
+
+    fn starts<'a>(
+        x: Option<&'a str>,
+        pat: &Regex,
+        negate: bool,
+        ) -> Option<bool> {
+
+        if let Some(x) = x {
+            let a =  pat.is_match(x);
+            if negate { Some(!a) } else { Some(a) }
+        } else { None }
+    }
+
+    utils::apply_utf8_bool!(array; starts; &pat, negate,)
+}
+
+#[pyfunction]
+fn str_ends(array: PyObject, pattern: &str, negate: bool) -> PyResult<PyObject> {
+    let pattern = escape(pattern);
+    let pattern = format!("{}$", pattern);
+    let pat = Regex::new(pattern.as_str()).unwrap_or_else(|_| panic!("Invalid regex pattern: {}", pattern));
+
+    fn ends<'a>(
+        x: Option<&'a str>,
+        pat: &Regex,
+        negate: bool,
+        ) -> Option<bool> {
+
+        if let Some(x) = x {
+            let a =  pat.is_match(x);
+            if negate { Some(!a) } else { Some(a) }
+        } else { None }
+    }
+
+    utils::apply_utf8_bool!(array; ends; &pat, negate,)
+}
+
+
 #[pymodule]
 fn _stringpy(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(str_c, m)?)?;
@@ -443,5 +473,7 @@ fn _stringpy(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(str_extract, m)?)?;
     m.add_function(wrap_pyfunction!(str_extract_all, m)?)?;
     m.add_function(wrap_pyfunction!(str_split, m)?)?;
+    m.add_function(wrap_pyfunction!(str_starts, m)?)?;
+    m.add_function(wrap_pyfunction!(str_ends, m)?)?;
     Ok(())
 }
