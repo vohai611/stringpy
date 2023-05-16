@@ -90,3 +90,8 @@ def test_str_split():
     actual = sp.str_split([None,'a,b,c','de,f', None], pattern =',').to_pylist()
     expect  = [[None],['a', 'b', 'c'],['de', 'f'], [None]]
     assert actual == expect
+
+def test_str_subset():
+    actual = sp.str_subset([None, 'Apple', 'Banana', 'Acetol'], pattern = '^A').to_pylist()
+    expect = ['Apple', 'Acetol']
+    assert actual == expect

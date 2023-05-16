@@ -408,6 +408,30 @@ def str_ends(array: Array, pattern: str=None, negate:bool=False) -> Array:
     -------
     Array
     """
+@exporter
+def str_subset(array: Array, pattern: str=None, negate:bool=False) -> Array:
+    """Subset (filter) array with a pattern, return string array
+
+    Parameters
+    ----------
+    array : Array
+    pattern : str
+        Expect a literal string, not a regex, all regex special characters will be escaped
+    negate : bool
+        Negate the result
+    Examples
+    --------
+    >>> str_subset(['apple', 'banana', 'pear', 'pineapple'], pattern = '^a').to_pylist()
+    ['apple']
+
+    >>> str_subset(['abc', 'def', 'ghi'], pattern = 'a', negate = True).to_pylist()
+    ['def', 'ghi']
+
+    Returns
+    -------
+    Array
+    """
+
 
 if __name__ == "__main__":
     import doctest

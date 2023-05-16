@@ -409,6 +409,39 @@ fn str_ends(array: PyObject, pattern: &str, negate: bool) -> PyResult<PyObject> 
     utils::apply_utf8_bool!(array; ends; &pat, negate,)
 }
 
+#[pyfunction]
+fn str_subset(array: PyObject, pattern: &str, negate: bool) -> PyResult<PyObject> {
+    let pat = Regex::new(pattern).unwrap_or_else(|_| panic!("Invalid regex pattern: {}", pattern));
+
+    // if match return x, esle return None
+    fn subset<'a>(x: Option<&'a str>, pat: &Regex, negate: bool) -> Option<&'a str> {
+        let x = x?;
+        let a = pat.is_match(x);
+        if negate {
+            (!a).then(|| x)
+        } else {
+            a.then(|| x)
+        }
+    }
+
+    let result = Python::with_gil(|py| {
+        let array = arrow_in::to_rust_array(array, py).unwrap();
+        let array = array.as_any();
+        let array: Vec<Option<&str>> = array
+            .downcast_ref::<Utf8Array<i32>>()
+            .unwrap()
+            .iter()
+            .filter(|x| subset(*x, &pat, negate).is_some())
+            .collect();
+
+        let result = arrow2::array::Utf8Array::<i32>::from(array);
+        let result = Box::new(result);
+        arrow_in::to_py_array(result, py)
+    });
+    result
+
+}
+
 #[pymodule]
 fn _stringpy(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(str_c, m)?)?;
@@ -428,5 +461,6 @@ fn _stringpy(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(str_split, m)?)?;
     m.add_function(wrap_pyfunction!(str_starts, m)?)?;
     m.add_function(wrap_pyfunction!(str_ends, m)?)?;
+    m.add_function(wrap_pyfunction!(str_subset, m)?)?;
     Ok(())
 }
