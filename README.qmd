@@ -19,11 +19,7 @@ format:
   #   toc-depth: 1
 ---
 
-
-<a href='https://stringpy.readthedocs.io/en/latest/?badge=latest'>
-    <img src='https://readthedocs.org/projects/stringpy/badge/?version=latest' alt='Documentation Status' />
-</a>
-
+[![Documentation Status](https://readthedocs.org/projects/stringpy/badge/?version=latest)](https://stringpy.readthedocs.io/en/latest/?badge=latest)
 [![](https://github.com/vohai611/stringpy/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/vohai611/stringpy/actions/workflows/CI.yml)
 
 # Introduction
