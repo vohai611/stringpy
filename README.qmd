@@ -6,17 +6,11 @@ format:
   rst: 
     toc: false
     output-file: README.rst
-  gfm:
+  commonmark:
     code-fold: true
     toc-location: right
     toc: true
     toc-depth: 1
-  # html: 
-  #   self-contained: true
-  #   code-fold: true
-  #   toc: true
-  #   toc-location: body
-  #   toc-depth: 1
 ---
 
 [![Documentation Status](https://readthedocs.org/projects/stringpy/badge/?version=latest)](https://stringpy.readthedocs.io/en/latest/?badge=latest)

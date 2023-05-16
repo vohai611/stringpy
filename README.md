@@ -12,19 +12,9 @@ Hai Vo
 - <a href="#different-type-of-io" id="toc-different-type-of-io">Different
   type of i/o</a>
 
-<div>
-
-[![](https://readthedocs.org/projects/stringpy/badge/?version=latest.png)](https://stringpy.readthedocs.io/en/latest/?badge=latest)
-
-Documentation Status
-
-</div>
-
-<div>
-
+[![Documentation
+Status](https://readthedocs.org/projects/stringpy/badge/?version=latest.png)](https://stringpy.readthedocs.io/en/latest/?badge=latest)
 [![](https://github.com/vohai611/stringpy/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/vohai611/stringpy/actions/workflows/CI.yml)
-
-</div>
 
 # Introduction
 
@@ -127,7 +117,7 @@ sp.str_split(df2['value'], pattern='->')
 
 </details>
 
-    <pyarrow.lib.ListArray object at 0x11fe55180>
+    <pyarrow.lib.ListArray object at 0x107276260>
     [
       [
         "one",
@@ -158,7 +148,7 @@ sp.str_remove_ascent(vietnam)
 
 </details>
 
-    <pyarrow.lib.StringArray object at 0x11fe55ae0>
+    <pyarrow.lib.StringArray object at 0x107277a60>
     [
       "Ha Noi",
       "Ho Chi Minh",
@@ -214,8 +204,8 @@ a_sr.str.replace('\w', 'b', regex=True)
 
 </details>
 
-    CPU times: user 503 ms, sys: 11.3 ms, total: 515 ms
-    Wall time: 519 ms
+    CPU times: user 504 ms, sys: 12 ms, total: 516 ms
+    Wall time: 527 ms
 
     0         bbbbbbbbbb
     1         bbbbbbbbbb
@@ -240,12 +230,10 @@ sp.str_replace_all(a, pattern='\w', replace= 'b')
 
 </details>
 
-    CPU times: user 290 ms, sys: 5.74 ms, total: 296 ms
-
-
+    CPU times: user 292 ms, sys: 4.79 ms, total: 297 ms
     Wall time: 296 ms
 
-    <pyarrow.lib.StringArray object at 0x11fe56680>
+    <pyarrow.lib.StringArray object at 0x12f211fc0>
     [
       "bbbbbbbbbb",
       "bbbbbbbbbb",
@@ -282,16 +270,16 @@ a_sr.str.count('a')
 
 </details>
 
-    CPU times: user 158 ms, sys: 3.68 ms, total: 161 ms
-    Wall time: 161 ms
+    CPU times: user 162 ms, sys: 8.66 ms, total: 171 ms
+    Wall time: 183 ms
 
-    0         1
+    0         0
     1         0
-    2         1
+    2         0
     3         0
-    4         1
+    4         0
              ..
-    599995    0
+    599995    1
     599996    0
     599997    0
     599998    0
@@ -308,28 +296,28 @@ sp.str_count(a, pattern='a')
 
 </details>
 
-    CPU times: user 27.4 ms, sys: 1.21 ms, total: 28.7 ms
-    Wall time: 28.5 ms
+    CPU times: user 27.2 ms, sys: 1.02 ms, total: 28.2 ms
+    Wall time: 28.2 ms
 
-    <pyarrow.lib.Int32Array object at 0x11fe56260>
+    <pyarrow.lib.Int32Array object at 0x12f211300>
     [
-      1,
+      0,
+      0,
+      0,
+      0,
+      0,
       0,
       1,
-      0,
-      1,
-      2,
-      0,
       0,
       0,
       0,
       ...
       0,
+      2,
       0,
       0,
       0,
       1,
-      0,
       0,
       0,
       0,
@@ -338,29 +326,29 @@ sp.str_count(a, pattern='a')
 
 # Implement list
 
-- [x] str_count
+- ☒ str_count
 
-- [x] str_detect
+- ☒ str_detect
 
-- [x] str_extract /str_extract_all
+- ☒ str_extract /str_extract_all
 
 - \[\] str_locate() str_locate_all()
 
 - \[\] str_match() str_match_all()
 
-- [x] str_replace() str_replace_all()
+- ☒ str_replace() str_replace_all()
 
-- [x] str_remove() str_remove_all()
+- ☒ str_remove() str_remove_all()
 
 - \[\] str_split() str_split_1() str_split_fixed() str_split_i()
 
-- [x] str_starts() str_ends()
+- ☒ str_starts() str_ends()
 
 - \[\] str_subset()
 
 - \[\] str_which()
 
-- [x] str_c(), str_combine()
+- ☒ str_c(), str_combine()
 
 - \[\] str_flatten() str_flatten_comma()
 
@@ -372,9 +360,9 @@ sp.str_count(a, pattern='a')
 
 - \[\] str_sub()/ str_sub_all()
 
-- [x] str_trim() str_squish()
+- ☒ str_trim() str_squish()
 
-- [x] str_trunc()
+- ☒ str_trunc()
 
 - \[\] str_wrap()
 
@@ -382,7 +370,7 @@ sp.str_count(a, pattern='a')
 
 - \[\] str_unique()
 
-- [x] str_remove_ascent()
+- ☒ str_remove_ascent()
 
 # Different type of i/o
 
