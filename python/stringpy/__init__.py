@@ -451,6 +451,26 @@ def str_dup(array: Array, times: int = 1) -> Array:
     Array
     """
 
+@exporter
+def str_length(array: Array) -> Array:
+    """Get length of each string in array.These are the individual elements (which are often, but not always letters)
+    For example length of "Hà Nội" will be 6
+
+
+    Parameters
+    ----------
+    array : Array
+
+    Examples
+    --------
+    >>> str_length(['abc', 'def', 'ghi', None ,'']).to_pylist()
+    [3, 3, 3, None, 0]
+
+    Returns
+    -------
+    Array
+    """
+
 if __name__ == "__main__":
     import doctest
     doctest.testmod(verbose=True)

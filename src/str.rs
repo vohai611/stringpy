@@ -78,26 +78,7 @@ fn str_count(array: PyObject, pattern: &str) -> Result<PyObject, StringpyErr> {
         let x = x?;
         return Option::Some(pat.find_iter(x).count() as i32);
     }
-
-    let result = Python::with_gil(|py| {
-        let array = arrow_in::to_rust_array(array, py)?;
-        let rs_cap = array.len();
-
-        let mut rs: Vec<Option<i32>> = Vec::with_capacity(rs_cap);
-        let array = array
-            .as_any()
-            .downcast_ref::<Utf8Array<i32>>()
-            .unwrap_or_else(|| panic!("Not a string array"))
-            .iter();
-
-        for i in array {
-            rs.push(count(i, &pat));
-        }
-
-        let result = arrow2::array::Int32Array::from(rs);
-        arrow_in::to_py_array(result.boxed(), py)
-    });
-    Ok(result?)
+    utils::apply_utf8_i32!(array; count; &pat,)
 }
 
 #[pyfunction]
@@ -506,6 +487,16 @@ fn str_dup(array: PyObject, times: usize) -> Result<PyObject, StringpyErr> {
     utils::apply_utf8!(array; repeat; times,)
 }
 
+#[pyfunction]
+fn str_length(array: PyObject) -> Result<PyObject, StringpyErr> {
+    fn length(x : Option<&str>) -> Option<i32> {
+        let x = x?;
+        Some(unidecode::unidecode(x).len() as i32)
+    }
+
+    utils::apply_utf8_i32!(array; length;)
+}
+
 #[pymodule]
 fn _stringpy(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(str_c, m)?)?;
@@ -528,5 +519,6 @@ fn _stringpy(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(str_subset, m)?)?;
     m.add_function(wrap_pyfunction!(str_which, m)?)?;
     m.add_function(wrap_pyfunction!(str_dup, m)?)?;
+    m.add_function(wrap_pyfunction!(str_length, m)?)?;
     Ok(())
 }

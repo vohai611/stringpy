@@ -102,6 +102,11 @@ def test_str_dup():
     expect = ['aaa', 'bbb', 'ccc', None]
     assert actual == expect
 
+def test_str_length():
+    actual = sp.str_length(['', 'a', 'b', 'c', None]).to_pylist()
+    expect = [0, 1, 1, 1, None]
+    assert actual == expect
+
 def test_raises_group_out_of_index():
     # raise error if group is out of index
     with pytest.raises(ValueError) as exc_info:   

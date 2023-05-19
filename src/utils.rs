@@ -61,5 +61,31 @@ macro_rules!  apply_utf8_bool {
 }
 }
 
+#[macro_export]
+macro_rules! apply_utf8_i32 {
+    ($ob:expr; $func:expr; $($args:expr,)* ) => {
+        {
+
+    let result = Python::with_gil(|py| {
+        let array = arrow_in::to_rust_array($ob, py).unwrap();
+        let array = array.as_any();
+        let array: Vec<Option<i32>> = array
+            .downcast_ref::<Utf8Array<i32>>()
+            .unwrap()
+            .iter()
+            .map(|i| $func(i, $($args),*))
+            .collect();
+
+        let result = arrow2::array::Int32Array::from(array);
+        let result = Box::new(result);
+        arrow_in::to_py_array(result, py)
+    });
+    Ok(result?)
+
+    }
+}
+}
+
 pub(crate) use apply_utf8;
 pub(crate) use apply_utf8_bool;
+pub(crate) use apply_utf8_i32;
