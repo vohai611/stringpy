@@ -97,6 +97,11 @@ def test_str_subset():
     expect = ['Apple', 'Acetol']
     assert actual == expect
 
+def test_str_dup():
+    actual = sp.str_dup(['a', 'b', 'c', None], times = 3).to_pylist()
+    expect = ['aaa', 'bbb', 'ccc', None]
+    assert actual == expect
+
 def test_raises_group_out_of_index():
     # raise error if group is out of index
     with pytest.raises(ValueError) as exc_info:   

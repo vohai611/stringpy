@@ -496,6 +496,16 @@ fn str_which(array: PyObject, pattern: &str, negate: bool) -> Result<PyObject, S
     result
 }
 
+#[pyfunction]
+fn str_dup(array: PyObject, times: usize) -> Result<PyObject, StringpyErr> {
+
+    fn repeat(x: Option<&str>, times: usize) -> Option<Cow<str>> {
+        let x = x?;
+        Some(Cow::Owned(x.repeat(times)))
+    }
+    utils::apply_utf8!(array; repeat; times,)
+}
+
 #[pymodule]
 fn _stringpy(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(str_c, m)?)?;
@@ -517,5 +527,6 @@ fn _stringpy(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(str_ends, m)?)?;
     m.add_function(wrap_pyfunction!(str_subset, m)?)?;
     m.add_function(wrap_pyfunction!(str_which, m)?)?;
+    m.add_function(wrap_pyfunction!(str_dup, m)?)?;
     Ok(())
 }

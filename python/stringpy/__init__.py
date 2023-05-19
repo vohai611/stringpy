@@ -432,6 +432,24 @@ def str_subset(array: Array, pattern: str=None, negate:bool=False) -> Array:
     Array
     """
 
+@exporter
+def str_dup(array: Array, times: int = 1) -> Array:
+    """Duplicate each string in array by times
+
+    Parameters
+    ----------
+    array : Array
+    times : int
+
+    Examples
+    --------
+    >>> str_dup(['abc', 'def', 'ghi'], times = 2).to_pylist()
+    ['abcabc', 'defdef', 'ghighi']
+
+    Returns
+    -------
+    Array
+    """
 
 if __name__ == "__main__":
     import doctest
