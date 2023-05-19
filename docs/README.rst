@@ -87,7 +87,7 @@ Split string
 
       ::
 
-         <pyarrow.lib.ListArray object at 0x107277280>
+         <pyarrow.lib.ListArray object at 0x1694da1a0>
          [
            [
              "one",
@@ -120,7 +120,7 @@ Remove accent
 
       ::
 
-         <pyarrow.lib.StringArray object at 0x12f211c60>
+         <pyarrow.lib.StringArray object at 0x169550f40>
          [
            "Ha Noi",
            "Ho Chi Minh",
@@ -176,8 +176,8 @@ Replace pattern
 
       ::
 
-         CPU times: user 509 ms, sys: 17.6 ms, total: 527 ms
-         Wall time: 546 ms
+         CPU times: user 441 ms, sys: 17.9 ms, total: 459 ms
+         Wall time: 514 ms
 
    .. container:: cell-output cell-output-display
 
@@ -207,14 +207,14 @@ Replace pattern
 
       ::
 
-         CPU times: user 291 ms, sys: 10.3 ms, total: 301 ms
-         Wall time: 308 ms
+         CPU times: user 254 ms, sys: 14.4 ms, total: 269 ms
+         Wall time: 300 ms
 
    .. container:: cell-output cell-output-display
 
       ::
 
-         <pyarrow.lib.StringArray object at 0x12f211d80>
+         <pyarrow.lib.StringArray object at 0x169550e80>
          [
            "bbbbbbbbbb",
            "bbbbbbbbbb",
@@ -253,8 +253,8 @@ Counting
 
       ::
 
-         CPU times: user 159 ms, sys: 6.75 ms, total: 165 ms
-         Wall time: 168 ms
+         CPU times: user 144 ms, sys: 6.65 ms, total: 151 ms
+         Wall time: 166 ms
 
    .. container:: cell-output cell-output-display
 
@@ -263,13 +263,13 @@ Counting
          0         0
          1         0
          2         0
-         3         1
-         4         1
+         3         0
+         4         0
                   ..
          599995    0
          599996    0
          599997    0
-         599998    0
+         599998    1
          599999    0
          Length: 600000, dtype: int64
 
@@ -284,40 +284,43 @@ Counting
 
       ::
 
-         CPU times: user 27.9 ms, sys: 2.91 ms, total: 30.8 ms
-         Wall time: 39.8 ms
+         CPU times: user 24.6 ms, sys: 1.83 ms, total: 26.4 ms
+         Wall time: 30.3 ms
 
    .. container:: cell-output cell-output-display
 
       ::
 
-         <pyarrow.lib.Int32Array object at 0x12f2122c0>
+         <pyarrow.lib.Int32Array object at 0x169552080>
          [
            0,
            0,
            0,
-           1,
-           1,
-           1,
-           2,
-           2,
            0,
-           2,
+           0,
+           1,
+           0,
+           0,
+           1,
+           0,
            ...
+           2,
+           1,
+           0,
+           0,
+           0,
+           0,
+           0,
            0,
            1,
-           1,
-           0,
-           0,
-           0,
-           0,
-           0,
-           0,
            0
          ]
 
 Implement list
 ==============
+
+part 1
+------
 
 -  ☒ str_count
 
@@ -337,32 +340,26 @@ Implement list
 
 -  ☒ str_starts() str_ends()
 
--  [] str_subset()
+-  ☒ str_subset()
 
--  [] str_which()
+-  ☒ str_which()
 
 -  ☒ str_c(), str_combine()
 
 -  [] str_flatten() str_flatten_comma()
 
+part 2
+------
+
 -  [] str_dup()
-
 -  [] str_length() str_width()
-
 -  [] str_pad()
-
 -  [] str_sub()/ str_sub_all()
-
 -  ☒ str_trim() str_squish()
-
 -  ☒ str_trunc()
-
 -  [] str_wrap()
-
 -  [] str_to_upper() str_to_lower() str_to_title() str_to_sentence()
-
 -  [] str_unique()
-
 -  ☒ str_remove_ascent()
 
 Different type of i/o

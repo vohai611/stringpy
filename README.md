@@ -117,7 +117,7 @@ sp.str_split(df2['value'], pattern='->')
 
 </details>
 
-    <pyarrow.lib.ListArray object at 0x12f212080>
+    <pyarrow.lib.ListArray object at 0x169551540>
     [
       [
         "one",
@@ -148,7 +148,7 @@ sp.str_remove_ascent(vietnam)
 
 </details>
 
-    <pyarrow.lib.StringArray object at 0x12f212260>
+    <pyarrow.lib.StringArray object at 0x169551ae0>
     [
       "Ha Noi",
       "Ho Chi Minh",
@@ -204,8 +204,8 @@ a_sr.str.replace('\w', 'b', regex=True)
 
 </details>
 
-    CPU times: user 500 ms, sys: 10.2 ms, total: 511 ms
-    Wall time: 510 ms
+    CPU times: user 438 ms, sys: 8.58 ms, total: 447 ms
+    Wall time: 455 ms
 
     0         bbbbbbbbbb
     1         bbbbbbbbbb
@@ -230,10 +230,10 @@ sp.str_replace_all(a, pattern='\w', replace= 'b')
 
 </details>
 
-    CPU times: user 292 ms, sys: 7.32 ms, total: 299 ms
-    Wall time: 299 ms
+    CPU times: user 251 ms, sys: 7.26 ms, total: 259 ms
+    Wall time: 264 ms
 
-    <pyarrow.lib.StringArray object at 0x12f095f60>
+    <pyarrow.lib.StringArray object at 0x1694d9e40>
     [
       "bbbbbbbbbb",
       "bbbbbbbbbb",
@@ -270,20 +270,20 @@ a_sr.str.count('a')
 
 </details>
 
-    CPU times: user 158 ms, sys: 4.45 ms, total: 163 ms
-    Wall time: 162 ms
+    CPU times: user 144 ms, sys: 10.6 ms, total: 154 ms
+    Wall time: 186 ms
 
     0         0
     1         1
-    2         1
-    3         0
+    2         0
+    3         1
     4         0
              ..
     599995    0
-    599996    0
+    599996    1
     599997    0
-    599998    1
-    599999    2
+    599998    0
+    599999    0
     Length: 600000, dtype: int64
 
 <details>
@@ -296,35 +296,37 @@ sp.str_count(a, pattern='a')
 
 </details>
 
-    CPU times: user 27.2 ms, sys: 1.01 ms, total: 28.3 ms
-    Wall time: 28.1 ms
+    CPU times: user 24.1 ms, sys: 855 µs, total: 24.9 ms
+    Wall time: 26.7 ms
 
-    <pyarrow.lib.Int32Array object at 0x12f096680>
+    <pyarrow.lib.Int32Array object at 0x1695525c0>
     [
       0,
       1,
+      0,
       1,
       0,
       0,
-      0,
-      0,
+      1,
       0,
       0,
       0,
       ...
-      0,
-      0,
-      0,
-      0,
+      1,
+      1,
       0,
       0,
       0,
       0,
       1,
-      2
+      0,
+      0,
+      0
     ]
 
 # Implement list
+
+## part 1
 
 - [x] str_count
 
@@ -344,32 +346,25 @@ sp.str_count(a, pattern='a')
 
 - [x] str_starts() str_ends()
 
-- \[\] str_subset()
+- [x] str_subset()
 
-- \[\] str_which()
+- [x] str_which()
 
 - [x] str_c(), str_combine()
 
 - \[\] str_flatten() str_flatten_comma()
 
+## part 2
+
 - \[\] str_dup()
-
 - \[\] str_length() str_width()
-
 - \[\] str_pad()
-
 - \[\] str_sub()/ str_sub_all()
-
 - [x] str_trim() str_squish()
-
 - [x] str_trunc()
-
 - \[\] str_wrap()
-
 - \[\] str_to_upper() str_to_lower() str_to_title() str_to_sentence()
-
 - \[\] str_unique()
-
 - [x] str_remove_ascent()
 
 # Different type of i/o
