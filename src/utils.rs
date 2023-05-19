@@ -31,7 +31,7 @@ macro_rules! apply_utf8 {
         let result = Box::new(result);
         arrow_in::to_py_array(result, py)
     });
-    result
+    Ok(result?)
 
     }
 }
@@ -43,7 +43,7 @@ macro_rules!  apply_utf8_bool {
         {
 
     let result = Python::with_gil(|py| {
-        let array = arrow_in::to_rust_array($ob, py).unwrap();
+        let array = arrow_in::to_rust_array($ob, py)?;
         let array = array.as_any();
         let array: Vec<Option<bool>> = array
             .downcast_ref::<Utf8Array<i32>>()
@@ -56,8 +56,7 @@ macro_rules!  apply_utf8_bool {
         let result = Box::new(result);
         arrow_in::to_py_array(result, py)
     });
-    result
-
+    Ok(result?)
     }
 }
 }

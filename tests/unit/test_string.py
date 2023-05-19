@@ -1,5 +1,6 @@
 import stringpy as sp
 import pyarrow as pa
+import pytest
 
 
 def test_str_c():
@@ -95,3 +96,16 @@ def test_str_subset():
     actual = sp.str_subset([None, 'Apple', 'Banana', 'Acetol'], pattern = '^A').to_pylist()
     expect = ['Apple', 'Acetol']
     assert actual == expect
+
+def test_raises_group_out_of_index():
+    # raise error if group is out of index
+    with pytest.raises(ValueError) as exc_info:   
+        sp.str_extract(['adsa' ,'a.dsfda', '.bcadaa', None, ''], pattern ='(a)', group =3) 
+    assert  str(exc_info.value) == 'Group 3 does not exist in `(a)`'
+    # raise erro if pattern is wrong
+    with pytest.raises(ValueError) as exc_info:   
+        sp.str_extract_all(['abc'], pattern ='[')
+    
+    with pytest.raises(ValueError) as exc_info:
+        sp.str_trim(['abc'], side = 'wrong')
+    assert str(exc_info.value) == "side must be one of 'left', 'right', 'both'"
