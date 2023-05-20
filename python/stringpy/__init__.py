@@ -471,6 +471,24 @@ def str_length(array: Array) -> Array:
     Array
     """
 
+@exporter
+def str_unique(array: Array) -> Array:
+    """Get unique strings in array
+
+    Parameters
+    ----------
+    array : Array
+
+    Examples
+    --------
+    >>> str_unique(['abc', 'def', 'ghi', 'abc', 'def']).to_pylist()
+    ['abc', 'def', 'ghi']
+
+    Returns
+    -------
+    Array
+    """
+
 if __name__ == "__main__":
     import doctest
     doctest.testmod(verbose=True)

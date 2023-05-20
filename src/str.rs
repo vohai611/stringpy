@@ -3,6 +3,7 @@ use crate::arrow_in;
 use crate::atomic;
 use crate::error::StringpyErr;
 use crate::utils;
+use itertools::Itertools;
 use arrow2::array::ListArray;
 use arrow2::array::Utf8Array;
 use arrow2::datatypes::{DataType, Field};
@@ -497,6 +498,26 @@ fn str_length(array: PyObject) -> Result<PyObject, StringpyErr> {
     utils::apply_utf8_i32!(array; length;)
 }
 
+#[pyfunction]
+fn str_unique(array: PyObject) -> Result<PyObject, StringpyErr> {
+    let result = Python::with_gil(|py| {
+        let array = arrow_in::to_rust_array(array, py)?;
+        let array = array.as_any();
+        let array: Vec<Option<&str>> = array
+            .downcast_ref::<Utf8Array<i32>>()
+            .unwrap()
+            .iter()
+            .unique()
+            .collect();
+
+        let result = arrow2::array::Utf8Array::<i32>::from(array);
+        let result = Box::new(result);
+        Ok(arrow_in::to_py_array(result, py)?)
+    });
+    result
+}
+
+
 #[pymodule]
 fn _stringpy(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(str_c, m)?)?;
@@ -520,5 +541,6 @@ fn _stringpy(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(str_which, m)?)?;
     m.add_function(wrap_pyfunction!(str_dup, m)?)?;
     m.add_function(wrap_pyfunction!(str_length, m)?)?;
+    m.add_function(wrap_pyfunction!(str_unique, m)?)?;
     Ok(())
 }
