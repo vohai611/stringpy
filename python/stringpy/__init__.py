@@ -489,6 +489,73 @@ def str_unique(array: Array) -> Array:
     Array
     """
 
-if __name__ == "__main__":
-    import doctest
-    doctest.testmod(verbose=True)
+@exporter
+def str_to_lower(array: Array) -> Array:
+    """Convert each string to lower case
+
+    Parameters
+    ----------
+    array : Array
+
+    Examples
+    --------
+    >>> str_to_lower(['ABC', 'Def', 'Ghi']).to_pylist()
+    ['abc', 'def', 'ghi']
+
+    Returns
+    -------
+    Array
+    """
+
+@exporter
+def str_to_upper(array: Array) -> Array:
+    """Convert each string to upper case
+
+    Parameters
+    ----------
+    array : Array
+
+    Examples
+    --------
+    >>> str_to_upper(['abc', 'Def', 'Ghi']).to_pylist()
+    ['ABC', 'DEF', 'GHI']
+
+    Returns
+    -------
+    Array
+    """
+
+@exporter
+def str_to_title(array: Array) -> Array:
+    """Convert each string to title case
+
+    Parameters
+    ----------
+    array : Array
+
+    Examples
+    --------
+    >>> str_to_title(['abc', 'def', 'ghi']).to_pylist()
+    ['Abc', 'Def', 'Ghi']
+
+    Returns
+    -------
+    Array
+    """
+@exporter
+def str_to_sentence(array: Array) -> Array:
+    """Convert each string to sentence case
+
+    Parameters
+    ----------
+    array : Array
+
+    Examples
+    --------
+    >>> str_to_sentence(['i need you here. right now!']).to_pylist()
+    ['I need you here. Right now!']
+
+    Returns
+    -------
+    Array
+    """

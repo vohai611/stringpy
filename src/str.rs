@@ -517,6 +517,33 @@ fn str_unique(array: PyObject) -> Result<PyObject, StringpyErr> {
     result
 }
 
+#[pyfunction]
+fn str_to_upper(array: PyObject) -> Result<PyObject, StringpyErr> {
+    fn to_upper(x: Option<&str>) -> Option<Cow<str>> {
+        let x = x?;
+        Some(Cow::Owned(x.to_uppercase()))
+    }
+    utils::apply_utf8!(array; to_upper;)
+}
+
+#[pyfunction]
+fn str_to_lower(array: PyObject) -> Result<PyObject, StringpyErr> {
+    fn to_lower(x: Option<&str>) -> Option<Cow<str>> {
+        let x = x?;
+        Some(Cow::Owned(x.to_lowercase()))
+    }
+    utils::apply_utf8!(array; to_lower;)
+}
+
+#[pyfunction]
+fn str_to_title(array: PyObject) -> Result<PyObject, StringpyErr> {
+    utils::apply_utf8!(array; atomic::to_upper; " ",)  
+}
+
+#[pyfunction]
+fn str_to_sentence(array: PyObject) -> Result<PyObject, StringpyErr> {
+    utils::apply_utf8!(array; atomic::to_upper; ". ",)
+}
 
 #[pymodule]
 fn _stringpy(_py: Python, m: &PyModule) -> PyResult<()> {
@@ -542,5 +569,9 @@ fn _stringpy(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(str_dup, m)?)?;
     m.add_function(wrap_pyfunction!(str_length, m)?)?;
     m.add_function(wrap_pyfunction!(str_unique, m)?)?;
+    m.add_function(wrap_pyfunction!(str_to_upper, m)?)?;
+    m.add_function(wrap_pyfunction!(str_to_lower, m)?)?;
+    m.add_function(wrap_pyfunction!(str_to_title, m)?)?;
+    m.add_function(wrap_pyfunction!(str_to_sentence, m)?)?;
     Ok(())
 }
