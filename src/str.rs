@@ -545,6 +545,36 @@ fn str_to_sentence(array: PyObject) -> Result<PyObject, StringpyErr> {
     utils::apply_utf8!(array; atomic::to_upper; ". ",)
 }
 
+#[pyfunction]
+fn str_pad(array: PyObject, width: usize, side : &str, pad : &str) -> Result<PyObject, StringpyErr> {
+
+    if ! ["left", "right", "both"].contains(&side) {
+        return Err(StringpyErr::new_value_err(format!("Invalid side: `{}`. Must be one of [left, right, both]", side)));
+    }
+
+    fn padding<'a> (x: Option<&'a str>, width: usize, side: &str, pad: &str) -> Option<Cow<'a, str>> {
+        let x = x?;
+        let lenth = x.len();
+        if width < lenth {
+            return Some(Cow::Borrowed(x));
+        } else {
+            let pad = pad.repeat(width - lenth);
+            match side {
+                "left" => Some(Cow::Owned(pad + x)),
+                "right" => Some(Cow::Owned(x.to_string() + &pad.as_str())),
+                "both" => {
+                    let pad_left = pad.chars().take(pad.len() / 2).collect::<String>();
+                    let pad_right = pad.chars().skip(pad.len() / 2).collect::<String>();
+                    Some(Cow::Owned(pad_left + x + &pad_right))
+                }
+                _ => Some(Cow::Borrowed(x)),
+            }
+        }
+        
+    }
+    utils::apply_utf8!(array; padding; width, side, pad,)
+}
+
 #[pymodule]
 fn _stringpy(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(str_c, m)?)?;
@@ -573,5 +603,6 @@ fn _stringpy(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(str_to_lower, m)?)?;
     m.add_function(wrap_pyfunction!(str_to_title, m)?)?;
     m.add_function(wrap_pyfunction!(str_to_sentence, m)?)?;
+    m.add_function(wrap_pyfunction!(str_pad, m)?)?;
     Ok(())
 }

@@ -107,6 +107,14 @@ def test_str_length():
     expect = [0, 1, 1, 1, None]
     assert actual == expect
 
+def test_str_pad():
+    actual = sp.str_pad(['a', 'b', 'c', None], width = 3, side = 'left', pad = '0').to_pylist()
+    expect = ['00a', '00b', '00c', None]
+    assert actual == expect
+    actual = sp.str_pad(['abc def', 'this is wrong'], width = 4, side = 'right', pad = '0').to_pylist()
+    expect = ['abc def', 'this is wrong']
+
+
 def test_raises_group_out_of_index():
     # raise error if group is out of index
     with pytest.raises(ValueError) as exc_info:   
