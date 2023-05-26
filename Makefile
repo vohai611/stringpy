@@ -23,3 +23,9 @@ readme:
 	@echo "Generating README.rst from README.md"
 	@quarto render README.qmd 
 	@mv README.rst docs/README.rst
+
+test:
+	@echo "Running tests"
+	@pytest -rP
+	@pytest --doctest-modules python/stringpy
+#@python3 -m doctest -f python/stringpy/__init__.py -v

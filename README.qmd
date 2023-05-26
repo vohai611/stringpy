@@ -134,15 +134,15 @@ sp.str_count(a, pattern='a')
 - [] str_flatten() str_flatten_comma()
 
 ## part 2
-- [] str_dup()
-- [] str_length() str_width()
-- [] str_pad()
+- [x] str_dup()
+- [x] str_length() str_width()
+- [x] str_pad()
 - [] str_sub()/  str_sub_all()
 - [x] str_trim() str_squish()
 - [x] str_trunc()
 - [] str_wrap()
-- [] str_to_upper() str_to_lower() str_to_title() str_to_sentence()
-- [] str_unique()
+- [x] str_to_upper() str_to_lower() str_to_title() str_to_sentence()
+- [x] str_unique()
 - [x] str_remove_ascent()
 
 # Different type of i/o
