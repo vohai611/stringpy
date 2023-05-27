@@ -28,4 +28,3 @@ test:
 	@echo "Running tests"
 	@pytest -rP
 	@pytest --doctest-modules python/stringpy
-#@python3 -m doctest -f python/stringpy/__init__.py -v

@@ -87,7 +87,7 @@ Split string
 
       ::
 
-         <pyarrow.lib.ListArray object at 0x1694da1a0>
+         <pyarrow.lib.ListArray object at 0x1302b4ee0>
          [
            [
              "one",
@@ -120,7 +120,7 @@ Remove accent
 
       ::
 
-         <pyarrow.lib.StringArray object at 0x169550f40>
+         <pyarrow.lib.StringArray object at 0x102af4b20>
          [
            "Ha Noi",
            "Ho Chi Minh",
@@ -176,8 +176,8 @@ Replace pattern
 
       ::
 
-         CPU times: user 441 ms, sys: 17.9 ms, total: 459 ms
-         Wall time: 514 ms
+         CPU times: user 496 ms, sys: 8.6 ms, total: 505 ms
+         Wall time: 505 ms
 
    .. container:: cell-output cell-output-display
 
@@ -207,14 +207,14 @@ Replace pattern
 
       ::
 
-         CPU times: user 254 ms, sys: 14.4 ms, total: 269 ms
-         Wall time: 300 ms
+         CPU times: user 296 ms, sys: 9.33 ms, total: 305 ms
+         Wall time: 305 ms
 
    .. container:: cell-output cell-output-display
 
       ::
 
-         <pyarrow.lib.StringArray object at 0x169550e80>
+         <pyarrow.lib.StringArray object at 0x1302b4fa0>
          [
            "bbbbbbbbbb",
            "bbbbbbbbbb",
@@ -253,22 +253,22 @@ Counting
 
       ::
 
-         CPU times: user 144 ms, sys: 6.65 ms, total: 151 ms
-         Wall time: 166 ms
+         CPU times: user 158 ms, sys: 4.76 ms, total: 162 ms
+         Wall time: 162 ms
 
    .. container:: cell-output cell-output-display
 
       ::
 
-         0         0
-         1         0
+         0         1
+         1         1
          2         0
-         3         0
+         3         1
          4         0
                   ..
          599995    0
          599996    0
-         599997    0
+         599997    2
          599998    1
          599999    0
          Length: 600000, dtype: int64
@@ -284,34 +284,34 @@ Counting
 
       ::
 
-         CPU times: user 24.6 ms, sys: 1.83 ms, total: 26.4 ms
-         Wall time: 30.3 ms
+         CPU times: user 27 ms, sys: 1.58 ms, total: 28.5 ms
+         Wall time: 28.4 ms
 
    .. container:: cell-output cell-output-display
 
       ::
 
-         <pyarrow.lib.Int32Array object at 0x169552080>
+         <pyarrow.lib.Int32Array object at 0x1302b5d80>
          [
+           1,
+           1,
            0,
-           0,
-           0,
-           0,
+           1,
            0,
            1,
            0,
            0,
            1,
-           0,
-           ...
            2,
-           1,
+           ...
            0,
            0,
            0,
            0,
+           2,
            0,
            0,
+           2,
            1,
            0
          ]
@@ -351,9 +351,9 @@ part 1
 part 2
 ------
 
--  [] str_dup()
--  [] str_length() str_width()
--  [] str_pad()
+-  ☒ str_dup()
+-  ☒ str_length() str_width()
+-  ☒ str_pad()
 -  [] str_sub()/ str_sub_all()
 -  ☒ str_trim() str_squish()
 -  ☒ str_trunc()

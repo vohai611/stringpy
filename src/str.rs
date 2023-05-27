@@ -3,11 +3,12 @@ use crate::arrow_in;
 use crate::atomic;
 use crate::error::StringpyErr;
 use crate::utils;
-use itertools::Itertools;
 use arrow2::array::ListArray;
 use arrow2::array::Utf8Array;
 use arrow2::datatypes::{DataType, Field};
 use arrow2::offset::{Offsets, OffsetsBuffer};
+use itertools::izip;
+use itertools::Itertools;
 use pyo3::{prelude::*, types::PyTuple};
 use regex::escape;
 use regex::Regex;
@@ -18,7 +19,7 @@ use std::iter::zip;
 fn str_c(array: PyObject, collapse: Option<&str>) -> PyResult<String> {
     let collapse = collapse.unwrap_or("");
     let mut result = Python::with_gil(|py| {
-        let array = arrow_in::to_rust_array(array,py).unwrap();
+        let array = arrow_in::to_rust_array(array, py).unwrap();
         let array = array.as_any();
         let array = array.downcast_ref::<Utf8Array<i32>>().unwrap();
 
@@ -79,7 +80,7 @@ fn str_count(array: PyObject, pattern: &str) -> Result<PyObject, StringpyErr> {
         let x = x?;
         return Option::Some(pat.find_iter(x).count() as i32);
     }
-    utils::apply_utf8_i32!(array; count; &pat,)
+    utils::apply_utf8_i32!(array; count; &pat)
 }
 
 #[pyfunction]
@@ -91,7 +92,7 @@ fn str_replace(array: PyObject, pattern: &str, replace: &str) -> Result<PyObject
         return Some(Cow::from(pat.replace(x, replace)));
     }
 
-    apply_utf8!(array; replace_one; &pat, replace,)
+    apply_utf8!(array; replace_one; &pat, replace)
 }
 
 #[pyfunction]
@@ -103,7 +104,7 @@ fn str_replace_all(array: PyObject, pattern: &str, replace: &str) -> Result<PyOb
         return Some(Cow::from(pat.replace_all(x, replace)));
     }
 
-    apply_utf8!(array; replace_all; &pat, replace,)
+    apply_utf8!(array; replace_all; &pat, replace)
 }
 
 #[pyfunction]
@@ -134,7 +135,7 @@ fn str_trim(array: PyObject, side: &str) -> Result<PyObject, StringpyErr> {
         };
         return Some(Cow::from(out));
     }
-    apply_utf8!(array; trim; side,)
+    apply_utf8!(array; trim; side)
 }
 
 #[pyfunction]
@@ -146,7 +147,7 @@ fn str_detect(array: PyObject, pattern: &str) -> Result<PyObject, StringpyErr> {
         return Some(pat.is_match(x));
     }
 
-    utils::apply_utf8_bool!(array; detect; &pat,)
+    utils::apply_utf8_bool!(array; detect; &pat)
 }
 
 #[pyfunction]
@@ -196,7 +197,7 @@ fn str_trunc(
         Some(Cow::from(a))
     }
 
-    apply_utf8!(array; truncate; width, side, ellipsis,)
+    apply_utf8!(array; truncate; width, side, ellipsis)
 }
 
 #[pyfunction]
@@ -238,7 +239,7 @@ fn str_extract(
         }
     }
 
-    apply_utf8!(array; extract; &pat, group,)
+    apply_utf8!(array; extract; &pat, group)
 }
 
 //Vec<Option<Vec<Option<String>>>>
@@ -404,7 +405,7 @@ fn str_starts(array: PyObject, pattern: &str, negate: bool) -> Result<PyObject, 
     let pattern = format!("^{}", pattern);
     let pat = Regex::new(pattern.as_str())?;
 
-    utils::apply_utf8_bool!(array; atomic::detect; &pat, negate,)
+    utils::apply_utf8_bool!(array; atomic::detect; &pat, negate)
 }
 
 #[pyfunction]
@@ -413,7 +414,7 @@ fn str_ends(array: PyObject, pattern: &str, negate: bool) -> Result<PyObject, St
     let pattern = format!("{}$", pattern);
     let pat = Regex::new(pattern.as_str())?;
 
-    utils::apply_utf8_bool!(array; atomic::detect; &pat, negate,)
+    utils::apply_utf8_bool!(array; atomic::detect; &pat, negate)
 }
 
 #[pyfunction]
@@ -436,7 +437,7 @@ fn str_subset(array: PyObject, pattern: &str, negate: bool) -> Result<PyObject, 
         let array = array.as_any();
         let array: Vec<Option<&str>> = array
             .downcast_ref::<Utf8Array<i32>>()
-            .unwrap()
+            .unwrap_or_else(|| panic!("Expected String Array"))
             .iter()
             .filter(|x| subset(*x, &pat, negate).is_some())
             .collect();
@@ -479,18 +480,17 @@ fn str_which(array: PyObject, pattern: &str, negate: bool) -> Result<PyObject, S
 }
 
 #[pyfunction]
-fn str_dup(array: PyObject, times: usize) -> Result<PyObject, StringpyErr> {
-
+fn str_dup(array: PyObject, times: Vec<usize>) -> Result<PyObject, StringpyErr> {
     fn repeat(x: Option<&str>, times: usize) -> Option<Cow<str>> {
         let x = x?;
         Some(Cow::Owned(x.repeat(times)))
     }
-    utils::apply_utf8!(array; repeat; times,)
+    utils::apply_utf8!(array; repeat; times;)
 }
 
 #[pyfunction]
 fn str_length(array: PyObject) -> Result<PyObject, StringpyErr> {
-    fn length(x : Option<&str>) -> Option<i32> {
+    fn length(x: Option<&str>) -> Option<i32> {
         let x = x?;
         Some(unidecode::unidecode(x).len() as i32)
     }
@@ -537,28 +537,41 @@ fn str_to_lower(array: PyObject) -> Result<PyObject, StringpyErr> {
 
 #[pyfunction]
 fn str_to_title(array: PyObject) -> Result<PyObject, StringpyErr> {
-    utils::apply_utf8!(array; atomic::to_upper; " ",)  
+    utils::apply_utf8!(array; atomic::to_upper; " ")
 }
 
 #[pyfunction]
 fn str_to_sentence(array: PyObject) -> Result<PyObject, StringpyErr> {
-    utils::apply_utf8!(array; atomic::to_upper; ". ",)
+    utils::apply_utf8!(array ; atomic::to_upper; ". ")
 }
 
 #[pyfunction]
-fn str_pad(array: PyObject, width: usize, side : &str, pad : &str) -> Result<PyObject, StringpyErr> {
+fn str_pad(
+    array: PyObject,
+    width: Vec<i32>,
+    side: Vec<&str>,
+    pad: Vec<char>,
+) -> Result<PyObject, StringpyErr> {
+    // if ! ["left", "right", "both"].contains(&side) {
+    //     return Err(StringpyErr::new_value_err(format!("Invalid side: `{}`. Must be one of [left, right, both]", side)));
+    // }
+    let width = width
+        .into_iter()
+        .map(|x| x as usize)
+        .collect::<Vec<usize>>();
 
-    if ! ["left", "right", "both"].contains(&side) {
-        return Err(StringpyErr::new_value_err(format!("Invalid side: `{}`. Must be one of [left, right, both]", side)));
-    }
-
-    fn padding<'a> (x: Option<&'a str>, width: usize, side: &str, pad: &str) -> Option<Cow<'a, str>> {
+    fn padding<'a>(
+        x: Option<&'a str>,
+        width: usize,
+        side: &str,
+        pad: char,
+    ) -> Option<Cow<'a, str>> {
         let x = x?;
         let lenth = x.len();
         if width < lenth {
             return Some(Cow::Borrowed(x));
         } else {
-            let pad = pad.repeat(width - lenth);
+            let pad = pad.to_string().repeat(width - lenth);
             match side {
                 "left" => Some(Cow::Owned(pad + x)),
                 "right" => Some(Cow::Owned(x.to_string() + &pad.as_str())),
@@ -570,10 +583,11 @@ fn str_pad(array: PyObject, width: usize, side : &str, pad : &str) -> Result<PyO
                 _ => Some(Cow::Borrowed(x)),
             }
         }
-        
     }
-    utils::apply_utf8!(array; padding; width, side, pad,)
+    apply_utf8!(array ; padding; width, side , pad;)
 }
+
+
 
 #[pymodule]
 fn _stringpy(_py: Python, m: &PyModule) -> PyResult<()> {

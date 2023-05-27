@@ -117,7 +117,7 @@ sp.str_split(df2['value'], pattern='->')
 
 </details>
 
-    <pyarrow.lib.ListArray object at 0x169551540>
+    <pyarrow.lib.ListArray object at 0x1302b5540>
     [
       [
         "one",
@@ -148,7 +148,7 @@ sp.str_remove_ascent(vietnam)
 
 </details>
 
-    <pyarrow.lib.StringArray object at 0x169551ae0>
+    <pyarrow.lib.StringArray object at 0x103cde0e0>
     [
       "Ha Noi",
       "Ho Chi Minh",
@@ -204,8 +204,8 @@ a_sr.str.replace('\w', 'b', regex=True)
 
 </details>
 
-    CPU times: user 438 ms, sys: 8.58 ms, total: 447 ms
-    Wall time: 455 ms
+    CPU times: user 500 ms, sys: 7.82 ms, total: 507 ms
+    Wall time: 508 ms
 
     0         bbbbbbbbbb
     1         bbbbbbbbbb
@@ -230,10 +230,10 @@ sp.str_replace_all(a, pattern='\w', replace= 'b')
 
 </details>
 
-    CPU times: user 251 ms, sys: 7.26 ms, total: 259 ms
-    Wall time: 264 ms
+    CPU times: user 296 ms, sys: 4.96 ms, total: 301 ms
+    Wall time: 301 ms
 
-    <pyarrow.lib.StringArray object at 0x1694d9e40>
+    <pyarrow.lib.StringArray object at 0x103cdffa0>
     [
       "bbbbbbbbbb",
       "bbbbbbbbbb",
@@ -270,18 +270,18 @@ a_sr.str.count('a')
 
 </details>
 
-    CPU times: user 144 ms, sys: 10.6 ms, total: 154 ms
-    Wall time: 186 ms
+    CPU times: user 158 ms, sys: 3.67 ms, total: 161 ms
+    Wall time: 161 ms
 
     0         0
-    1         1
+    1         0
     2         0
-    3         1
-    4         0
+    3         0
+    4         1
              ..
-    599995    0
-    599996    1
-    599997    0
+    599995    1
+    599996    0
+    599997    1
     599998    0
     599999    0
     Length: 600000, dtype: int64
@@ -296,30 +296,30 @@ sp.str_count(a, pattern='a')
 
 </details>
 
-    CPU times: user 24.1 ms, sys: 855 µs, total: 24.9 ms
-    Wall time: 26.7 ms
+    CPU times: user 26.7 ms, sys: 742 µs, total: 27.4 ms
+    Wall time: 27.3 ms
 
-    <pyarrow.lib.Int32Array object at 0x1695525c0>
+    <pyarrow.lib.Int32Array object at 0x1302b63e0>
     [
       0,
-      1,
+      0,
+      0,
       0,
       1,
-      0,
-      0,
+      1,
       1,
       0,
       0,
       0,
       ...
-      1,
-      1,
-      0,
-      0,
-      0,
       0,
       1,
       0,
+      0,
+      1,
+      1,
+      0,
+      1,
       0,
       0
     ]
@@ -356,9 +356,9 @@ sp.str_count(a, pattern='a')
 
 ## part 2
 
-- \[\] str_dup()
-- \[\] str_length() str_width()
-- \[\] str_pad()
+- [x] str_dup()
+- [x] str_length() str_width()
+- [x] str_pad()
 - \[\] str_sub()/ str_sub_all()
 - [x] str_trim() str_squish()
 - [x] str_trunc()

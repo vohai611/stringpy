@@ -1,65 +1,10 @@
 '''This module provide a set of vectorized function to manipulate string, mostly mimic the main functionality of stringr package in R.
 As this package use pyarrow as a bridge to communicate with Rust, it ONLY work for any input that can convert to pyarray. And the resust is also a pyarry in most of cases.'''
 
-from stringpy import _stringpy
 from pyarrow import Array, ListArray
-import pyarrow as pa
-from typing import Callable, List
-import inspect
-from functools import wraps
+from typing import List, Union
+from .utils import exporter, exporter2
 
-
-def check_same_length(lists: List[Array]):
-    it = iter(lists)
-    the_len = len(next(it))
-    if not all(len(i) == the_len for i in it):
-        raise ValueError('Not all array have same length!')
-
-
-def sync_kw(kwargs, kw_with_defaults):
-    for k in kwargs:
-        if k in kw_with_defaults:
-            kw_with_defaults[k] = kwargs[k]
-        else:
-            raise KeyError(f"No such argument {k}")
-
-
-def exporter(func: Callable):
-    """Use this when accepting only one array as argument"""
-    @wraps(func)
-    def inner(array, **kwargs):
-        rust_func = func.__name__
-        # use default kwargs in python function
-        kw_with_defaults = {k: v.default for k, v in dict(inspect.signature(
-            func).parameters).items() if v.default is not inspect._empty}
-
-        array = pa.array(array) if not isinstance(array, pa.Array) else array
-        sync_kw(kwargs, kw_with_defaults)
-
-        return getattr(_stringpy, rust_func)(array, **kw_with_defaults)
-    return inner
-
-
-def exporter2(func: Callable):
-    """Use this when accepting multiple arrays as arguments"""
-    @wraps(func)
-    def inner(*args, **kwargs):
-        rust_func = func.__name__
-        # use default kwargs in python function
-        kw_with_defaults = {k: v.default for k, v in dict(inspect.signature(
-            func).parameters).items() if v.default is not inspect._empty}
-
-        if len(args) == 1:
-            raise ValueError("At least two arrays are required")
-        check_same_length(args)
-
-        args = list(args)
-        args = [pa.array(a) if not isinstance(a, pa.Array) else a for a in args]
-        args = tuple(args)
-        sync_kw(kwargs, kw_with_defaults)
-
-        return getattr(_stringpy, rust_func)(*args, **kw_with_defaults)
-    return inner
 
 
 @exporter
@@ -446,7 +391,7 @@ def str_subset(array: Array, pattern: str = None, negate: bool = False) -> Array
     """
 
 
-@exporter
+@exporter(vectorize_arg=['times'])
 def str_dup(array: Array, times: int = 1) -> Array:
     """Duplicate each string in array by times
 
@@ -466,7 +411,7 @@ def str_dup(array: Array, times: int = 1) -> Array:
     """
 
 
-@exporter
+@exporter()
 def str_length(array: Array) -> Array:
     """Get length of each string in array.These are the individual elements (which are often, but not always letters)
     For example length of "Hà Nội" will be 6
@@ -582,9 +527,29 @@ def str_to_sentence(array: Array) -> Array:
     """
 
 
-@exporter
-def str_pad(array: Array, width: int=None, side: str = 'left', pad: str = ' ') -> Array:
-    """Pad each string with pad string to width
+@exporter(vectorize_arg=['width', 'side', 'pad'])
+def str_pad(array: Array, width: Union[int, List[int]]=None, side: Union[str, List[str]] = 'left', pad: str = ' ') -> Array:
+    """_summary_
+
+    Parameters
+    ----------
+    array : Array
+        _description_
+    width : Union[int, List[int]], optional
+        The width of output string, by default None
+    side : Union[str, List[str]], optional
+        _description_, by default 'left'
+    pad : str, optional
+        _description_, by default ' '
+
+    Returns
+    -------
+    Array
+        _description_
+    """    """"""
+
+
+    """
 
     Parameters
     ----------
@@ -602,4 +567,5 @@ def str_pad(array: Array, width: int=None, side: str = 'left', pad: str = ' ') -
     Returns
     -------
     Array
+        _description_
     """
