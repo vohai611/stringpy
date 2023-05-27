@@ -6,7 +6,6 @@ from typing import List, Union
 from .utils import exporter, exporter2
 
 
-
 @exporter
 def str_c(array: Array, collapse: str = None) -> str:
     """Collapse a vector of str into a single string
@@ -63,7 +62,7 @@ def str_count(array: Array, pattern: str = None) -> Array:
 
     Examples
     --------
-    >>> str_count(['abc', 'def', 'ghi'], pattern = 'a').to_pylist()
+    >>> str_count(['abc', 'def', 'ghi'], pattern=r'a').to_pylist()
     [1, 0, 0]
 
     Returns
@@ -84,7 +83,7 @@ def str_replace(array: Array, pattern: str = None, replace: str = None) -> Array
 
     Examples
     --------
-    >>> str_replace(['abc', 'def', 'ghi'], pattern = '\w', replace = 'x').to_pylist()
+    >>> str_replace(['abc', 'def', 'ghi'], pattern=r'\w', replace = 'x').to_pylist()
     ['xbc', 'xef', 'xhi']
 
     Returns
@@ -104,7 +103,7 @@ def str_remove(array: Array, pattern: str = None) -> Array:
 
     Examples
     --------
-    >>> str_remove(['abc 12', 'def 23', 'ghi 34'], pattern = '\d').to_pylist()
+    >>> str_remove(['abc 12', 'def 23', 'ghi 34'], pattern=r'\d').to_pylist()
     ['abc 2', 'def 3', 'ghi 4']
 
     Returns
@@ -124,7 +123,7 @@ def str_remove_all(array: Array, pattern: str = None) -> Array:
 
     Examples
     --------
-    >>> str_remove_all(['abc 1', 'def 2', 'ghi 3'], pattern = '\d').to_pylist()
+    >>> str_remove_all(['abc 1', 'def 2', 'ghi 3'], pattern=r'\d').to_pylist()
     ['abc ', 'def ', 'ghi ']
 
     Returns
@@ -145,7 +144,7 @@ def str_replace_all(array: Array, pattern: str = None, replace: str = None) -> A
 
     Examples
     --------
-    >>> str_replace_all(['abc 122', 'def 233', 'ghi 344'], pattern = '\d', replace = 'x').to_pylist()
+    >>> str_replace_all(['abc 122', 'def 233', 'ghi 344'], pattern=r'\d', replace = 'x').to_pylist()
     ['abc xxx', 'def xxx', 'ghi xxx']
 
 
@@ -204,7 +203,7 @@ def str_detect(array: Array, pattern: str = None) -> Array:
 
     Examples
     --------
-    >>> str_detect(['abc', 'def', 'ghi'], pattern = 'a').to_pylist()
+    >>> str_detect(['abc', 'def', 'ghi'], pattern=r'a').to_pylist()
     [True, False, False]
 
     Returns
@@ -270,7 +269,7 @@ def str_extract(array: Array, pattern: str = None, group: int = None) -> Array:
 
     Examples
     --------
-    >>> str_extract(['abc', 'def', 'ghi'], pattern = '\w').to_pylist()
+    >>> str_extract(['abc', 'def', 'ghi'], pattern=r'\w').to_pylist()
     ['a', 'd', 'g']
 
     Returns
@@ -292,7 +291,7 @@ def str_extract_all(array: Array, pattern: str = None, group: int = None) -> Lis
 
     Examples
     --------
-    >>> str_extract_all(['abc12', 'd13ef', 'gh23i'], pattern = '\d').to_pylist()
+    >>> str_extract_all(['abc12', 'd13ef', 'gh23i'], pattern=r'\d').to_pylist()
     [['1', '2'], ['1', '3'], ['2', '3']]
 
     Returns
@@ -329,10 +328,10 @@ def str_starts(array: Array, pattern: str = None, negate: bool = False) -> Array
         Negate the result
     Examples
     --------
-    >>> str_starts(['abc', 'def', 'ghi'], pattern = 'a').to_pylist()
+    >>> str_starts(['abc', 'def', 'ghi'], pattern=r'a').to_pylist()
     [True, False, False]
 
-    >>> str_starts(['a.bc', 'adef', 'aghi'], pattern = 'a.').to_pylist()
+    >>> str_starts(['a.bc', 'adef', 'aghi'], pattern=r'a.').to_pylist()
     [True, False, False]
 
     Returns
@@ -354,10 +353,10 @@ def str_ends(array: Array, pattern: str = None, negate: bool = False) -> Array:
         Negate the result
     Examples
     --------
-    >>> str_ends(['abc', 'def', 'ghi'], pattern = 'c').to_pylist()
+    >>> str_ends(['abc', 'def', 'ghi'], pattern=r'c').to_pylist()
     [True, False, False]
 
-    >>> str_ends(['ab.c', 'defc', 'ghic'], pattern = '.c').to_pylist()
+    >>> str_ends(['ab.c', 'defc', 'ghic'], pattern=r'.c').to_pylist()
     [True, False, False]
 
     Returns
@@ -379,10 +378,10 @@ def str_subset(array: Array, pattern: str = None, negate: bool = False) -> Array
         Negate the result
     Examples
     --------
-    >>> str_subset(['apple', 'banana', 'pear', 'pineapple'], pattern = '^a').to_pylist()
+    >>> str_subset(['apple', 'banana', 'pear', 'pineapple'], pattern=r'^a').to_pylist()
     ['apple']
 
-    >>> str_subset(['abc', 'def', 'ghi'], pattern = 'a', negate = True).to_pylist()
+    >>> str_subset(['abc', 'def', 'ghi'], pattern=r'a', negate = True).to_pylist()
     ['def', 'ghi']
 
     Returns
@@ -528,7 +527,7 @@ def str_to_sentence(array: Array) -> Array:
 
 
 @exporter(vectorize_arg=['width', 'side', 'pad'])
-def str_pad(array: Array, width: Union[int, List[int]]=None, side: Union[str, List[str]] = 'left', pad: str = ' ') -> Array:
+def str_pad(array: Array, width: Union[int, List[int]] = None, side: Union[str, List[str]] = 'left', pad: str = ' ') -> Array:
     """_summary_
 
     Parameters
@@ -547,7 +546,6 @@ def str_pad(array: Array, width: Union[int, List[int]]=None, side: Union[str, Li
     Array
         _description_
     """    """"""
-
 
     """
 
@@ -568,4 +566,62 @@ def str_pad(array: Array, width: Union[int, List[int]]=None, side: Union[str, Li
     -------
     Array
         _description_
+    """
+
+
+@exporter(vectorize_arg=['start', 'end'])
+def str_sub(array: Array, start: int = None, end: int = None) -> Array:
+    """Get substring of each string in array by index, count from 0. Note that ``end`` is exclusive and
+    must be larger thann ``start``. If provide negative index, it will be counted from the end of the string.
+    In case ``start`` and ``end`` are out side of [0, length of string], it will be corced to the boundary.
+
+    Parameters
+    ----------
+    array : Array
+    start : int
+        Start position (inclusive)
+    end : int
+        End position (exclusive)
+
+    Examples
+    --------
+    >>> str_sub(['abc', 'def', 'ghi'], start = 1, end = 2).to_pylist()
+    ['b', 'e', 'h']
+    >>> str_sub(['Make', 'you', 'feel'], start = [1,1,1], end= [3,2,3]).to_pylist()
+    ['ak', 'o', 'ee']
+
+    Returns
+    -------
+    Array
+    """
+
+
+@exporter
+def str_match(array: Array, pattern: str = None) -> Array:
+    """Extract any number of match define by unnamed/named patter.
+
+    Parameters
+    ----------
+    array : Array
+    pattern : str
+        Expect a literal string, not a regex, all regex special characters will be escaped
+
+    Examples
+    --------
+
+    Returns
+    -------
+    Array
+    """
+
+
+@exporter
+def str_locate(array: Array, pattern: str = None) -> Array:
+    """Locate the position of the first match of pattern in each string in array. Return -1 if not found.
+
+    Parameters
+    ----------
+    array : Array
+    pattern : str
+        Expect a literal string, not a regex, all regex special characters will be escaped
     """

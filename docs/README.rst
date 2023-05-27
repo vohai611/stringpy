@@ -18,6 +18,16 @@ core functions are written in Rust. Note that I write this package
 mostly for personal use (convenience and speed) and learning purpose, so
 please use with care!
 
+How it works
+============
+
+-  Using arrow for data structure
+-  Using pyo3 for python binding
+-  Convert Python type (mostly List) to Rust type (mostly Vec) for the
+   case not using arrow. This may cause some overhead, but it make the
+   code more flexible. For example: many function not only vectorize
+   over main array but also it arugments.
+
 Installation
 ============
 
@@ -87,7 +97,7 @@ Split string
 
       ::
 
-         <pyarrow.lib.ListArray object at 0x1302b4ee0>
+         <pyarrow.lib.ListArray object at 0x11cbf9ba0>
          [
            [
              "one",
@@ -120,7 +130,7 @@ Remove accent
 
       ::
 
-         <pyarrow.lib.StringArray object at 0x102af4b20>
+         <pyarrow.lib.StringArray object at 0x11cc71cc0>
          [
            "Ha Noi",
            "Ho Chi Minh",
@@ -176,8 +186,8 @@ Replace pattern
 
       ::
 
-         CPU times: user 496 ms, sys: 8.6 ms, total: 505 ms
-         Wall time: 505 ms
+         CPU times: user 433 ms, sys: 6.57 ms, total: 440 ms
+         Wall time: 440 ms
 
    .. container:: cell-output cell-output-display
 
@@ -207,14 +217,14 @@ Replace pattern
 
       ::
 
-         CPU times: user 296 ms, sys: 9.33 ms, total: 305 ms
-         Wall time: 305 ms
+         CPU times: user 230 ms, sys: 7.13 ms, total: 237 ms
+         Wall time: 237 ms
 
    .. container:: cell-output cell-output-display
 
       ::
 
-         <pyarrow.lib.StringArray object at 0x1302b4fa0>
+         <pyarrow.lib.StringArray object at 0x11cc711e0>
          [
            "bbbbbbbbbb",
            "bbbbbbbbbb",
@@ -239,39 +249,117 @@ Replace pattern
            "bbbbbbbbbb"
          ]
 
-Counting
---------
+Subset by index
+---------------
 
 .. container:: cell
 
    .. code:: python
 
       %%time
-      a_sr.str.count('a')
+      a_sr.str.slice(2,4)
 
    .. container:: cell-output cell-output-stdout
 
       ::
 
-         CPU times: user 158 ms, sys: 4.76 ms, total: 162 ms
-         Wall time: 162 ms
+         CPU times: user 54.3 ms, sys: 3.81 ms, total: 58.1 ms
+         Wall time: 57.9 ms
 
    .. container:: cell-output cell-output-display
 
       ::
 
-         0         1
-         1         1
-         2         0
-         3         1
-         4         0
-                  ..
-         599995    0
-         599996    0
-         599997    2
-         599998    1
-         599999    0
-         Length: 600000, dtype: int64
+         0         zi
+         1         rh
+         2         tu
+         3         sv
+         4         ze
+                   ..
+         599995    ny
+         599996    qs
+         599997    vd
+         599998    pv
+         599999    dd
+         Length: 600000, dtype: object
+
+.. container:: cell
+
+   .. code:: python
+
+      %%time
+      sp.str_sub(a, start=2, end=4)
+
+   .. container:: cell-output cell-output-stdout
+
+      ::
+
+         CPU times: user 24.5 ms, sys: 3.47 ms, total: 28 ms
+         Wall time: 27.9 ms
+
+   .. container:: cell-output cell-output-display
+
+      ::
+
+         <pyarrow.lib.StringArray object at 0x11cc712a0>
+         [
+           "zi",
+           "rh",
+           "tu",
+           "sv",
+           "ze",
+           "ts",
+           "xb",
+           "pp",
+           "zs",
+           "xg",
+           ...
+           "sq",
+           "mg",
+           "to",
+           "cv",
+           "qq",
+           "ny",
+           "qs",
+           "vd",
+           "pv",
+           "dd"
+         ]
+
+::
+
+   ## Counting
+
+   ::: {.cell execution_count=10}
+   ``` {.python .cell-code}
+   %%time
+   a_sr.str.count('a')
+
+.. container:: cell-output cell-output-stdout
+
+   ::
+
+      CPU times: user 131 ms, sys: 3.02 ms, total: 134 ms
+      Wall time: 134 ms
+
+.. container:: cell-output cell-output-display
+
+   ::
+
+      0         0
+      1         1
+      2         0
+      3         0
+      4         1
+               ..
+      599995    0
+      599996    0
+      599997    0
+      599998    0
+      599999    0
+      Length: 600000, dtype: int64
+
+:::
 
 .. container:: cell
 
@@ -284,35 +372,35 @@ Counting
 
       ::
 
-         CPU times: user 27 ms, sys: 1.58 ms, total: 28.5 ms
-         Wall time: 28.4 ms
+         CPU times: user 23.4 ms, sys: 933 µs, total: 24.3 ms
+         Wall time: 25.2 ms
 
    .. container:: cell-output cell-output-display
 
       ::
 
-         <pyarrow.lib.Int32Array object at 0x1302b5d80>
+         <pyarrow.lib.Int32Array object at 0x11cc72200>
          [
-           1,
-           1,
            0,
            1,
+           0,
            0,
            1,
            0,
            0,
            1,
            2,
+           0,
            ...
            0,
            0,
            0,
-           0,
            2,
            0,
            0,
-           2,
-           1,
+           0,
+           0,
+           0,
            0
          ]
 
@@ -330,13 +418,15 @@ part 1
 
 -  [] str_locate() str_locate_all()
 
--  [] str_match() str_match_all()
+-  ☒ str_match() str_match_all()
 
 -  ☒ str_replace() str_replace_all()
 
 -  ☒ str_remove() str_remove_all()
 
--  [] str_split() str_split_1() str_split_fixed() str_split_i()
+-  ☒ str_split()
+
+-  [] str_split_1() str_split_fixed() str_split_i()
 
 -  ☒ str_starts() str_ends()
 
@@ -354,13 +444,18 @@ part 2
 -  ☒ str_dup()
 -  ☒ str_length() str_width()
 -  ☒ str_pad()
--  [] str_sub()/ str_sub_all()
+-  ☒ str_sub()/ str_sub_all()
 -  ☒ str_trim() str_squish()
 -  ☒ str_trunc()
 -  [] str_wrap()
--  [] str_to_upper() str_to_lower() str_to_title() str_to_sentence()
--  [] str_unique()
+-  ☒ str_to_upper() str_to_lower() str_to_title() str_to_sentence()
+-  ☒ str_unique()
 -  ☒ str_remove_ascent()
+
+Optimize
+--------
+
+Handle case when input is scalar or vector in Rust to improve speed
 
 Different type of i/o
 =====================

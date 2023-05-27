@@ -49,11 +49,9 @@ def exporter(_func=None, vectorize_arg: List = None):
                         TypeError(
                             f'Can not corce {i} to list, please check your input a')
 
-                    if len(kw_with_defaults[i]) == 1:
-                        kw_with_defaults[i] = kw_with_defaults[i] * len(array)
-                    elif len(kw_with_defaults[i]) != len(array):
-                        raise ValueError(
-                            f"Length of {i} must be equal to 1 or to length of array")
+                    if (len(kw_with_defaults[i]) != 1) | (len(kw_with_defaults[i]) != len(array)):
+                        ValueError( f"Length of {i} must be equal to 1 or to length of array")
+                        
 
             return getattr(_stringpy, rust_func)(array, **kw_with_defaults)
         return inner

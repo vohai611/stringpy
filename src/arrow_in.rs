@@ -5,10 +5,10 @@
 use std::error;
 use std::fmt;
 
+use arrow2::{array::Array, datatypes::Field, error::Error, ffi};
 use pyo3::exceptions::PyOSError;
 use pyo3::ffi::Py_uintptr_t;
 use pyo3::prelude::*;
-use arrow2::{array::Array, datatypes::Field, error::Error, ffi};
 
 /// an error that bridges Error with a Python error
 #[derive(Debug)]

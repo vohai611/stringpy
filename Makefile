@@ -28,3 +28,6 @@ test:
 	@echo "Running tests"
 	@pytest -rP
 	@pytest --doctest-modules python/stringpy
+rust:
+	@echo "Build release"
+	@maturin develop --release

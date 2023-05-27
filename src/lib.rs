@@ -1,5 +1,5 @@
-pub mod str;
 mod arrow_in;
-mod utils;
 mod atomic;
 mod error;
+pub mod str;
+mod utils;

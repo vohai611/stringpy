@@ -26,6 +26,12 @@ format:
 
 This project is a python package to mimic [r::stringr](https://stringr.tidyverse.org/) functionalities, the core functions are written in Rust. Note that I write this package mostly for personal use (convenience and speed) and learning purpose, so please use with care!  
 
+# How it works
+
+- Using arrow for data structure 
+- Using pyo3 for python binding
+- Convert Python type (mostly List) to Rust type (mostly Vec) for the case not using arrow. This may cause some overhead, but it make the code more flexible. For example: many function not only vectorize over main array but also it arugments.
+
 # Installation
 
 This package is not on Pipy yet, so you need to compile from source. 
@@ -102,6 +108,19 @@ a_sr.str.replace('\w', 'b', regex=True)
 sp.str_replace_all(a, pattern='\w', replace= 'b')
 ```
 
+## Subset by index
+
+```{python}
+%%time
+a_sr.str.slice(2,4)
+```
+
+
+```{python}
+%%time
+sp.str_sub(a, start=2, end=4)
+```
+```
 ## Counting
 
 ```{python}
@@ -121,10 +140,11 @@ sp.str_count(a, pattern='a')
 - [x] str_detect
 - [x] str_extract /str_extract_all
 - [] str_locate() str_locate_all()
-- [] str_match() str_match_all()
+- [x] str_match() str_match_all()
 - [x] str_replace() str_replace_all()
 - [x] str_remove() str_remove_all()
-- [] str_split() str_split_1() str_split_fixed() str_split_i()
+- [x] str_split()
+- [] str_split_1() str_split_fixed() str_split_i()
 - [x] str_starts() str_ends()
 
 - [x] str_subset()
@@ -137,13 +157,17 @@ sp.str_count(a, pattern='a')
 - [x] str_dup()
 - [x] str_length() str_width()
 - [x] str_pad()
-- [] str_sub()/  str_sub_all()
+- [x] str_sub()/  str_sub_all()
 - [x] str_trim() str_squish()
 - [x] str_trunc()
 - [] str_wrap()
 - [x] str_to_upper() str_to_lower() str_to_title() str_to_sentence()
 - [x] str_unique()
 - [x] str_remove_ascent()
+
+## Optimize
+
+Handle case when input is scalar or vector in Rust to improve speed
 
 # Different type of i/o
 
@@ -172,3 +196,4 @@ sp.str_count(a, pattern='a')
 4. vec<str> in vec<vec<str>> out
 - Use apply_utf8_lst!() macro
 - @export
+

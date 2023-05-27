@@ -3,10 +3,12 @@ use crate::arrow_in;
 use crate::atomic;
 use crate::error::StringpyErr;
 use crate::utils;
+use arrow2::array::Int32Array;
 use arrow2::array::ListArray;
 use arrow2::array::Utf8Array;
 use arrow2::datatypes::{DataType, Field};
 use arrow2::offset::{Offsets, OffsetsBuffer};
+use core::panic;
 use itertools::izip;
 use itertools::Itertools;
 use pyo3::{prelude::*, types::PyTuple};
@@ -587,7 +589,156 @@ fn str_pad(
     apply_utf8!(array ; padding; width, side , pad;)
 }
 
+#[pyfunction]
+fn str_sub(array: PyObject, start: Vec<i32>, end: Vec<i32>) -> Result<PyObject, StringpyErr> {
+    fn sub(x: Option<&str>, start: i32, end: i32) -> Option<Cow<str>> {
+        let x = x?;
+        let len = x.len();
 
+        let start = if start >= len as i32 {
+            len
+        } else if (start >= 0) & (start < len as i32) {
+            start as usize
+        } else if (start < 0) & (start > -(len as i32)) {
+            len - (-start as usize)
+        } else {
+            0
+        };
+
+        let end = if end >= len as i32 {
+            len
+        } else if (end >= 0) & (end < len as i32) {
+            end as usize
+        } else if (end < 0) & (end > -(len as i32)) {
+            len - (-end as usize)
+        } else {
+            0
+        };
+
+        Some(Cow::Owned(x[start..end].to_string()))
+    }
+    utils::apply_utf8!(array; sub; start, end;)
+}
+
+#[pyfunction]
+fn str_match(array: PyObject, pattern: &str) -> Result<PyObject, StringpyErr> {
+    let pat = Regex::new(pattern)?;
+
+    fn _match<'a>(x: Option<&'a str>, pat: &Regex) -> Option<Vec<Option<String>>> {
+        let x = x?;
+        let mut result = Vec::new();
+        for i in pat.captures(x)?.iter().skip(1) {
+            // skip group 0 which is implicit group
+            // of whole match
+            result.push(Some(i.unwrap().as_str().to_string()))
+        }
+
+        Some(result)
+    }
+
+    let result = Python::with_gil(|py| {
+        let array = arrow_in::to_rust_array(array, py)?;
+        let array = array.as_any();
+        let mut array: Vec<Option<Vec<Option<String>>>> = array
+            .downcast_ref::<Utf8Array<i32>>()
+            .unwrap()
+            .iter()
+            .map(|i| _match(i, &pat))
+            .collect();
+
+        let length_each: Vec<usize> = array
+            .iter()
+            .map(|x| if let Some(x) = x { x.len() } else { 1 }) // None still take length 1
+            .collect();
+
+        let array2 = array
+            .iter_mut()
+            .reduce(|x, y| {
+                if let Some(x_in) = x {
+                    if let Some(y) = y {
+                        x_in.append(y);
+                    } else {
+                        x_in.push(None)
+                    }
+                } else {
+                    if let Some(y) = y {
+                        let mut tmp = vec![None];
+                        tmp.append(y);
+                        *x = Some(tmp);
+                    } else {
+                        *x = Some(vec![None, None])
+                    }
+                }
+                x
+            })
+            .unwrap()
+            .as_ref()
+            .unwrap();
+
+        let _field = Box::new(Field::new("_", DataType::Utf8, true));
+        let _list = DataType::List(_field);
+
+        let offset = Offsets::try_from_iter(length_each.into_iter()).unwrap();
+        let offset_buf = OffsetsBuffer::from(offset);
+        let ar2 = Utf8Array::<i32>::from(array2);
+        let b2: ListArray<i32> = ListArray::new(_list, offset_buf, Box::new(ar2), None);
+        arrow_in::to_py_array(b2.boxed(), py)
+    });
+    Ok(result?)
+}
+
+#[pyfunction]
+fn str_locate(array: PyObject, pattern: &str) -> Result<PyObject, StringpyErr> {
+    let pat = Regex::new(pattern).unwrap();
+
+    fn find_loc<'a>(x: Option<&'a str>, pat: &Regex) -> Option<Vec<i32>> {
+        let x = x?;
+        let mut locs = pat.capture_locations();
+        let _out = pat.captures_read(&mut locs, x)?;
+        let (first, end) = locs.get(0)?;
+        let out = Some(vec![first as i32, end as i32]);
+        return out;
+    }
+
+    let result = Python::with_gil(|py| {
+        let array = arrow_in::to_rust_array(array, py)?;
+        let array = array.as_any();
+        let array: Vec<Option<Vec<i32>>> = array
+            .downcast_ref::<Utf8Array<i32>>()
+            .unwrap()
+            .iter()
+            .map(|i| find_loc(i, &pat))
+            .collect();
+
+        let length_each: Vec<usize> = array
+            .iter()
+            .map(|_| 2) // always length 2
+            .collect();
+
+        // Vec<Option<Vec<usize>> to Vec<Option<usize>>
+        let mut array2: Vec<Option<i32>> = Vec::with_capacity(length_each.iter().sum());
+        array.iter().for_each(|x| {
+            if let Some(x) = x {
+                array2.push(Some(x[0]));
+                array2.push(Some(x[1]));
+            } else {
+                array2.push(None);
+                array2.push(None);
+            }
+        });
+
+        let _field = Box::new(Field::new("_", DataType::Int32, true));
+        let _list = DataType::List(_field);
+
+        let offset = Offsets::try_from_iter(length_each.into_iter()).unwrap();
+        let offset_buf = OffsetsBuffer::from(offset);
+        let ar2 = Int32Array::from(array2);
+        let b2: ListArray<i32> = ListArray::new(_list, offset_buf, Box::new(ar2), None);
+        arrow_in::to_py_array(b2.boxed(), py)
+    });
+
+    Ok(result?)
+}
 
 #[pymodule]
 fn _stringpy(_py: Python, m: &PyModule) -> PyResult<()> {
@@ -618,5 +769,8 @@ fn _stringpy(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(str_to_title, m)?)?;
     m.add_function(wrap_pyfunction!(str_to_sentence, m)?)?;
     m.add_function(wrap_pyfunction!(str_pad, m)?)?;
+    m.add_function(wrap_pyfunction!(str_sub, m)?)?;
+    m.add_function(wrap_pyfunction!(str_match, m)?)?;
+    m.add_function(wrap_pyfunction!(str_locate, m)?)?;
     Ok(())
 }

@@ -12,7 +12,7 @@ pub fn list_array(ob: PyObject, py: Python) -> Utf8Array<i32> {
 
 /// Apply a function to a Utf8Array and return a new Utf8Array.
 /// This function must take one element of input and return one element of output
-/// 
+///
 #[macro_export]
 macro_rules! apply_utf8 {
     ($ob:expr; $func:expr; $($args:expr),* ) => {
@@ -46,6 +46,10 @@ let result = Python::with_gil(|py| {
         .downcast_ref::<Utf8Array<i32>>()
         .unwrap_or_else(|| panic!("Expect string array"));
 
+    $(let $ob2 =  if $ob2.len() == 1 {
+        vec![$ob2[0]; array.len()]
+     } else {$ob2};)*
+
     let array: Vec<Option<Cow<str>>> = izip!(array, $($ob2),*)
         .map(|(i1,   $($ob2),*) | $func(i1,  $($ob2),* ,  $($args),*))
         //.map(|(i1, width, side)| $func(i1,width, side,  $($args),*))
@@ -60,7 +64,6 @@ Ok(result?)
 }
 }
 }
-
 
 #[macro_export]
 macro_rules!  apply_utf8_bool {
