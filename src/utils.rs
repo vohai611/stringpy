@@ -23,7 +23,7 @@ macro_rules! apply_utf8 {
         let array = array.as_any();
         let array: Vec<Option<Cow<str>>> = array
             .downcast_ref::<Utf8Array<i32>>()
-            .unwrap_or_else(|| panic!("Expect string array"))
+            .ok_or(StringpyErr::new_value_err("Expect string array"))?
             .iter()
             .map(|i| $func(i, $($args),*))
             .collect();
@@ -44,7 +44,7 @@ let result = Python::with_gil(|py| {
     let array = array.as_any();
     let array= array
         .downcast_ref::<Utf8Array<i32>>()
-        .unwrap_or_else(|| panic!("Expect string array"));
+        .ok_or(StringpyErr::new_value_err("Expect string array"))?;
 
     $(let $ob2 =  if $ob2.len() == 1 {
         vec![$ob2[0]; array.len()]
@@ -75,7 +75,7 @@ macro_rules!  apply_utf8_bool {
         let array = array.as_any();
         let array: Vec<Option<bool>> = array
             .downcast_ref::<Utf8Array<i32>>()
-            .unwrap()
+            .ok_or(StringpyErr::new_value_err("Expect string array"))?
             .iter()
             .map(|i| $func(i, $($args),*))
             .collect();
@@ -99,7 +99,7 @@ macro_rules! apply_utf8_i32 {
         let array = array.as_any();
         let array: Vec<Option<i32>> = array
             .downcast_ref::<Utf8Array<i32>>()
-            .unwrap()
+            .ok_or(StringpyErr::new_value_err("Expect string array"))?
             .iter()
             .map(|i| $func(i, $($args),*))
             .collect();

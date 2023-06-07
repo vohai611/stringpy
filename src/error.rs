@@ -8,8 +8,8 @@ pub enum StringpyErr {
 }
 
 impl StringpyErr {
-    pub fn new_value_err(message: String) -> Self {
-        StringpyErr::PyErr(PyValueError::new_err(message))
+    pub fn new_value_err<S: Into<String>>(message: S) -> Self {
+        StringpyErr::PyErr(PyValueError::new_err(message.into()))
     }
 }
 

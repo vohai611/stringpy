@@ -73,7 +73,15 @@ def str_count(array: Array, pattern: str = None) -> Array:
 
 @exporter
 def str_replace(array: Array, pattern: str = None, replace: str = None) -> Array:
-    """Replace a first matching pattern in string array 
+    """Replace a first matching pattern in string array. 
+    Note that in this function, you can also use group in `replace`. For example, 
+    in this case, I split a string in CamelCase.
+    >>> str_replace(['someThing', 'isNot'], pattern='(?P<g1>[a-z])(?P<g2>[A-Z])', replace= '$g1 $g2').to_pylist() 
+    ['some Thing', 'is Not']
+
+    Note that group syntax in Rust::Regex is bit different:
+     - (?P<group-name>) to capture group
+     - $group-name to refer to group
 
     Parameters
     ----------
