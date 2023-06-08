@@ -1,7 +1,7 @@
 README
 ================
 Hai Vo
-5/1/23
+Invalid Date
 
 - <a href="#introduction" id="toc-introduction">Introduction</a>
 - <a href="#how-it-works" id="toc-how-it-works">How it works</a>
@@ -127,7 +127,7 @@ sp.str_split(df2['value'], pattern='->')
 
 </details>
 
-    <pyarrow.lib.ListArray object at 0x11cc72920>
+    <pyarrow.lib.ListArray object at 0x104f420e0>
     [
       [
         "one",
@@ -145,20 +145,39 @@ sp.str_split(df2['value'], pattern='->')
       ]
     ]
 
+## Camel case to snake case
+
+<details>
+<summary>Code</summary>
+
+``` python
+a = sp.str_replace_all(['ThisIsSomeCamelCase', 'ObjectNotFound'],
+                      pattern='([a-z])([A-Z])', replace= '$1 $2').to_pylist() 
+sp.str_replace_all(sp.str_to_lower(a), pattern = ' ', replace = '_')
+```
+
+</details>
+
+    <pyarrow.lib.StringArray object at 0x11df8e020>
+    [
+      "this_is_some_camel_case",
+      "object_not_found"
+    ]
+
 ## Remove accent
 
 <details>
 <summary>Code</summary>
 
 ``` python
-vietnam = ['Hà Nội', 'Hồ Chí Minh', 'Đà Nẵng', 'Hải Phòng', 'Cần Thơ', 'Biên Hòa', 'Nha Trang', 'BMT', 'Huế', 'Buôn Ma Thuột', 'Bắc Giang', 'Bắc Ninh', 'Bến Tre', 'Bình Dương', 'Bình Phước', 'Bình Thuận', 'Cà Mau', 'Cao Bằng', 'Đắk Lắk', 'Đắk Nông', 'Điện Biên', 'Đồng Nai', 'Đồng Tháp', 'Gia Lai', 'Hà Giang', 'Hà Nam', 'Hà Tĩnh', 'Hải Dương', 'Hậu Giang', 'Hòa Bình', 'Hưng Yên', 'Khánh Hòa', 'Kiên Giang', 'Kon Tum', 'Lai Châu', 'Lâm Đồng', 'Lạng Sơn', 'Lào Cai', 'Long An', 'Nam Định', 'Nghệ An', 'Ninh Bình', 'Ninh Thuận', 'Phú Thọ', 'Phú Yên', 'Quảng Bình', 'Quảng Nam', 'Quảng Ngãi', 'Quảng Ninh', 'Quảng Trị', 'Sóc Trăng', 'Sơn La'] 
+vietnam = ['Hà Nội', 'Hồ Chí Minh', 'Đà Nẵng', 'Hải Phòng', 'Cần Thơ', 'Biên Hòa', 'Nha Trang', 'BMT', 'Huế', 'Buôn Ma Thuột', 'Bắc Giang', 'Bắc Ninh', 'Bến Tre', 'Bình Dương', 'Bình Phước', 'Bình Thuận', 'Cà Mau', 'Cao Bằng', 'Đắk Lắk', 'Đắk Nông', 'Điện Biên', 'Đồng Nai', 'Đồng Tháp'] 
 
 sp.str_remove_ascent(vietnam)
 ```
 
 </details>
 
-    <pyarrow.lib.StringArray object at 0x11cc718a0>
+    <pyarrow.lib.StringArray object at 0x104f43ee0>
     [
       "Ha Noi",
       "Ho Chi Minh",
@@ -171,16 +190,16 @@ sp.str_remove_ascent(vietnam)
       "Hue",
       "Buon Ma Thuot",
       ...
-      "Ninh Thuan",
-      "Phu Tho",
-      "Phu Yen",
-      "Quang Binh",
-      "Quang Nam",
-      "Quang Ngai",
-      "Quang Ninh",
-      "Quang Tri",
-      "Soc Trang",
-      "Son La"
+      "Binh Duong",
+      "Binh Phuoc",
+      "Binh Thuan",
+      "Ca Mau",
+      "Cao Bang",
+      "Dak Lak",
+      "Dak Nong",
+      "Dien Bien",
+      "Dong Nai",
+      "Dong Thap"
     ]
 
 # Random speed comparison
@@ -214,8 +233,8 @@ a_sr.str.replace('\w', 'b', regex=True)
 
 </details>
 
-    CPU times: user 429 ms, sys: 7.73 ms, total: 437 ms
-    Wall time: 437 ms
+    CPU times: user 437 ms, sys: 4.84 ms, total: 442 ms
+    Wall time: 442 ms
 
     0         bbbbbbbbbb
     1         bbbbbbbbbb
@@ -240,10 +259,10 @@ sp.str_replace_all(a, pattern='\w', replace= 'b')
 
 </details>
 
-    CPU times: user 231 ms, sys: 5.69 ms, total: 237 ms
-    Wall time: 237 ms
+    CPU times: user 232 ms, sys: 4.37 ms, total: 236 ms
+    Wall time: 236 ms
 
-    <pyarrow.lib.StringArray object at 0x11cc71de0>
+    <pyarrow.lib.StringArray object at 0x11df8e740>
     [
       "bbbbbbbbbb",
       "bbbbbbbbbb",
@@ -280,20 +299,20 @@ a_sr.str.slice(2,4)
 
 </details>
 
-    CPU times: user 54.4 ms, sys: 4 ms, total: 58.4 ms
-    Wall time: 58.1 ms
+    CPU times: user 54 ms, sys: 4.01 ms, total: 58 ms
+    Wall time: 57.8 ms
 
-    0         nk
-    1         bj
-    2         fl
-    3         mp
-    4         iy
+    0         ot
+    1         js
+    2         jt
+    3         bb
+    4         fb
               ..
-    599995    ff
-    599996    eu
-    599997    nw
-    599998    mw
-    599999    jr
+    599995    be
+    599996    tm
+    599997    mu
+    599998    rv
+    599999    le
     Length: 600000, dtype: object
 
 <details>
@@ -306,58 +325,58 @@ sp.str_sub(a, start=2, end=4)
 
 </details>
 
-    CPU times: user 24.9 ms, sys: 3.49 ms, total: 28.4 ms
-    Wall time: 28.3 ms
+    CPU times: user 24 ms, sys: 3.07 ms, total: 27.1 ms
+    Wall time: 27 ms
 
-    <pyarrow.lib.StringArray object at 0x11cc720e0>
+    <pyarrow.lib.StringArray object at 0x11e00e080>
     [
-      "nk",
-      "bj",
-      "fl",
-      "mp",
-      "iy",
-      "vv",
-      "vf",
-      "ac",
-      "jh",
-      "hz",
+      "ot",
+      "js",
+      "jt",
+      "bb",
+      "fb",
+      "ei",
+      "wl",
+      "ov",
+      "vl",
+      "vj",
       ...
-      "sz",
-      "xy",
-      "sf",
-      "bi",
-      "of",
-      "ff",
-      "eu",
-      "nw",
-      "mw",
-      "jr"
+      "np",
+      "jj",
+      "lw",
+      "se",
+      "ze",
+      "be",
+      "tm",
+      "mu",
+      "rv",
+      "le"
     ]
 
     ## Counting
 
-    ::: {.cell execution_count=10}
+    ::: {.cell execution_count=11}
     ``` {.python .cell-code}
     %%time
     a_sr.str.count('a')
 
 <div class="cell-output cell-output-stdout">
 
-    CPU times: user 130 ms, sys: 2.96 ms, total: 133 ms
+    CPU times: user 130 ms, sys: 1.71 ms, total: 132 ms
     Wall time: 132 ms
 
 </div>
 
-<div class="cell-output cell-output-display" execution_count="21">
+<div class="cell-output cell-output-display" execution_count="71">
 
-    0         0
-    1         1
+    0         2
+    1         0
     2         0
     3         0
-    4         1
+    4         0
              ..
     599995    0
-    599996    3
+    599996    0
     599997    0
     599998    0
     599999    0
@@ -377,29 +396,29 @@ sp.str_count(a, pattern='a')
 
 </details>
 
-    CPU times: user 23.3 ms, sys: 897 µs, total: 24.2 ms
-    Wall time: 24.1 ms
+    CPU times: user 23 ms, sys: 848 µs, total: 23.8 ms
+    Wall time: 23.7 ms
 
-    <pyarrow.lib.Int32Array object at 0x103baf280>
+    <pyarrow.lib.Int32Array object at 0x11e00ee00>
     [
-      0,
-      1,
-      0,
-      0,
-      1,
-      0,
-      1,
       2,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
       1,
       0,
       ...
       0,
       0,
-      0,
-      0,
       1,
       0,
-      3,
+      0,
+      0,
+      0,
       0,
       0,
       0
