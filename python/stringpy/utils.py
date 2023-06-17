@@ -1,7 +1,7 @@
 
 import inspect
 from functools import wraps
-from typing import Callable, List
+from typing import Callable, List, TypeVar, Any
 import pyarrow as pa
 from stringpy import _stringpy
 
@@ -24,10 +24,11 @@ def sync_kw(kwargs, kw_with_defaults):
 def is_scala(x: any):
     return isinstance(x, (int, float, str, bool))
 
+_TFunc = TypeVar("_TFunc", bound=Callable[..., Any])
 
 def exporter(_func=None, vectorize_arg: List = None):
     """Use this when accepting only one array as argument"""
-    def decorator_register(func: Callable):
+    def decorator_register(func: _TFunc)-> _TFunc:
         @wraps(func)
         def inner(array, **kwargs):
             rust_func = func.__name__
@@ -36,22 +37,23 @@ def exporter(_func=None, vectorize_arg: List = None):
                 func).parameters).items() if v.default is not inspect._empty}
 
             # FIXME need to check length =1 , length = array, corece to array length if = 1
-            array = pa.array(array) if not isinstance(array, pa.Array) else array
+            array = pa.array(array) if not isinstance(
+                array, pa.Array) else array
             sync_kw(kwargs, kw_with_defaults)
 
             if vectorize_arg is not None:
                 for i in vectorize_arg:
+
                     if is_scala(kw_with_defaults[i]):
                         kw_with_defaults[i] = [kw_with_defaults[i]]
                     elif type(kw_with_defaults[i]) is not list:
                         kw_with_defaults[i] = list(kw_with_defaults[i])
-                    else:
-                        TypeError(
-                            f'Can not corce {i} to list, please check your input a')
 
-                    if (len(kw_with_defaults[i]) != 1) | (len(kw_with_defaults[i]) != len(array)):
-                        ValueError( f"Length of {i} must be equal to 1 or to length of array")
-                        
+                    item_len = len(kw_with_defaults[i])
+
+                    if not (item_len == 1) | (item_len == len(array)):
+                        raise ValueError(
+                            f"Length of `{i}` must be equal to 1 or to length of array")
 
             return getattr(_stringpy, rust_func)(array, **kw_with_defaults)
         return inner
@@ -75,7 +77,8 @@ def exporter2(func: Callable):
         check_same_length(args)
 
         args = list(args)
-        args = [pa.array(a) if not isinstance(a, pa.Array) else a for a in args]
+        args = [pa.array(a) if not isinstance(
+            a, pa.Array) else a for a in args]
         args = tuple(args)
         sync_kw(kwargs, kw_with_defaults)
 

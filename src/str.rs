@@ -16,6 +16,7 @@ use regex::escape;
 use regex::Regex;
 use std::borrow::Cow;
 use std::iter::zip;
+use std::collections::HashMap;
 
 type StringpyResult = Result<PyObject, StringpyErr>;
 
@@ -76,15 +77,25 @@ fn str_combine(py_args: &PyTuple, sep: Option<&str>) -> PyResult<Vec<String>> {
     Ok(rs)
 }
 
-#[pyfunction]
-fn str_count(array: PyObject, pattern: &str) -> StringpyResult {
-    let pat = Regex::new(pattern)?;
 
-    fn count(x: Option<&str>, pat: &Regex) -> Option<i32> {
+#[pyfunction]
+fn str_count(array: PyObject, pattern: Vec<&str>) -> StringpyResult {
+    let mut pattern_table = HashMap::new();
+    pattern.iter().sorted_unstable().dedup().for_each(|x| {
+        pattern_table.insert(x.to_string(), Regex::new(x).unwrap());
+    });
+
+    fn count(x: Option<&str>, pat: &str, table: &HashMap<String, Regex>) -> Option<i32> {
+        let pat = table.get(pat).unwrap();
         let x = x?;
         return Option::Some(pat.find_iter(x).count() as i32);
     }
-    utils::apply_utf8_i32!(array; count; &pat)
+    // decide if vectorize or not
+    if pattern.len() == 1 {
+        utils::apply_utf8_i32!(array; count; &pattern[0], &pattern_table)
+    } else {
+        utils::apply_utf8_i32!(array; count; pattern; &pattern_table)
+    }
 }
 
 #[pyfunction]
@@ -598,8 +609,13 @@ fn str_sub(array: PyObject, start: Vec<i32>, end: Vec<i32>) -> StringpyResult {
             0
         };
 
-        Some(Cow::Owned(x[start..end].to_string()))
+        if start > end {
+            Some(Cow::Owned(x[end..start].to_string()))
+        } else {
+            Some(Cow::Owned(x[start..end].to_string()))
+        }
     }
+
     utils::apply_utf8!(array; sub; start, end;)
 }
 

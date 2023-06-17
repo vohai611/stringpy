@@ -51,7 +51,7 @@ def str_combine(*args, sep: str = None) -> List:
     """
 
 
-@exporter
+@exporter(vectorize_arg=['pattern'])
 def str_count(array: Array, pattern: str = None) -> Array:
     """Count the number of times a pattern occurs in each string
 
@@ -399,7 +399,7 @@ def str_subset(array: Array, pattern: str = None, negate: bool = False) -> Array
 
 
 @exporter(vectorize_arg=['times'])
-def str_dup(array: Array, times: int = 1) -> Array:
+def str_dup(array: Array, times: Union[int, List[int]] = 1) -> Array:
     """Duplicate each string in array by times
 
     Parameters
@@ -535,7 +535,9 @@ def str_to_sentence(array: Array) -> Array:
 
 
 @exporter(vectorize_arg=['width', 'side', 'pad'])
-def str_pad(array: Array, width: Union[int, List[int]] = None, side: Union[str, List[str]] = 'left', pad: str = ' ') -> Array:
+def str_pad(array: Array, width: Union[int, List[int]] = None,
+            side: Union[str, List[str]] = 'left',
+            pad: Union[str, List[str]] = ' ') -> Array:
     """_summary_
 
     Parameters
@@ -578,7 +580,7 @@ def str_pad(array: Array, width: Union[int, List[int]] = None, side: Union[str, 
 
 
 @exporter(vectorize_arg=['start', 'end'])
-def str_sub(array: Array, start: int = None, end: int = None) -> Array:
+def str_sub(array: Array, start: Union[int, List[int]] = None, end: Union[int, List[int]] = None) -> Array:
     """Get substring of each string in array by index, count from 0. Note that ``end`` is exclusive and
     must be larger thann ``start``. If provide negative index, it will be counted from the end of the string.
     In case ``start`` and ``end`` are out side of [0, length of string], it will be corced to the boundary.
@@ -605,7 +607,7 @@ def str_sub(array: Array, start: int = None, end: int = None) -> Array:
 
 
 @exporter
-def str_match(array: Array, pattern: str = None) -> Array:
+def str_match(array: Array, pattern: Union[str, List] = None) -> Array:
     """Extract any number of match define by unnamed/named patter.
 
     Parameters

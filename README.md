@@ -22,7 +22,7 @@ Status](https://readthedocs.org/projects/stringpy/badge/?version=latest.png)](ht
 This project is a python package to mimic
 [r::stringr](https://stringr.tidyverse.org/) functionalities, the core
 functions are written in Rust. Note that I write this package mostly for
-personal use (convenience and speed) and learning purpose, so please use
+personal use (convenience and speed) and learning purpose, so please use1
 with care!
 
 # How it works
