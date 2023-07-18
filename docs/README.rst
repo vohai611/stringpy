@@ -97,7 +97,7 @@ Split string
 
       ::
 
-         <pyarrow.lib.ListArray object at 0x14a10e620>
+         <pyarrow.lib.ListArray object at 0x1077ebe20>
          [
            [
              "one",
@@ -130,7 +130,7 @@ Camel case to snake case
 
       ::
 
-         <pyarrow.lib.StringArray object at 0x1077eb3a0>
+         <pyarrow.lib.StringArray object at 0x14a10df00>
          [
            "this_is_some_camel_case",
            "object_not_found"
@@ -151,7 +151,7 @@ Remove accent
 
       ::
 
-         <pyarrow.lib.StringArray object at 0x14a1757e0>
+         <pyarrow.lib.StringArray object at 0x14a1756c0>
          [
            "Ha Noi",
            "Ho Chi Minh",
@@ -207,8 +207,8 @@ Replace pattern
 
       ::
 
-         CPU times: user 437 ms, sys: 7.58 ms, total: 445 ms
-         Wall time: 445 ms
+         CPU times: user 443 ms, sys: 7.14 ms, total: 450 ms
+         Wall time: 451 ms
 
    .. container:: cell-output cell-output-display
 
@@ -238,14 +238,14 @@ Replace pattern
 
       ::
 
-         CPU times: user 235 ms, sys: 8.45 ms, total: 243 ms
-         Wall time: 243 ms
+         CPU times: user 236 ms, sys: 15.7 ms, total: 251 ms
+         Wall time: 262 ms
 
    .. container:: cell-output cell-output-display
 
       ::
 
-         <pyarrow.lib.StringArray object at 0x14a174fa0>
+         <pyarrow.lib.StringArray object at 0x14a175420>
          [
            "bbbbbbbbbb",
            "bbbbbbbbbb",
@@ -284,24 +284,24 @@ Subset by index
 
       ::
 
-         CPU times: user 55.4 ms, sys: 4.46 ms, total: 59.9 ms
-         Wall time: 59.4 ms
+         CPU times: user 53.8 ms, sys: 3.44 ms, total: 57.2 ms
+         Wall time: 57 ms
 
    .. container:: cell-output cell-output-display
 
       ::
 
-         0         bp
-         1         oq
-         2         tt
-         3         po
-         4         fy
+         0         vi
+         1         xs
+         2         kw
+         3         ub
+         4         uo
                    ..
-         599995    ox
-         599996    cn
-         599997    mw
-         599998    da
-         599999    cr
+         599995    kp
+         599996    qq
+         599997    do
+         599998    kr
+         599999    rz
          Length: 600000, dtype: object
 
 .. container:: cell
@@ -315,36 +315,36 @@ Subset by index
 
       ::
 
-         CPU times: user 24.1 ms, sys: 3.39 ms, total: 27.5 ms
-         Wall time: 27.4 ms
+         CPU times: user 24.5 ms, sys: 6.09 ms, total: 30.6 ms
+         Wall time: 40.1 ms
 
    .. container:: cell-output cell-output-display
 
       ::
 
-         <pyarrow.lib.StringArray object at 0x14a175720>
+         <pyarrow.lib.StringArray object at 0x14a1754e0>
          [
-           "bp",
-           "oq",
-           "tt",
-           "po",
-           "fy",
-           "tw",
-           "bc",
-           "ne",
-           "pu",
-           "md",
+           "vi",
+           "xs",
+           "kw",
+           "ub",
+           "uo",
+           "ua",
+           "jw",
+           "tv",
+           "qy",
+           "ll",
            ...
-           "nz",
-           "ea",
-           "jd",
-           "cd",
-           "gp",
-           "ox",
-           "cn",
-           "mw",
-           "da",
-           "cr"
+           "hc",
+           "zu",
+           "cq",
+           "sr",
+           "rt",
+           "kp",
+           "qq",
+           "do",
+           "kr",
+           "rz"
          ]
 
 ::
@@ -360,24 +360,24 @@ Subset by index
 
    ::
 
-      CPU times: user 132 ms, sys: 3.33 ms, total: 135 ms
-      Wall time: 135 ms
+      CPU times: user 131 ms, sys: 4.68 ms, total: 136 ms
+      Wall time: 136 ms
 
 .. container:: cell-output cell-output-display
 
    ::
 
-      0         1
+      0         0
       1         0
       2         0
-      3         1
+      3         0
       4         0
                ..
-      599995    0
-      599996    3
+      599995    1
+      599996    0
       599997    0
-      599998    1
-      599999    1
+      599998    0
+      599999    0
       Length: 600000, dtype: int64
 
 :::
@@ -393,36 +393,36 @@ Subset by index
 
       ::
 
-         CPU times: user 33.9 ms, sys: 1.04 ms, total: 34.9 ms
-         Wall time: 35.1 ms
+         CPU times: user 35 ms, sys: 692 µs, total: 35.7 ms
+         Wall time: 35.7 ms
 
    .. container:: cell-output cell-output-display
 
       ::
 
-         <pyarrow.lib.Int32Array object at 0x14a175d20>
+         <pyarrow.lib.Int32Array object at 0x14a175c60>
          [
-           1,
-           0,
-           0,
-           1,
            0,
            0,
            0,
            0,
            0,
            1,
+           0,
+           0,
+           0,
+           2,
            ...
-           1,
-           1,
+           0,
            1,
            0,
            0,
            0,
-           3,
-           0,
            1,
-           1
+           0,
+           0,
+           0,
+           0
          ]
 
 Implement list
@@ -519,5 +519,5 @@ Rust
    :target: https://stringpy.readthedocs.io/en/latest/?badge=latest
 .. |image1| image:: https://github.com/vohai611/stringpy/actions/workflows/CI.yml/badge.svg?branch=main
    :target: https://github.com/vohai611/stringpy/actions/workflows/CI.yml
-.. |codecov| image:: https://codecov.io/gh/vohai611/stringpy/branch/main/graph/badge.svg?token=5QNSE2HMHM
+.. |codecov| image:: https://codecov.io/gh/vohai611/stringpy/branch/feat/rust-test/graph/badge.svg?token=5QNSE2HMHM
    :target: https://codecov.io/gh/vohai611/stringpy

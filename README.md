@@ -15,7 +15,7 @@ Hai Vo
 
 [![doc](https://readthedocs.org/projects/stringpy/badge/?version=latest.png)](https://stringpy.readthedocs.io/en/latest/?badge=latest)
 [![](https://github.com/vohai611/stringpy/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/vohai611/stringpy/actions/workflows/CI.yml)
-[![codecov](https://codecov.io/gh/vohai611/stringpy/branch/main/graph/badge.svg?token=5QNSE2HMHM)](https://codecov.io/gh/vohai611/stringpy)
+[![codecov](https://codecov.io/gh/vohai611/stringpy/branch/feat/rust-test/graph/badge.svg?token=5QNSE2HMHM)](https://codecov.io/gh/vohai611/stringpy)
 
 # Introduction
 
@@ -127,7 +127,7 @@ sp.str_split(df2['value'], pattern='->')
 
 </details>
 
-    <pyarrow.lib.ListArray object at 0x1077ebfa0>
+    <pyarrow.lib.ListArray object at 0x14a175ea0>
     [
       [
         "one",
@@ -158,7 +158,7 @@ sp.str_replace_all(sp.str_to_lower(a), pattern = ' ', replace = '_')
 
 </details>
 
-    <pyarrow.lib.StringArray object at 0x1077eb160>
+    <pyarrow.lib.StringArray object at 0x1077ebdc0>
     [
       "this_is_some_camel_case",
       "object_not_found"
@@ -177,7 +177,7 @@ sp.str_remove_ascent(vietnam)
 
 </details>
 
-    <pyarrow.lib.StringArray object at 0x1077ebb80>
+    <pyarrow.lib.StringArray object at 0x14a1766e0>
     [
       "Ha Noi",
       "Ho Chi Minh",
@@ -233,8 +233,8 @@ a_sr.str.replace('\w', 'b', regex=True)
 
 </details>
 
-    CPU times: user 444 ms, sys: 6.47 ms, total: 451 ms
-    Wall time: 450 ms
+    CPU times: user 441 ms, sys: 6.18 ms, total: 447 ms
+    Wall time: 447 ms
 
     0         bbbbbbbbbb
     1         bbbbbbbbbb
@@ -259,10 +259,10 @@ sp.str_replace_all(a, pattern='\w', replace= 'b')
 
 </details>
 
-    CPU times: user 234 ms, sys: 4.66 ms, total: 238 ms
-    Wall time: 238 ms
+    CPU times: user 234 ms, sys: 4.15 ms, total: 238 ms
+    Wall time: 237 ms
 
-    <pyarrow.lib.StringArray object at 0x1077ebe20>
+    <pyarrow.lib.StringArray object at 0x14a1779a0>
     [
       "bbbbbbbbbb",
       "bbbbbbbbbb",
@@ -299,20 +299,20 @@ a_sr.str.slice(2,4)
 
 </details>
 
-    CPU times: user 54.4 ms, sys: 3.95 ms, total: 58.4 ms
-    Wall time: 58.2 ms
+    CPU times: user 54.7 ms, sys: 4.71 ms, total: 59.4 ms
+    Wall time: 58.9 ms
 
-    0         lw
-    1         jg
-    2         vb
-    3         vc
-    4         jd
+    0         sj
+    1         ac
+    2         sy
+    3         gs
+    4         se
               ..
-    599995    sm
-    599996    eb
-    599997    kh
-    599998    zh
-    599999    pq
+    599995    ji
+    599996    fl
+    599997    rm
+    599998    le
+    599999    zn
     Length: 600000, dtype: object
 
 <details>
@@ -325,32 +325,32 @@ sp.str_sub(a, start=2, end=4)
 
 </details>
 
-    CPU times: user 23.9 ms, sys: 2.7 ms, total: 26.7 ms
-    Wall time: 26.6 ms
+    CPU times: user 24.1 ms, sys: 6.82 ms, total: 30.9 ms
+    Wall time: 33.7 ms
 
-    <pyarrow.lib.StringArray object at 0x14a175480>
+    <pyarrow.lib.StringArray object at 0x14a1760e0>
     [
-      "lw",
-      "jg",
-      "vb",
-      "vc",
-      "jd",
-      "mx",
-      "aa",
-      "nx",
-      "gf",
-      "uo",
+      "sj",
+      "ac",
+      "sy",
+      "gs",
+      "se",
+      "fp",
+      "bc",
+      "pc",
+      "bh",
+      "bd",
       ...
-      "bi",
-      "fv",
-      "er",
-      "fu",
-      "bz",
-      "sm",
-      "eb",
-      "kh",
-      "zh",
-      "pq"
+      "af",
+      "ir",
+      "do",
+      "mt",
+      "qd",
+      "ji",
+      "fl",
+      "rm",
+      "le",
+      "zn"
     ]
 
     ## Counting
@@ -362,23 +362,23 @@ sp.str_sub(a, start=2, end=4)
 
 <div class="cell-output cell-output-stdout">
 
-    CPU times: user 132 ms, sys: 2.52 ms, total: 134 ms
-    Wall time: 134 ms
+    CPU times: user 131 ms, sys: 1.74 ms, total: 133 ms
+    Wall time: 133 ms
 
 </div>
 
-<div class="cell-output cell-output-display" execution_count="23">
+<div class="cell-output cell-output-display" execution_count="47">
 
-    0         1
-    1         0
-    2         1
+    0         0
+    1         1
+    2         0
     3         0
-    4         1
+    4         0
              ..
     599995    0
     599996    0
-    599997    1
-    599998    0
+    599997    0
+    599998    1
     599999    1
     Length: 600000, dtype: int64
 
@@ -396,31 +396,31 @@ sp.str_count(a, pattern='a')
 
 </details>
 
-    CPU times: user 35 ms, sys: 861 µs, total: 35.8 ms
-    Wall time: 35.8 ms
+    CPU times: user 34.2 ms, sys: 1.21 ms, total: 35.4 ms
+    Wall time: 35.3 ms
 
-    <pyarrow.lib.Int32Array object at 0x14a1751e0>
+    <pyarrow.lib.Int32Array object at 0x14a175900>
     [
-      1,
       0,
       1,
       0,
+      0,
+      0,
       1,
       0,
-      2,
       0,
       0,
       0,
       ...
+      1,
       0,
-      0,
+      1,
       0,
       1,
       0,
       0,
       0,
       1,
-      0,
       1
     ]
 
