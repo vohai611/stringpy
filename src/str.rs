@@ -773,3 +773,55 @@ fn _stringpy(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(str_locate, m)?)?;
     Ok(())
 }
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    
+    
+    #[test]
+
+    // test case
+    //
+    //to_py_array(array: Box<dyn Array>, py: Python) -> PyResult<PyObject> 
+    //
+        
+    fn it_works() {
+    let test_arr = arrow2::array::Utf8Array::<i32>::from([Some("abc".to_string()), 
+            Some("def".to_string()),
+        None]);
+    pyo3::prepare_freethreaded_python();
+    let result = Python::with_gil(|py| {
+    arrow_in::to_py_array(Box::new(test_arr), py)
+    });
+    let second_arg = "abc";
+    let vec_second_arg = vec!["abc"];
+    let out = result.unwrap();
+    _ = str_c(out.clone(), Some("abc"));
+    _ = str_count(out.clone(), vec_second_arg.clone());
+    _ = str_replace(out.clone(), second_arg, second_arg);
+    _ = str_replace_all(out.clone(), second_arg, second_arg);
+    _ = str_remove(out.clone(), second_arg);
+    _ = str_remove_all(out.clone(), second_arg);
+    _ = str_remove_ascent(out.clone());
+    _ = str_squish(out.clone());
+    _ = str_trim(out.clone(), "left");
+    _ = str_detect(out.clone(), second_arg);
+    _ = str_trunc(out.clone(), 1,  "left", second_arg);
+    _ = str_extract(out.clone(), second_arg, Some(0));
+    _ = str_extract_all(out.clone(), second_arg, Some(0));
+    _ = str_split(out.clone(),second_arg, Some(1));
+    _ = str_starts(out.clone(), second_arg, true);
+    _ = str_ends(out.clone(), second_arg, true);
+    _ = str_subset(out.clone(), second_arg, true);
+    _ = str_which(out.clone(), second_arg, true);
+    _ = str_dup(out.clone(), vec![1]);
+    _ = str_length(out.clone());
+    _ = str_unique(out.clone());
+    _ = str_to_upper(out.clone());
+    _ = str_to_lower(out.clone());
+    _ = str_to_title(out.clone());
+    _ = str_to_sentence(out.clone());
+    assert_eq!(1,1) }
+}
