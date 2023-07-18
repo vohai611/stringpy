@@ -9,6 +9,12 @@ jobs:
       CARGO_TERM_COLOR: always
     steps:
       - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+          cache: 'pip' # caching pip dependencies
+      - run: pip install pyarrow
+      - uses: actions/checkout@v3
       - name: Install Rust
         run: rustup update stable
       - name: Install cargo-llvm-cov
