@@ -19,8 +19,10 @@ format:
   #   toc-depth: 1
 ---
 
-[![Documentation Status](https://readthedocs.org/projects/stringpy/badge/?version=latest)](https://stringpy.readthedocs.io/en/latest/?badge=latest)
+[![doc](https://readthedocs.org/projects/stringpy/badge/?version=latest)](https://stringpy.readthedocs.io/en/latest/?badge=latest)
 [![](https://github.com/vohai611/stringpy/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/vohai611/stringpy/actions/workflows/CI.yml)
+[![codecov](https://codecov.io/gh/vohai611/stringpy/branch/main/graph/badge.svg?token=5QNSE2HMHM)](https://codecov.io/gh/vohai611/stringpy)
+
 
 # Introduction
 

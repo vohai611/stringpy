@@ -1,7 +1,7 @@
 README
 ================
 Hai Vo
-Invalid Date
+5/1/23
 
 - <a href="#introduction" id="toc-introduction">Introduction</a>
 - <a href="#how-it-works" id="toc-how-it-works">How it works</a>
@@ -13,16 +13,16 @@ Invalid Date
 - <a href="#different-type-of-io" id="toc-different-type-of-io">Different
   type of i/o</a>
 
-[![Documentation
-Status](https://readthedocs.org/projects/stringpy/badge/?version=latest.png)](https://stringpy.readthedocs.io/en/latest/?badge=latest)
+[![doc](https://readthedocs.org/projects/stringpy/badge/?version=latest.png)](https://stringpy.readthedocs.io/en/latest/?badge=latest)
 [![](https://github.com/vohai611/stringpy/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/vohai611/stringpy/actions/workflows/CI.yml)
+[![codecov](https://codecov.io/gh/vohai611/stringpy/branch/main/graph/badge.svg?token=5QNSE2HMHM)](https://codecov.io/gh/vohai611/stringpy)
 
 # Introduction
 
 This project is a python package to mimic
 [r::stringr](https://stringr.tidyverse.org/) functionalities, the core
 functions are written in Rust. Note that I write this package mostly for
-personal use (convenience and speed) and learning purpose, so please use1
+personal use (convenience and speed) and learning purpose, so please use
 with care!
 
 # How it works
@@ -127,7 +127,7 @@ sp.str_split(df2['value'], pattern='->')
 
 </details>
 
-    <pyarrow.lib.ListArray object at 0x104f420e0>
+    <pyarrow.lib.ListArray object at 0x1077ebfa0>
     [
       [
         "one",
@@ -158,7 +158,7 @@ sp.str_replace_all(sp.str_to_lower(a), pattern = ' ', replace = '_')
 
 </details>
 
-    <pyarrow.lib.StringArray object at 0x11df8e020>
+    <pyarrow.lib.StringArray object at 0x1077eb160>
     [
       "this_is_some_camel_case",
       "object_not_found"
@@ -177,7 +177,7 @@ sp.str_remove_ascent(vietnam)
 
 </details>
 
-    <pyarrow.lib.StringArray object at 0x104f43ee0>
+    <pyarrow.lib.StringArray object at 0x1077ebb80>
     [
       "Ha Noi",
       "Ho Chi Minh",
@@ -233,8 +233,8 @@ a_sr.str.replace('\w', 'b', regex=True)
 
 </details>
 
-    CPU times: user 437 ms, sys: 4.84 ms, total: 442 ms
-    Wall time: 442 ms
+    CPU times: user 444 ms, sys: 6.47 ms, total: 451 ms
+    Wall time: 450 ms
 
     0         bbbbbbbbbb
     1         bbbbbbbbbb
@@ -259,10 +259,10 @@ sp.str_replace_all(a, pattern='\w', replace= 'b')
 
 </details>
 
-    CPU times: user 232 ms, sys: 4.37 ms, total: 236 ms
-    Wall time: 236 ms
+    CPU times: user 234 ms, sys: 4.66 ms, total: 238 ms
+    Wall time: 238 ms
 
-    <pyarrow.lib.StringArray object at 0x11df8e740>
+    <pyarrow.lib.StringArray object at 0x1077ebe20>
     [
       "bbbbbbbbbb",
       "bbbbbbbbbb",
@@ -299,20 +299,20 @@ a_sr.str.slice(2,4)
 
 </details>
 
-    CPU times: user 54 ms, sys: 4.01 ms, total: 58 ms
-    Wall time: 57.8 ms
+    CPU times: user 54.4 ms, sys: 3.95 ms, total: 58.4 ms
+    Wall time: 58.2 ms
 
-    0         ot
-    1         js
-    2         jt
-    3         bb
-    4         fb
+    0         lw
+    1         jg
+    2         vb
+    3         vc
+    4         jd
               ..
-    599995    be
-    599996    tm
-    599997    mu
-    599998    rv
-    599999    le
+    599995    sm
+    599996    eb
+    599997    kh
+    599998    zh
+    599999    pq
     Length: 600000, dtype: object
 
 <details>
@@ -325,32 +325,32 @@ sp.str_sub(a, start=2, end=4)
 
 </details>
 
-    CPU times: user 24 ms, sys: 3.07 ms, total: 27.1 ms
-    Wall time: 27 ms
+    CPU times: user 23.9 ms, sys: 2.7 ms, total: 26.7 ms
+    Wall time: 26.6 ms
 
-    <pyarrow.lib.StringArray object at 0x11e00e080>
+    <pyarrow.lib.StringArray object at 0x14a175480>
     [
-      "ot",
-      "js",
-      "jt",
-      "bb",
-      "fb",
-      "ei",
-      "wl",
-      "ov",
-      "vl",
-      "vj",
-      ...
-      "np",
-      "jj",
       "lw",
-      "se",
-      "ze",
-      "be",
-      "tm",
-      "mu",
-      "rv",
-      "le"
+      "jg",
+      "vb",
+      "vc",
+      "jd",
+      "mx",
+      "aa",
+      "nx",
+      "gf",
+      "uo",
+      ...
+      "bi",
+      "fv",
+      "er",
+      "fu",
+      "bz",
+      "sm",
+      "eb",
+      "kh",
+      "zh",
+      "pq"
     ]
 
     ## Counting
@@ -362,24 +362,24 @@ sp.str_sub(a, start=2, end=4)
 
 <div class="cell-output cell-output-stdout">
 
-    CPU times: user 130 ms, sys: 1.71 ms, total: 132 ms
-    Wall time: 132 ms
+    CPU times: user 132 ms, sys: 2.52 ms, total: 134 ms
+    Wall time: 134 ms
 
 </div>
 
-<div class="cell-output cell-output-display" execution_count="71">
+<div class="cell-output cell-output-display" execution_count="23">
 
-    0         2
+    0         1
     1         0
-    2         0
+    2         1
     3         0
-    4         0
+    4         1
              ..
     599995    0
     599996    0
-    599997    0
+    599997    1
     599998    0
-    599999    0
+    599999    1
     Length: 600000, dtype: int64
 
 </div>
@@ -396,32 +396,32 @@ sp.str_count(a, pattern='a')
 
 </details>
 
-    CPU times: user 23 ms, sys: 848 µs, total: 23.8 ms
-    Wall time: 23.7 ms
+    CPU times: user 35 ms, sys: 861 µs, total: 35.8 ms
+    Wall time: 35.8 ms
 
-    <pyarrow.lib.Int32Array object at 0x11e00ee00>
+    <pyarrow.lib.Int32Array object at 0x14a1751e0>
     [
+      1,
+      0,
+      1,
+      0,
+      1,
+      0,
       2,
       0,
       0,
       0,
-      0,
-      0,
-      0,
-      0,
-      1,
-      0,
       ...
       0,
       0,
+      0,
       1,
       0,
       0,
       0,
+      1,
       0,
-      0,
-      0,
-      0
+      1
     ]
 
 # Implement list
