@@ -20,7 +20,7 @@ format:
 ---
 
 [![doc](https://readthedocs.org/projects/stringpy/badge/?version=latest)](https://stringpy.readthedocs.io/en/latest/?badge=latest)
-[![build](https://github.com/vohai611/stringpy/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/vohai611/stringpy/actions/workflows/CI.yml)
+[![build](https://github.com/vohai611/stringpy/actions/workflows/build.yml/badge.svg)](https://github.com/vohai611/stringpy/actions/workflows/build.yml)
 [![codecov](https://codecov.io/gh/vohai611/stringpy/branch/main/graph/badge.svg?token=5QNSE2HMHM)](https://codecov.io/gh/vohai611/stringpy)
 
 # Introduction
@@ -49,6 +49,8 @@ Then install this package as normal python package:
 git clone https://github.com/vohai611/stringpy.git
 pip3 install ./stringpy
 ```
+
+Or you can download and install from **prebuild** wheels under [github action artifact](https://github.com/vohai611/stringpy/actions)
 
 # Milestone
 

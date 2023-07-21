@@ -48,6 +48,9 @@ Then install this package as normal python package:
    git clone https://github.com/vohai611/stringpy.git
    pip3 install ./stringpy
 
+Or you can download and install from **prebuild** wheels under `github
+action artifact <https://github.com/vohai611/stringpy/actions>`__
+
 Milestone
 =========
 
@@ -125,7 +128,7 @@ Split string
 
       ::
 
-         <pyarrow.lib.ListArray object at 0x1169019c0>
+         <pyarrow.lib.ListArray object at 0x13490e7a0>
          [
            [
              "one",
@@ -158,7 +161,7 @@ Camel case to snake case
 
       ::
 
-         <pyarrow.lib.StringArray object at 0x115f96620>
+         <pyarrow.lib.StringArray object at 0x13490c3a0>
          [
            "this_is_some_camel_case",
            "object_not_found"
@@ -179,7 +182,7 @@ Remove accent
 
       ::
 
-         <pyarrow.lib.StringArray object at 0x116902200>
+         <pyarrow.lib.StringArray object at 0x134b44ee0>
          [
            "Ha Noi",
            "Ho Chi Minh",
@@ -235,8 +238,8 @@ Replace pattern
 
       ::
 
-         CPU times: user 453 ms, sys: 8.4 ms, total: 461 ms
-         Wall time: 461 ms
+         CPU times: user 443 ms, sys: 7.78 ms, total: 451 ms
+         Wall time: 452 ms
 
    .. container:: cell-output cell-output-display
 
@@ -266,14 +269,14 @@ Replace pattern
 
       ::
 
-         CPU times: user 5.02 s, sys: 34.9 ms, total: 5.05 s
-         Wall time: 5.06 s
+         CPU times: user 5.02 s, sys: 40.9 ms, total: 5.06 s
+         Wall time: 5.09 s
 
    .. container:: cell-output cell-output-display
 
       ::
 
-         <pyarrow.lib.StringArray object at 0x105076020>
+         <pyarrow.lib.StringArray object at 0x134b45d80>
          [
            "bbbbbbbbbb",
            "bbbbbbbbbb",
@@ -312,24 +315,24 @@ Subset by index
 
       ::
 
-         CPU times: user 54.8 ms, sys: 5.02 ms, total: 59.8 ms
-         Wall time: 59.7 ms
+         CPU times: user 54.9 ms, sys: 4.1 ms, total: 59 ms
+         Wall time: 59.1 ms
 
    .. container:: cell-output cell-output-display
 
       ::
 
-         0         fr
-         1         ik
-         2         cy
-         3         id
-         4         nd
+         0         vw
+         1         to
+         2         su
+         3         ik
+         4         eb
                    ..
-         599995    mz
-         599996    ba
-         599997    pv
-         599998    jv
-         599999    uo
+         599995    hj
+         599996    wc
+         599997    pd
+         599998    ns
+         599999    kw
          Length: 600000, dtype: object
 
 .. container:: cell
@@ -343,36 +346,36 @@ Subset by index
 
       ::
 
-         CPU times: user 277 ms, sys: 4.52 ms, total: 282 ms
-         Wall time: 282 ms
+         CPU times: user 272 ms, sys: 7.4 ms, total: 279 ms
+         Wall time: 279 ms
 
    .. container:: cell-output cell-output-display
 
       ::
 
-         <pyarrow.lib.StringArray object at 0x116902740>
+         <pyarrow.lib.StringArray object at 0x134b45a80>
          [
-           "fr",
+           "vw",
+           "to",
+           "su",
            "ik",
-           "cy",
-           "id",
-           "nd",
-           "so",
-           "yy",
-           "ut",
-           "dq",
-           "ss",
+           "eb",
+           "vn",
+           "et",
+           "ix",
+           "sz",
+           "de",
            ...
-           "xq",
-           "lq",
-           "wz",
-           "lg",
-           "ez",
-           "mz",
-           "ba",
-           "pv",
-           "jv",
-           "uo"
+           "ag",
+           "el",
+           "mi",
+           "yc",
+           "me",
+           "hj",
+           "wc",
+           "pd",
+           "ns",
+           "kw"
          ]
 
 ::
@@ -388,8 +391,8 @@ Subset by index
 
    ::
 
-      CPU times: user 134 ms, sys: 2.67 ms, total: 137 ms
-      Wall time: 137 ms
+      CPU times: user 132 ms, sys: 3.22 ms, total: 136 ms
+      Wall time: 136 ms
 
 .. container:: cell-output cell-output-display
 
@@ -399,12 +402,12 @@ Subset by index
       1         1
       2         0
       3         0
-      4         3
+      4         0
                ..
       599995    0
-      599996    1
+      599996    0
       599997    0
-      599998    1
+      599998    0
       599999    0
       Length: 600000, dtype: int64
 
@@ -421,35 +424,35 @@ Subset by index
 
       ::
 
-         CPU times: user 430 ms, sys: 3.61 ms, total: 433 ms
-         Wall time: 433 ms
+         CPU times: user 428 ms, sys: 2.98 ms, total: 431 ms
+         Wall time: 432 ms
 
    .. container:: cell-output cell-output-display
 
       ::
 
-         <pyarrow.lib.Int32Array object at 0x116903ac0>
+         <pyarrow.lib.Int32Array object at 0x134b45b40>
          [
            0,
            1,
            0,
            0,
-           3,
            0,
            0,
-           1,
            0,
-           1,
+           0,
+           0,
+           0,
            ...
+           1,
+           0,
            0,
            2,
            0,
            0,
            0,
            0,
-           1,
            0,
-           1,
            0
          ]
 
@@ -540,7 +543,7 @@ Rust
 
 .. |doc| image:: https://readthedocs.org/projects/stringpy/badge/?version=latest.png
    :target: https://stringpy.readthedocs.io/en/latest/?badge=latest
-.. |build| image:: https://github.com/vohai611/stringpy/actions/workflows/CI.yml/badge.svg?branch=main
-   :target: https://github.com/vohai611/stringpy/actions/workflows/CI.yml
+.. |build| image:: https://github.com/vohai611/stringpy/actions/workflows/build.yml/badge.svg
+   :target: https://github.com/vohai611/stringpy/actions/workflows/build.yml
 .. |codecov| image:: https://codecov.io/gh/vohai611/stringpy/branch/main/graph/badge.svg?token=5QNSE2HMHM
    :target: https://codecov.io/gh/vohai611/stringpy
