@@ -16,7 +16,7 @@ jobs:
       - run: |
           python3 -m venv venv
           source venv/bin/activate
-          pip install pyarrow, maturin>=0.14.17, pytest, pytest-cov
+          pip install pyarrow maturin>=0.14.17 pytest pytest-cov
       - uses: actions/checkout@v3
       - name: Install Rust
         run: rustup update stable
