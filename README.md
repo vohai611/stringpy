@@ -13,9 +13,9 @@ Hai Vo
 - <a href="#different-type-of-io" id="toc-different-type-of-io">Different
   type of i/o</a>
 
-[![Documentation
-Status](https://readthedocs.org/projects/stringpy/badge/?version=latest.png)](https://stringpy.readthedocs.io/en/latest/?badge=latest)
+[![doc](https://readthedocs.org/projects/stringpy/badge/?version=latest.png)](https://stringpy.readthedocs.io/en/latest/?badge=latest)
 [![](https://github.com/vohai611/stringpy/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/vohai611/stringpy/actions/workflows/CI.yml)
+[![codecov](https://codecov.io/gh/vohai611/stringpy/branch/feat/rust-test/graph/badge.svg?token=5QNSE2HMHM)](https://codecov.io/gh/vohai611/stringpy)
 
 # Introduction
 
@@ -127,7 +127,7 @@ sp.str_split(df2['value'], pattern='->')
 
 </details>
 
-    <pyarrow.lib.ListArray object at 0x11cc72920>
+    <pyarrow.lib.ListArray object at 0x14a175ea0>
     [
       [
         "one",
@@ -145,20 +145,39 @@ sp.str_split(df2['value'], pattern='->')
       ]
     ]
 
+## Camel case to snake case
+
+<details>
+<summary>Code</summary>
+
+``` python
+a = sp.str_replace_all(['ThisIsSomeCamelCase', 'ObjectNotFound'],
+                      pattern='([a-z])([A-Z])', replace= '$1 $2').to_pylist() 
+sp.str_replace_all(sp.str_to_lower(a), pattern = ' ', replace = '_')
+```
+
+</details>
+
+    <pyarrow.lib.StringArray object at 0x1077ebdc0>
+    [
+      "this_is_some_camel_case",
+      "object_not_found"
+    ]
+
 ## Remove accent
 
 <details>
 <summary>Code</summary>
 
 ``` python
-vietnam = ['Hà Nội', 'Hồ Chí Minh', 'Đà Nẵng', 'Hải Phòng', 'Cần Thơ', 'Biên Hòa', 'Nha Trang', 'BMT', 'Huế', 'Buôn Ma Thuột', 'Bắc Giang', 'Bắc Ninh', 'Bến Tre', 'Bình Dương', 'Bình Phước', 'Bình Thuận', 'Cà Mau', 'Cao Bằng', 'Đắk Lắk', 'Đắk Nông', 'Điện Biên', 'Đồng Nai', 'Đồng Tháp', 'Gia Lai', 'Hà Giang', 'Hà Nam', 'Hà Tĩnh', 'Hải Dương', 'Hậu Giang', 'Hòa Bình', 'Hưng Yên', 'Khánh Hòa', 'Kiên Giang', 'Kon Tum', 'Lai Châu', 'Lâm Đồng', 'Lạng Sơn', 'Lào Cai', 'Long An', 'Nam Định', 'Nghệ An', 'Ninh Bình', 'Ninh Thuận', 'Phú Thọ', 'Phú Yên', 'Quảng Bình', 'Quảng Nam', 'Quảng Ngãi', 'Quảng Ninh', 'Quảng Trị', 'Sóc Trăng', 'Sơn La'] 
+vietnam = ['Hà Nội', 'Hồ Chí Minh', 'Đà Nẵng', 'Hải Phòng', 'Cần Thơ', 'Biên Hòa', 'Nha Trang', 'BMT', 'Huế', 'Buôn Ma Thuột', 'Bắc Giang', 'Bắc Ninh', 'Bến Tre', 'Bình Dương', 'Bình Phước', 'Bình Thuận', 'Cà Mau', 'Cao Bằng', 'Đắk Lắk', 'Đắk Nông', 'Điện Biên', 'Đồng Nai', 'Đồng Tháp'] 
 
 sp.str_remove_ascent(vietnam)
 ```
 
 </details>
 
-    <pyarrow.lib.StringArray object at 0x11cc718a0>
+    <pyarrow.lib.StringArray object at 0x14a1766e0>
     [
       "Ha Noi",
       "Ho Chi Minh",
@@ -171,16 +190,16 @@ sp.str_remove_ascent(vietnam)
       "Hue",
       "Buon Ma Thuot",
       ...
-      "Ninh Thuan",
-      "Phu Tho",
-      "Phu Yen",
-      "Quang Binh",
-      "Quang Nam",
-      "Quang Ngai",
-      "Quang Ninh",
-      "Quang Tri",
-      "Soc Trang",
-      "Son La"
+      "Binh Duong",
+      "Binh Phuoc",
+      "Binh Thuan",
+      "Ca Mau",
+      "Cao Bang",
+      "Dak Lak",
+      "Dak Nong",
+      "Dien Bien",
+      "Dong Nai",
+      "Dong Thap"
     ]
 
 # Random speed comparison
@@ -214,8 +233,8 @@ a_sr.str.replace('\w', 'b', regex=True)
 
 </details>
 
-    CPU times: user 429 ms, sys: 7.73 ms, total: 437 ms
-    Wall time: 437 ms
+    CPU times: user 441 ms, sys: 6.18 ms, total: 447 ms
+    Wall time: 447 ms
 
     0         bbbbbbbbbb
     1         bbbbbbbbbb
@@ -240,10 +259,10 @@ sp.str_replace_all(a, pattern='\w', replace= 'b')
 
 </details>
 
-    CPU times: user 231 ms, sys: 5.69 ms, total: 237 ms
+    CPU times: user 234 ms, sys: 4.15 ms, total: 238 ms
     Wall time: 237 ms
 
-    <pyarrow.lib.StringArray object at 0x11cc71de0>
+    <pyarrow.lib.StringArray object at 0x14a1779a0>
     [
       "bbbbbbbbbb",
       "bbbbbbbbbb",
@@ -280,20 +299,20 @@ a_sr.str.slice(2,4)
 
 </details>
 
-    CPU times: user 54.4 ms, sys: 4 ms, total: 58.4 ms
-    Wall time: 58.1 ms
+    CPU times: user 54.7 ms, sys: 4.71 ms, total: 59.4 ms
+    Wall time: 58.9 ms
 
-    0         nk
-    1         bj
-    2         fl
-    3         mp
-    4         iy
+    0         sj
+    1         ac
+    2         sy
+    3         gs
+    4         se
               ..
-    599995    ff
-    599996    eu
-    599997    nw
-    599998    mw
-    599999    jr
+    599995    ji
+    599996    fl
+    599997    rm
+    599998    le
+    599999    zn
     Length: 600000, dtype: object
 
 <details>
@@ -306,61 +325,61 @@ sp.str_sub(a, start=2, end=4)
 
 </details>
 
-    CPU times: user 24.9 ms, sys: 3.49 ms, total: 28.4 ms
-    Wall time: 28.3 ms
+    CPU times: user 24.1 ms, sys: 6.82 ms, total: 30.9 ms
+    Wall time: 33.7 ms
 
-    <pyarrow.lib.StringArray object at 0x11cc720e0>
+    <pyarrow.lib.StringArray object at 0x14a1760e0>
     [
-      "nk",
-      "bj",
-      "fl",
-      "mp",
-      "iy",
-      "vv",
-      "vf",
+      "sj",
       "ac",
-      "jh",
-      "hz",
+      "sy",
+      "gs",
+      "se",
+      "fp",
+      "bc",
+      "pc",
+      "bh",
+      "bd",
       ...
-      "sz",
-      "xy",
-      "sf",
-      "bi",
-      "of",
-      "ff",
-      "eu",
-      "nw",
-      "mw",
-      "jr"
+      "af",
+      "ir",
+      "do",
+      "mt",
+      "qd",
+      "ji",
+      "fl",
+      "rm",
+      "le",
+      "zn"
     ]
 
     ## Counting
 
-    ::: {.cell execution_count=10}
+    ::: {.cell execution_count=11}
     ``` {.python .cell-code}
     %%time
     a_sr.str.count('a')
 
 <div class="cell-output cell-output-stdout">
 
-    CPU times: user 130 ms, sys: 2.96 ms, total: 133 ms
-    Wall time: 132 ms
+    CPU times: user 131 ms, sys: 1.74 ms, total: 133 ms
+    Wall time: 133 ms
 
 </div>
 
-<div class="cell-output cell-output-display" execution_count="21">
+<div class="cell-output cell-output-display" execution_count="47">
 
     0         0
     1         1
     2         0
     3         0
-    4         1
+    4         0
              ..
     599995    0
-    599996    3
+    599996    0
     599997    0
-    599998    0
-    599999    0
+    599998    1
+    599999    1
     Length: 600000, dtype: int64
 
 </div>
@@ -377,32 +396,32 @@ sp.str_count(a, pattern='a')
 
 </details>
 
-    CPU times: user 23.3 ms, sys: 897 µs, total: 24.2 ms
-    Wall time: 24.1 ms
+    CPU times: user 34.2 ms, sys: 1.21 ms, total: 35.4 ms
+    Wall time: 35.3 ms
 
-    <pyarrow.lib.Int32Array object at 0x103baf280>
+    <pyarrow.lib.Int32Array object at 0x14a175900>
     [
       0,
       1,
       0,
       0,
-      1,
       0,
       1,
-      2,
-      1,
+      0,
+      0,
+      0,
       0,
       ...
+      1,
       0,
+      1,
+      0,
+      1,
       0,
       0,
       0,
       1,
-      0,
-      3,
-      0,
-      0,
-      0
+      1
     ]
 
 # Implement list

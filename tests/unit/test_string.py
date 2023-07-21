@@ -143,8 +143,15 @@ def test_str_match():
     expect = [['two'], [None]]
     assert actual == expect
     actual = sp.str_match(['abc def example@gmail.com def', 'abc xx@gmail.com abc.'],
-                           pattern=r".*\b(\w+@\w+\.com\b).*").to_pylist()
+                          pattern=r".*\b(\w+@\w+\.com\b).*").to_pylist()
     expect = [['example@gmail.com'], ['xx@gmail.com']]
+    assert actual == expect
+
+
+def test_str_squish():
+    actual = sp.str_squish(
+        ["This is  ", "not  really ", "well", "  format  ", None]).to_pylist()
+    expect = ['This is', 'not really', 'well', 'format', None]
     assert actual == expect
 
 
@@ -153,11 +160,11 @@ def test_raises_group_out_of_index():
     with pytest.raises(ValueError) as exc_info:
         sp.str_extract(['adsa', 'a.dsfda', '.bcadaa', None, ''],
                        pattern='(a)', group=2)
-    #assert str(exc_info.value) == 'Group 3 does not exist in `(a)`'
+    # assert str(exc_info.value) == 'Group 3 does not exist in `(a)`'
     # raise erro if pattern is wrong
     with pytest.raises(ValueError) as exc_info:
         sp.str_extract_all(['abc'], pattern='[')
 
     with pytest.raises(ValueError) as exc_info:
         sp.str_trim(['abc'], side='wrong')
-    #assert str(exc_info.value) == "side must be one of 'left', 'right', 'both'"
+    # assert str(exc_info.value) == "side must be one of 'left', 'right', 'both'"

@@ -15,7 +15,10 @@ use pyo3::{prelude::*, types::PyTuple};
 use regex::escape;
 use regex::Regex;
 use std::borrow::Cow;
+use std::collections::HashMap;
 use std::iter::zip;
+
+type StringpyResult = Result<PyObject, StringpyErr>;
 
 #[pyfunction]
 fn str_c(array: PyObject, collapse: Option<&str>) -> PyResult<String> {
@@ -75,18 +78,27 @@ fn str_combine(py_args: &PyTuple, sep: Option<&str>) -> PyResult<Vec<String>> {
 }
 
 #[pyfunction]
-fn str_count(array: PyObject, pattern: &str) -> Result<PyObject, StringpyErr> {
-    let pat = Regex::new(pattern)?;
+fn str_count(array: PyObject, pattern: Vec<&str>) -> StringpyResult {
+    let mut pattern_table = HashMap::new();
+    pattern.iter().sorted_unstable().dedup().for_each(|x| {
+        pattern_table.insert(x.to_string(), Regex::new(x).unwrap());
+    });
 
-    fn count(x: Option<&str>, pat: &Regex) -> Option<i32> {
+    fn count(x: Option<&str>, pat: &str, table: &HashMap<String, Regex>) -> Option<i32> {
+        let pat = table.get(pat).unwrap();
         let x = x?;
         return Option::Some(pat.find_iter(x).count() as i32);
     }
-    utils::apply_utf8_i32!(array; count; &pat)
+    // decide if vectorize or not
+    if pattern.len() == 1 {
+        utils::apply_utf8_i32!(array; count; &pattern[0], &pattern_table)
+    } else {
+        utils::apply_utf8_i32!(array; count; pattern; &pattern_table)
+    }
 }
 
 #[pyfunction]
-fn str_replace(array: PyObject, pattern: &str, replace: &str) -> Result<PyObject, StringpyErr> {
+fn str_replace(array: PyObject, pattern: &str, replace: &str) -> StringpyResult {
     let pat = Regex::new(pattern)?;
 
     fn replace_one<'a>(x: Option<&'a str>, pat: &Regex, replace: &str) -> Option<Cow<'a, str>> {
@@ -98,7 +110,7 @@ fn str_replace(array: PyObject, pattern: &str, replace: &str) -> Result<PyObject
 }
 
 #[pyfunction]
-fn str_replace_all(array: PyObject, pattern: &str, replace: &str) -> Result<PyObject, StringpyErr> {
+fn str_replace_all(array: PyObject, pattern: &str, replace: &str) -> StringpyResult {
     let pat = &Regex::new(pattern)?;
 
     fn replace_all<'a>(x: Option<&'a str>, pat: &Regex, replace: &str) -> Option<Cow<'a, str>> {
@@ -110,7 +122,7 @@ fn str_replace_all(array: PyObject, pattern: &str, replace: &str) -> Result<PyOb
 }
 
 #[pyfunction]
-fn str_squish(ob: PyObject) -> Result<PyObject, StringpyErr> {
+fn str_squish(ob: PyObject) -> StringpyResult {
     fn squish(x: Option<&str>) -> Option<Cow<str>> {
         let x = x?;
         let a: Vec<_> = x.split_whitespace().collect();
@@ -120,10 +132,10 @@ fn str_squish(ob: PyObject) -> Result<PyObject, StringpyErr> {
 }
 
 #[pyfunction]
-fn str_trim(array: PyObject, side: &str) -> Result<PyObject, StringpyErr> {
+fn str_trim(array: PyObject, side: &str) -> StringpyResult {
     if !["left", "right", "both"].contains(&side) {
         return Err(StringpyErr::new_value_err(
-            "side must be one of 'left', 'right', 'both'".to_string(),
+            "side must be one of 'left', 'right', 'both'",
         ));
     }
 
@@ -141,7 +153,7 @@ fn str_trim(array: PyObject, side: &str) -> Result<PyObject, StringpyErr> {
 }
 
 #[pyfunction]
-fn str_detect(array: PyObject, pattern: &str) -> Result<PyObject, StringpyErr> {
+fn str_detect(array: PyObject, pattern: &str) -> StringpyResult {
     let pat = Regex::new(pattern)?;
 
     fn detect(x: Option<&str>, pat: &Regex) -> Option<bool> {
@@ -153,7 +165,7 @@ fn str_detect(array: PyObject, pattern: &str) -> Result<PyObject, StringpyErr> {
 }
 
 #[pyfunction]
-fn str_remove_ascent(array: PyObject) -> Result<PyObject, StringpyErr> {
+fn str_remove_ascent(array: PyObject) -> StringpyResult {
     let remove_ascent = |x: Option<&str>| {
         if let Some(x) = x {
             Some(Cow::from(unidecode::unidecode(x)))
@@ -165,12 +177,7 @@ fn str_remove_ascent(array: PyObject) -> Result<PyObject, StringpyErr> {
 }
 
 #[pyfunction]
-fn str_trunc(
-    array: PyObject,
-    width: usize,
-    side: &str,
-    ellipsis: &str,
-) -> Result<PyObject, StringpyErr> {
+fn str_trunc(array: PyObject, width: usize, side: &str, ellipsis: &str) -> StringpyResult {
     fn truncate<'a>(
         x: Option<&'a str>,
         width: usize,
@@ -203,21 +210,17 @@ fn str_trunc(
 }
 
 #[pyfunction]
-fn str_remove(array: PyObject, pattern: &str) -> Result<PyObject, StringpyErr> {
+fn str_remove(array: PyObject, pattern: &str) -> StringpyResult {
     str_replace(array, pattern, "")
 }
 
 #[pyfunction]
-fn str_remove_all(array: PyObject, pattern: &str) -> Result<PyObject, StringpyErr> {
+fn str_remove_all(array: PyObject, pattern: &str) -> StringpyResult {
     str_replace_all(array, pattern, "")
 }
 
 #[pyfunction]
-fn str_extract(
-    array: PyObject,
-    pattern: &str,
-    group: Option<usize>,
-) -> Result<PyObject, StringpyErr> {
+fn str_extract(array: PyObject, pattern: &str, group: Option<usize>) -> StringpyResult {
     let pat = Regex::new(pattern)?;
 
     if group.is_some() {
@@ -246,11 +249,7 @@ fn str_extract(
 
 //Vec<Option<Vec<Option<String>>>>
 #[pyfunction]
-fn str_extract_all(
-    array: PyObject,
-    pattern: &str,
-    group: Option<usize>,
-) -> Result<PyObject, StringpyErr> {
+fn str_extract_all(array: PyObject, pattern: &str, group: Option<usize>) -> StringpyResult {
     let pat = Regex::new(pattern)?;
 
     if group.is_some() {
@@ -340,7 +339,7 @@ fn str_extract_all(
 }
 
 #[pyfunction]
-fn str_split(array: PyObject, pattern: &str, n: Option<usize>) -> Result<PyObject, StringpyErr> {
+fn str_split(array: PyObject, pattern: &str, n: Option<usize>) -> StringpyResult {
     let pat = Regex::new(pattern)?;
     let n = n.unwrap_or(usize::MAX);
 
@@ -355,7 +354,7 @@ fn str_split(array: PyObject, pattern: &str, n: Option<usize>) -> Result<PyObjec
         let array = array.as_any();
         let mut array: Vec<Option<Vec<Option<String>>>> = array
             .downcast_ref::<Utf8Array<i32>>()
-            .unwrap()
+            .ok_or(StringpyErr::new_value_err("Expect string array"))?
             .iter()
             .map(|i| split(i, &pat, n))
             .collect();
@@ -402,7 +401,7 @@ fn str_split(array: PyObject, pattern: &str, n: Option<usize>) -> Result<PyObjec
 }
 
 #[pyfunction]
-fn str_starts(array: PyObject, pattern: &str, negate: bool) -> Result<PyObject, StringpyErr> {
+fn str_starts(array: PyObject, pattern: &str, negate: bool) -> StringpyResult {
     let pattern = escape(pattern);
     let pattern = format!("^{}", pattern);
     let pat = Regex::new(pattern.as_str())?;
@@ -411,7 +410,7 @@ fn str_starts(array: PyObject, pattern: &str, negate: bool) -> Result<PyObject, 
 }
 
 #[pyfunction]
-fn str_ends(array: PyObject, pattern: &str, negate: bool) -> Result<PyObject, StringpyErr> {
+fn str_ends(array: PyObject, pattern: &str, negate: bool) -> StringpyResult {
     let pattern = escape(pattern);
     let pattern = format!("{}$", pattern);
     let pat = Regex::new(pattern.as_str())?;
@@ -420,7 +419,7 @@ fn str_ends(array: PyObject, pattern: &str, negate: bool) -> Result<PyObject, St
 }
 
 #[pyfunction]
-fn str_subset(array: PyObject, pattern: &str, negate: bool) -> Result<PyObject, StringpyErr> {
+fn str_subset(array: PyObject, pattern: &str, negate: bool) -> StringpyResult {
     let pat = Regex::new(pattern)?;
 
     // if match return x, esle return None
@@ -439,7 +438,7 @@ fn str_subset(array: PyObject, pattern: &str, negate: bool) -> Result<PyObject, 
         let array = array.as_any();
         let array: Vec<Option<&str>> = array
             .downcast_ref::<Utf8Array<i32>>()
-            .unwrap_or_else(|| panic!("Expected String Array"))
+            .ok_or(StringpyErr::new_value_err("Expect string array"))?
             .iter()
             .filter(|x| subset(*x, &pat, negate).is_some())
             .collect();
@@ -452,7 +451,7 @@ fn str_subset(array: PyObject, pattern: &str, negate: bool) -> Result<PyObject, 
 }
 
 #[pyfunction]
-fn str_which(array: PyObject, pattern: &str, negate: bool) -> Result<PyObject, StringpyErr> {
+fn str_which(array: PyObject, pattern: &str, negate: bool) -> StringpyResult {
     //let pat = Regex::new(pattern).map_err(|_| PyValueError::new_err(format!("Invalid regex pattern: {}", pattern)))?;
     let pat = Regex::new(pattern)?;
 
@@ -480,9 +479,8 @@ fn str_which(array: PyObject, pattern: &str, negate: bool) -> Result<PyObject, S
     });
     result
 }
-
 #[pyfunction]
-fn str_dup(array: PyObject, times: Vec<usize>) -> Result<PyObject, StringpyErr> {
+fn str_dup(array: PyObject, times: Vec<usize>) -> StringpyResult {
     fn repeat(x: Option<&str>, times: usize) -> Option<Cow<str>> {
         let x = x?;
         Some(Cow::Owned(x.repeat(times)))
@@ -491,7 +489,7 @@ fn str_dup(array: PyObject, times: Vec<usize>) -> Result<PyObject, StringpyErr> 
 }
 
 #[pyfunction]
-fn str_length(array: PyObject) -> Result<PyObject, StringpyErr> {
+fn str_length(array: PyObject) -> StringpyResult {
     fn length(x: Option<&str>) -> Option<i32> {
         let x = x?;
         Some(unidecode::unidecode(x).len() as i32)
@@ -501,7 +499,7 @@ fn str_length(array: PyObject) -> Result<PyObject, StringpyErr> {
 }
 
 #[pyfunction]
-fn str_unique(array: PyObject) -> Result<PyObject, StringpyErr> {
+fn str_unique(array: PyObject) -> StringpyResult {
     let result = Python::with_gil(|py| {
         let array = arrow_in::to_rust_array(array, py)?;
         let array = array.as_any();
@@ -520,7 +518,7 @@ fn str_unique(array: PyObject) -> Result<PyObject, StringpyErr> {
 }
 
 #[pyfunction]
-fn str_to_upper(array: PyObject) -> Result<PyObject, StringpyErr> {
+fn str_to_upper(array: PyObject) -> StringpyResult {
     fn to_upper(x: Option<&str>) -> Option<Cow<str>> {
         let x = x?;
         Some(Cow::Owned(x.to_uppercase()))
@@ -529,7 +527,7 @@ fn str_to_upper(array: PyObject) -> Result<PyObject, StringpyErr> {
 }
 
 #[pyfunction]
-fn str_to_lower(array: PyObject) -> Result<PyObject, StringpyErr> {
+fn str_to_lower(array: PyObject) -> StringpyResult {
     fn to_lower(x: Option<&str>) -> Option<Cow<str>> {
         let x = x?;
         Some(Cow::Owned(x.to_lowercase()))
@@ -538,22 +536,17 @@ fn str_to_lower(array: PyObject) -> Result<PyObject, StringpyErr> {
 }
 
 #[pyfunction]
-fn str_to_title(array: PyObject) -> Result<PyObject, StringpyErr> {
+fn str_to_title(array: PyObject) -> StringpyResult {
     utils::apply_utf8!(array; atomic::to_upper; " ")
 }
 
 #[pyfunction]
-fn str_to_sentence(array: PyObject) -> Result<PyObject, StringpyErr> {
+fn str_to_sentence(array: PyObject) -> StringpyResult {
     utils::apply_utf8!(array ; atomic::to_upper; ". ")
 }
 
 #[pyfunction]
-fn str_pad(
-    array: PyObject,
-    width: Vec<i32>,
-    side: Vec<&str>,
-    pad: Vec<char>,
-) -> Result<PyObject, StringpyErr> {
+fn str_pad(array: PyObject, width: Vec<i32>, side: Vec<&str>, pad: Vec<char>) -> StringpyResult {
     // if ! ["left", "right", "both"].contains(&side) {
     //     return Err(StringpyErr::new_value_err(format!("Invalid side: `{}`. Must be one of [left, right, both]", side)));
     // }
@@ -590,7 +583,7 @@ fn str_pad(
 }
 
 #[pyfunction]
-fn str_sub(array: PyObject, start: Vec<i32>, end: Vec<i32>) -> Result<PyObject, StringpyErr> {
+fn str_sub(array: PyObject, start: Vec<i32>, end: Vec<i32>) -> StringpyResult {
     fn sub(x: Option<&str>, start: i32, end: i32) -> Option<Cow<str>> {
         let x = x?;
         let len = x.len();
@@ -615,13 +608,18 @@ fn str_sub(array: PyObject, start: Vec<i32>, end: Vec<i32>) -> Result<PyObject, 
             0
         };
 
-        Some(Cow::Owned(x[start..end].to_string()))
+        if start > end {
+            Some(Cow::Owned(x[end..start].to_string()))
+        } else {
+            Some(Cow::Owned(x[start..end].to_string()))
+        }
     }
+
     utils::apply_utf8!(array; sub; start, end;)
 }
 
 #[pyfunction]
-fn str_match(array: PyObject, pattern: &str) -> Result<PyObject, StringpyErr> {
+fn str_match(array: PyObject, pattern: &str) -> StringpyResult {
     let pat = Regex::new(pattern)?;
 
     fn _match<'a>(x: Option<&'a str>, pat: &Regex) -> Option<Vec<Option<String>>> {
@@ -688,7 +686,7 @@ fn str_match(array: PyObject, pattern: &str) -> Result<PyObject, StringpyErr> {
 }
 
 #[pyfunction]
-fn str_locate(array: PyObject, pattern: &str) -> Result<PyObject, StringpyErr> {
+fn str_locate(array: PyObject, pattern: &str) -> StringpyResult {
     let pat = Regex::new(pattern).unwrap();
 
     fn find_loc<'a>(x: Option<&'a str>, pat: &Regex) -> Option<Vec<i32>> {

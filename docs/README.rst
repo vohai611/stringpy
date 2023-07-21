@@ -7,7 +7,7 @@ README
    Hai Vo
 :Date: 5/1/23
 
-|Documentation Status| |image1|
+|doc| |image1| |codecov|
 
 Introduction
 ============
@@ -97,7 +97,7 @@ Split string
 
       ::
 
-         <pyarrow.lib.ListArray object at 0x11cbf9ba0>
+         <pyarrow.lib.ListArray object at 0x1077ebe20>
          [
            [
              "one",
@@ -115,6 +115,27 @@ Split string
            ]
          ]
 
+Camel case to snake case
+------------------------
+
+.. container:: cell
+
+   .. code:: python
+
+      a = sp.str_replace_all(['ThisIsSomeCamelCase', 'ObjectNotFound'],
+                            pattern='([a-z])([A-Z])', replace= '$1 $2').to_pylist() 
+      sp.str_replace_all(sp.str_to_lower(a), pattern = ' ', replace = '_')
+
+   .. container:: cell-output cell-output-display
+
+      ::
+
+         <pyarrow.lib.StringArray object at 0x14a10df00>
+         [
+           "this_is_some_camel_case",
+           "object_not_found"
+         ]
+
 Remove accent
 -------------
 
@@ -122,7 +143,7 @@ Remove accent
 
    .. code:: python
 
-      vietnam = ['Hà Nội', 'Hồ Chí Minh', 'Đà Nẵng', 'Hải Phòng', 'Cần Thơ', 'Biên Hòa', 'Nha Trang', 'BMT', 'Huế', 'Buôn Ma Thuột', 'Bắc Giang', 'Bắc Ninh', 'Bến Tre', 'Bình Dương', 'Bình Phước', 'Bình Thuận', 'Cà Mau', 'Cao Bằng', 'Đắk Lắk', 'Đắk Nông', 'Điện Biên', 'Đồng Nai', 'Đồng Tháp', 'Gia Lai', 'Hà Giang', 'Hà Nam', 'Hà Tĩnh', 'Hải Dương', 'Hậu Giang', 'Hòa Bình', 'Hưng Yên', 'Khánh Hòa', 'Kiên Giang', 'Kon Tum', 'Lai Châu', 'Lâm Đồng', 'Lạng Sơn', 'Lào Cai', 'Long An', 'Nam Định', 'Nghệ An', 'Ninh Bình', 'Ninh Thuận', 'Phú Thọ', 'Phú Yên', 'Quảng Bình', 'Quảng Nam', 'Quảng Ngãi', 'Quảng Ninh', 'Quảng Trị', 'Sóc Trăng', 'Sơn La'] 
+      vietnam = ['Hà Nội', 'Hồ Chí Minh', 'Đà Nẵng', 'Hải Phòng', 'Cần Thơ', 'Biên Hòa', 'Nha Trang', 'BMT', 'Huế', 'Buôn Ma Thuột', 'Bắc Giang', 'Bắc Ninh', 'Bến Tre', 'Bình Dương', 'Bình Phước', 'Bình Thuận', 'Cà Mau', 'Cao Bằng', 'Đắk Lắk', 'Đắk Nông', 'Điện Biên', 'Đồng Nai', 'Đồng Tháp'] 
 
       sp.str_remove_ascent(vietnam)
 
@@ -130,7 +151,7 @@ Remove accent
 
       ::
 
-         <pyarrow.lib.StringArray object at 0x11cc71cc0>
+         <pyarrow.lib.StringArray object at 0x14a1756c0>
          [
            "Ha Noi",
            "Ho Chi Minh",
@@ -143,16 +164,16 @@ Remove accent
            "Hue",
            "Buon Ma Thuot",
            ...
-           "Ninh Thuan",
-           "Phu Tho",
-           "Phu Yen",
-           "Quang Binh",
-           "Quang Nam",
-           "Quang Ngai",
-           "Quang Ninh",
-           "Quang Tri",
-           "Soc Trang",
-           "Son La"
+           "Binh Duong",
+           "Binh Phuoc",
+           "Binh Thuan",
+           "Ca Mau",
+           "Cao Bang",
+           "Dak Lak",
+           "Dak Nong",
+           "Dien Bien",
+           "Dong Nai",
+           "Dong Thap"
          ]
 
 Random speed comparison
@@ -186,8 +207,8 @@ Replace pattern
 
       ::
 
-         CPU times: user 433 ms, sys: 6.57 ms, total: 440 ms
-         Wall time: 440 ms
+         CPU times: user 443 ms, sys: 7.14 ms, total: 450 ms
+         Wall time: 451 ms
 
    .. container:: cell-output cell-output-display
 
@@ -217,14 +238,14 @@ Replace pattern
 
       ::
 
-         CPU times: user 230 ms, sys: 7.13 ms, total: 237 ms
-         Wall time: 237 ms
+         CPU times: user 236 ms, sys: 15.7 ms, total: 251 ms
+         Wall time: 262 ms
 
    .. container:: cell-output cell-output-display
 
       ::
 
-         <pyarrow.lib.StringArray object at 0x11cc711e0>
+         <pyarrow.lib.StringArray object at 0x14a175420>
          [
            "bbbbbbbbbb",
            "bbbbbbbbbb",
@@ -263,24 +284,24 @@ Subset by index
 
       ::
 
-         CPU times: user 54.3 ms, sys: 3.81 ms, total: 58.1 ms
-         Wall time: 57.9 ms
+         CPU times: user 53.8 ms, sys: 3.44 ms, total: 57.2 ms
+         Wall time: 57 ms
 
    .. container:: cell-output cell-output-display
 
       ::
 
-         0         zi
-         1         rh
-         2         tu
-         3         sv
-         4         ze
+         0         vi
+         1         xs
+         2         kw
+         3         ub
+         4         uo
                    ..
-         599995    ny
-         599996    qs
-         599997    vd
-         599998    pv
-         599999    dd
+         599995    kp
+         599996    qq
+         599997    do
+         599998    kr
+         599999    rz
          Length: 600000, dtype: object
 
 .. container:: cell
@@ -294,43 +315,43 @@ Subset by index
 
       ::
 
-         CPU times: user 24.5 ms, sys: 3.47 ms, total: 28 ms
-         Wall time: 27.9 ms
+         CPU times: user 24.5 ms, sys: 6.09 ms, total: 30.6 ms
+         Wall time: 40.1 ms
 
    .. container:: cell-output cell-output-display
 
       ::
 
-         <pyarrow.lib.StringArray object at 0x11cc712a0>
+         <pyarrow.lib.StringArray object at 0x14a1754e0>
          [
-           "zi",
-           "rh",
-           "tu",
-           "sv",
-           "ze",
-           "ts",
-           "xb",
-           "pp",
-           "zs",
-           "xg",
+           "vi",
+           "xs",
+           "kw",
+           "ub",
+           "uo",
+           "ua",
+           "jw",
+           "tv",
+           "qy",
+           "ll",
            ...
-           "sq",
-           "mg",
-           "to",
-           "cv",
+           "hc",
+           "zu",
+           "cq",
+           "sr",
+           "rt",
+           "kp",
            "qq",
-           "ny",
-           "qs",
-           "vd",
-           "pv",
-           "dd"
+           "do",
+           "kr",
+           "rz"
          ]
 
 ::
 
    ## Counting
 
-   ::: {.cell execution_count=10}
+   ::: {.cell execution_count=11}
    ``` {.python .cell-code}
    %%time
    a_sr.str.count('a')
@@ -339,20 +360,20 @@ Subset by index
 
    ::
 
-      CPU times: user 131 ms, sys: 3.02 ms, total: 134 ms
-      Wall time: 134 ms
+      CPU times: user 131 ms, sys: 4.68 ms, total: 136 ms
+      Wall time: 136 ms
 
 .. container:: cell-output cell-output-display
 
    ::
 
       0         0
-      1         1
+      1         0
       2         0
       3         0
-      4         1
+      4         0
                ..
-      599995    0
+      599995    1
       599996    0
       599997    0
       599998    0
@@ -372,32 +393,32 @@ Subset by index
 
       ::
 
-         CPU times: user 23.4 ms, sys: 933 µs, total: 24.3 ms
-         Wall time: 25.2 ms
+         CPU times: user 35 ms, sys: 692 µs, total: 35.7 ms
+         Wall time: 35.7 ms
 
    .. container:: cell-output cell-output-display
 
       ::
 
-         <pyarrow.lib.Int32Array object at 0x11cc72200>
+         <pyarrow.lib.Int32Array object at 0x14a175c60>
          [
            0,
-           1,
+           0,
+           0,
            0,
            0,
            1,
            0,
            0,
-           1,
+           0,
            2,
-           0,
            ...
            0,
+           1,
            0,
            0,
-           2,
            0,
-           0,
+           1,
            0,
            0,
            0,
@@ -494,7 +515,9 @@ Rust
 -  Use apply_utf8_lst!() macro
 -  @export
 
-.. |Documentation Status| image:: https://readthedocs.org/projects/stringpy/badge/?version=latest.png
+.. |doc| image:: https://readthedocs.org/projects/stringpy/badge/?version=latest.png
    :target: https://stringpy.readthedocs.io/en/latest/?badge=latest
 .. |image1| image:: https://github.com/vohai611/stringpy/actions/workflows/CI.yml/badge.svg?branch=main
    :target: https://github.com/vohai611/stringpy/actions/workflows/CI.yml
+.. |codecov| image:: https://codecov.io/gh/vohai611/stringpy/branch/feat/rust-test/graph/badge.svg?token=5QNSE2HMHM
+   :target: https://codecov.io/gh/vohai611/stringpy

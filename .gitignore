@@ -133,3 +133,4 @@ examples/*
 .vscode/*
 Makefile
 make.bat
+.DS_Store

@@ -31,3 +31,6 @@ test:
 rust:
 	@echo "Build release"
 	@maturin develop --release
+cov: 
+	@echo "test coveraage"
+	@cargo llvm-cov --html
