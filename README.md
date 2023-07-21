@@ -1,11 +1,13 @@
 README
 ================
 Hai Vo
-5/1/23
+7/21/23
 
 - <a href="#introduction" id="toc-introduction">Introduction</a>
 - <a href="#how-it-works" id="toc-how-it-works">How it works</a>
 - <a href="#installation" id="toc-installation">Installation</a>
+- <a href="#milestone" id="toc-milestone">Milestone</a>
+- <a href="#documentation" id="toc-documentation">Documentation</a>
 - <a href="#usage-example" id="toc-usage-example">Usage example</a>
 - <a href="#random-speed-comparison"
   id="toc-random-speed-comparison">Random speed comparison</a>
@@ -14,20 +16,22 @@ Hai Vo
   type of i/o</a>
 
 [![doc](https://readthedocs.org/projects/stringpy/badge/?version=latest.png)](https://stringpy.readthedocs.io/en/latest/?badge=latest)
-[![](https://github.com/vohai611/stringpy/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/vohai611/stringpy/actions/workflows/CI.yml)
-[![codecov](https://codecov.io/gh/vohai611/stringpy/branch/feat/rust-test/graph/badge.svg?token=5QNSE2HMHM)](https://codecov.io/gh/vohai611/stringpy)
+[![build](https://github.com/vohai611/stringpy/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/vohai611/stringpy/actions/workflows/CI.yml)
+[![codecov](https://codecov.io/gh/vohai611/stringpy/branch/main/graph/badge.svg?token=5QNSE2HMHM)](https://codecov.io/gh/vohai611/stringpy)
 
 # Introduction
 
 This project is a python package to mimic
 [r::stringr](https://stringr.tidyverse.org/) functionalities, the core
-functions are written in Rust. Note that I write this package mostly for
-personal use (convenience and speed) and learning purpose, so please use
-with care!
+functions are written in Rust and then export to Python. Note that I
+write this package mostly for personal use (convenience and speed) and
+learning purpose, so please use with care!
+
+Any type of contribution are welcome!
 
 # How it works
 
-- Using arrow for data structure
+- Using arrow format to store main input array.
 - Using pyo3 for python binding
 - Convert Python type (mostly List) to Rust type (mostly Vec) for the
   case not using arrow. This may cause some overhead, but it make the
@@ -36,7 +40,7 @@ with care!
 
 # Installation
 
-This package is not on Pipy yet, so you need to compile from source.
+This package is not on PyPi yet, so you need to compile from source.
 
 First you need rust compiler:
 
@@ -46,6 +50,28 @@ Then install this package as normal python package:
 
     git clone https://github.com/vohai611/stringpy.git
     pip3 install ./stringpy
+
+# Milestone
+
+## v0.1.0
+
+- [x] Implement basic function
+- [x] Add document
+- [x] Add test
+- [x] Add CI/CD
+- [x] Add example
+- [x] Add codecov
+- \[\] Release PyPi
+
+## v0.2.0
+
+- \[\] Add benchmark
+- \[\] Vectorize on arguments
+
+# Documentation
+
+The documentation can be found at
+[here](https://stringpy.readthedocs.io/en/latest/)
 
 # Usage example
 
@@ -127,7 +153,7 @@ sp.str_split(df2['value'], pattern='->')
 
 </details>
 
-    <pyarrow.lib.ListArray object at 0x14a175ea0>
+    <pyarrow.lib.ListArray object at 0x1169027a0>
     [
       [
         "one",
@@ -158,7 +184,7 @@ sp.str_replace_all(sp.str_to_lower(a), pattern = ' ', replace = '_')
 
 </details>
 
-    <pyarrow.lib.StringArray object at 0x1077ebdc0>
+    <pyarrow.lib.StringArray object at 0x115f95c00>
     [
       "this_is_some_camel_case",
       "object_not_found"
@@ -177,7 +203,7 @@ sp.str_remove_ascent(vietnam)
 
 </details>
 
-    <pyarrow.lib.StringArray object at 0x14a1766e0>
+    <pyarrow.lib.StringArray object at 0x116901d80>
     [
       "Ha Noi",
       "Ho Chi Minh",
@@ -233,8 +259,8 @@ a_sr.str.replace('\w', 'b', regex=True)
 
 </details>
 
-    CPU times: user 441 ms, sys: 6.18 ms, total: 447 ms
-    Wall time: 447 ms
+    CPU times: user 456 ms, sys: 6.11 ms, total: 462 ms
+    Wall time: 463 ms
 
     0         bbbbbbbbbb
     1         bbbbbbbbbb
@@ -259,10 +285,10 @@ sp.str_replace_all(a, pattern='\w', replace= 'b')
 
 </details>
 
-    CPU times: user 234 ms, sys: 4.15 ms, total: 238 ms
-    Wall time: 237 ms
+    CPU times: user 5.02 s, sys: 34.4 ms, total: 5.06 s
+    Wall time: 5.08 s
 
-    <pyarrow.lib.StringArray object at 0x14a1779a0>
+    <pyarrow.lib.StringArray object at 0x1050751e0>
     [
       "bbbbbbbbbb",
       "bbbbbbbbbb",
@@ -299,20 +325,20 @@ a_sr.str.slice(2,4)
 
 </details>
 
-    CPU times: user 54.7 ms, sys: 4.71 ms, total: 59.4 ms
-    Wall time: 58.9 ms
+    CPU times: user 55.9 ms, sys: 4.61 ms, total: 60.5 ms
+    Wall time: 60.6 ms
 
-    0         sj
-    1         ac
-    2         sy
-    3         gs
-    4         se
+    0         fi
+    1         sp
+    2         xx
+    3         fw
+    4         kf
               ..
-    599995    ji
-    599996    fl
-    599997    rm
-    599998    le
-    599999    zn
+    599995    kd
+    599996    vl
+    599997    sk
+    599998    mw
+    599999    kd
     Length: 600000, dtype: object
 
 <details>
@@ -325,32 +351,32 @@ sp.str_sub(a, start=2, end=4)
 
 </details>
 
-    CPU times: user 24.1 ms, sys: 6.82 ms, total: 30.9 ms
-    Wall time: 33.7 ms
+    CPU times: user 280 ms, sys: 5.09 ms, total: 285 ms
+    Wall time: 286 ms
 
-    <pyarrow.lib.StringArray object at 0x14a1760e0>
+    <pyarrow.lib.StringArray object at 0x1169018a0>
     [
-      "sj",
-      "ac",
-      "sy",
-      "gs",
-      "se",
-      "fp",
-      "bc",
-      "pc",
-      "bh",
-      "bd",
-      ...
-      "af",
-      "ir",
-      "do",
+      "fi",
+      "sp",
+      "xx",
+      "fw",
+      "kf",
       "mt",
-      "qd",
-      "ji",
-      "fl",
-      "rm",
-      "le",
-      "zn"
+      "ac",
+      "lc",
+      "sm",
+      "pe",
+      ...
+      "xq",
+      "jf",
+      "tu",
+      "pa",
+      "rp",
+      "kd",
+      "vl",
+      "sk",
+      "mw",
+      "kd"
     ]
 
     ## Counting
@@ -362,24 +388,24 @@ sp.str_sub(a, start=2, end=4)
 
 <div class="cell-output cell-output-stdout">
 
-    CPU times: user 131 ms, sys: 1.74 ms, total: 133 ms
-    Wall time: 133 ms
+    CPU times: user 132 ms, sys: 2.96 ms, total: 135 ms
+    Wall time: 135 ms
 
 </div>
 
 <div class="cell-output cell-output-display" execution_count="47">
 
-    0         0
-    1         1
-    2         0
+    0         1
+    1         0
+    2         1
     3         0
     4         0
              ..
-    599995    0
+    599995    1
     599996    0
-    599997    0
-    599998    1
-    599999    1
+    599997    1
+    599998    0
+    599999    0
     Length: 600000, dtype: int64
 
 </div>
@@ -396,32 +422,32 @@ sp.str_count(a, pattern='a')
 
 </details>
 
-    CPU times: user 34.2 ms, sys: 1.21 ms, total: 35.4 ms
-    Wall time: 35.3 ms
+    CPU times: user 435 ms, sys: 3.1 ms, total: 438 ms
+    Wall time: 438 ms
 
-    <pyarrow.lib.Int32Array object at 0x14a175900>
+    <pyarrow.lib.Int32Array object at 0x116901a80>
     [
+      1,
       0,
       1,
       0,
       0,
       0,
       1,
-      0,
       0,
       0,
       0,
       ...
-      1,
+      0,
+      0,
+      0,
+      2,
       0,
       1,
       0,
       1,
       0,
-      0,
-      0,
-      1,
-      1
+      0
     ]
 
 # Implement list
@@ -469,10 +495,6 @@ sp.str_count(a, pattern='a')
 - [x] str_unique()
 - [x] str_remove_ascent()
 
-## Optimize
-
-Handle case when input is scalar or vector in Rust to improve speed
-
 # Different type of i/o
 
 ## Python
@@ -489,20 +511,20 @@ Handle case when input is scalar or vector in Rust to improve speed
 
 1.  vec<str> in vec<str> out
 
-- Use apply_utf8!() macro
+- apply_utf8!()
 - @export
 
 2.  vec<str>+ in vec<str> out
 
-- Use apply_utf8!() macro
+- apply_utf8!()
 - @export2
 
 3.  vec<str> in vec<bool> out
 
-- Use apply_utf8_bool!() macro
+- apply_utf8_bool!()
 - @export
 
 4.  vec<str> in vec\<vec<str>\> out
 
-- Use apply_utf8_lst!() macro
+- apply_utf8_lst!()
 - @export

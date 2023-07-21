@@ -1,7 +1,7 @@
 ---
 title: "README"
 author: "Hai Vo"
-date: "2023/5/1"
+date: "2023/7/21"
 format: 
   rst: 
     toc: false
@@ -20,22 +20,24 @@ format:
 ---
 
 [![doc](https://readthedocs.org/projects/stringpy/badge/?version=latest)](https://stringpy.readthedocs.io/en/latest/?badge=latest)
-[![](https://github.com/vohai611/stringpy/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/vohai611/stringpy/actions/workflows/CI.yml)
-[![codecov](https://codecov.io/gh/vohai611/stringpy/branch/feat/rust-test/graph/badge.svg?token=5QNSE2HMHM)](https://codecov.io/gh/vohai611/stringpy)
+[![build](https://github.com/vohai611/stringpy/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/vohai611/stringpy/actions/workflows/CI.yml)
+[![codecov](https://codecov.io/gh/vohai611/stringpy/branch/main/graph/badge.svg?token=5QNSE2HMHM)](https://codecov.io/gh/vohai611/stringpy)
 
 # Introduction
 
-This project is a python package to mimic [r::stringr](https://stringr.tidyverse.org/) functionalities, the core functions are written in Rust. Note that I write this package mostly for personal use (convenience and speed) and learning purpose, so please use with care!  
+This project is a python package to mimic [r::stringr](https://stringr.tidyverse.org/) functionalities, the core functions are written in Rust and then export to Python. Note that I write this package mostly for personal use (convenience and speed) and learning purpose, so please use with care!  
+
+Any type of contribution are welcome!
 
 # How it works
 
-- Using arrow for data structure 
+- Using arrow format to store main input array.
 - Using pyo3 for python binding
 - Convert Python type (mostly List) to Rust type (mostly Vec) for the case not using arrow. This may cause some overhead, but it make the code more flexible. For example: many function not only vectorize over main array but also it arugments.
 
 # Installation
 
-This package is not on Pipy yet, so you need to compile from source. 
+This package is not on PyPi yet, so you need to compile from source. 
 
 First you need rust compiler:
 ```
@@ -47,6 +49,25 @@ Then install this package as normal python package:
 git clone https://github.com/vohai611/stringpy.git
 pip3 install ./stringpy
 ```
+
+# Milestone
+
+## v0.1.0
+- [x] Implement basic function
+- [x] Add document
+- [x] Add test
+- [x] Add CI/CD
+- [x] Add example
+- [x] Add codecov
+- [] Release PyPi
+
+## v0.2.0
+- [] Add benchmark
+- [] Vectorize on arguments
+
+# Documentation
+
+The documentation can be found at [here](https://stringpy.readthedocs.io/en/latest/)
 
 # Usage example
 
@@ -174,9 +195,6 @@ sp.str_count(a, pattern='a')
 - [x] str_unique()
 - [x] str_remove_ascent()
 
-## Optimize
-
-Handle case when input is scalar or vector in Rust to improve speed
 
 # Different type of i/o
 
@@ -191,18 +209,18 @@ Handle case when input is scalar or vector in Rust to improve speed
 - `apply_utf8_lst!()`
 
 1. vec<str> in vec<str> out
-- Use apply_utf8!() macro
+- apply_utf8!() 
 - @export
 
 2. vec<str>+ in vec<str> out
-- Use apply_utf8!() macro
+- apply_utf8!()
 - @export2
 
 3. vec<str> in vec<bool> out
-- Use apply_utf8_bool!() macro
+- apply_utf8_bool!()
 - @export
 
 4. vec<str> in vec<vec<str>> out
-- Use apply_utf8_lst!() macro
+- apply_utf8_lst!() 
 - @export
 

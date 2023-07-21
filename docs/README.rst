@@ -5,23 +5,25 @@ README
 :Author: Hai Vo
 :Authors:
    Hai Vo
-:Date: 5/1/23
+:Date: 7/21/23
 
-|doc| |image1| |codecov|
+|doc| |build| |codecov|
 
 Introduction
 ============
 
 This project is a python package to mimic
 `r::stringr <https://stringr.tidyverse.org/>`__ functionalities, the
-core functions are written in Rust. Note that I write this package
-mostly for personal use (convenience and speed) and learning purpose, so
-please use with care!
+core functions are written in Rust and then export to Python. Note that
+I write this package mostly for personal use (convenience and speed) and
+learning purpose, so please use with care!
+
+Any type of contribution are welcome!
 
 How it works
 ============
 
--  Using arrow for data structure
+-  Using arrow format to store main input array.
 -  Using pyo3 for python binding
 -  Convert Python type (mostly List) to Rust type (mostly Vec) for the
    case not using arrow. This may cause some overhead, but it make the
@@ -31,7 +33,7 @@ How it works
 Installation
 ============
 
-This package is not on Pipy yet, so you need to compile from source.
+This package is not on PyPi yet, so you need to compile from source.
 
 First you need rust compiler:
 
@@ -45,6 +47,32 @@ Then install this package as normal python package:
 
    git clone https://github.com/vohai611/stringpy.git
    pip3 install ./stringpy
+
+Milestone
+=========
+
+v0.1.0
+------
+
+-  ☒ Implement basic function
+-  ☒ Add document
+-  ☒ Add test
+-  ☒ Add CI/CD
+-  ☒ Add example
+-  ☒ Add codecov
+-  [] Release PyPi
+
+v0.2.0
+------
+
+-  [] Add benchmark
+-  [] Vectorize on arguments
+
+Documentation
+=============
+
+The documentation can be found at
+`here <https://stringpy.readthedocs.io/en/latest/>`__
 
 Usage example
 =============
@@ -97,7 +125,7 @@ Split string
 
       ::
 
-         <pyarrow.lib.ListArray object at 0x1077ebe20>
+         <pyarrow.lib.ListArray object at 0x1169019c0>
          [
            [
              "one",
@@ -130,7 +158,7 @@ Camel case to snake case
 
       ::
 
-         <pyarrow.lib.StringArray object at 0x14a10df00>
+         <pyarrow.lib.StringArray object at 0x115f96620>
          [
            "this_is_some_camel_case",
            "object_not_found"
@@ -151,7 +179,7 @@ Remove accent
 
       ::
 
-         <pyarrow.lib.StringArray object at 0x14a1756c0>
+         <pyarrow.lib.StringArray object at 0x116902200>
          [
            "Ha Noi",
            "Ho Chi Minh",
@@ -207,8 +235,8 @@ Replace pattern
 
       ::
 
-         CPU times: user 443 ms, sys: 7.14 ms, total: 450 ms
-         Wall time: 451 ms
+         CPU times: user 453 ms, sys: 8.4 ms, total: 461 ms
+         Wall time: 461 ms
 
    .. container:: cell-output cell-output-display
 
@@ -238,14 +266,14 @@ Replace pattern
 
       ::
 
-         CPU times: user 236 ms, sys: 15.7 ms, total: 251 ms
-         Wall time: 262 ms
+         CPU times: user 5.02 s, sys: 34.9 ms, total: 5.05 s
+         Wall time: 5.06 s
 
    .. container:: cell-output cell-output-display
 
       ::
 
-         <pyarrow.lib.StringArray object at 0x14a175420>
+         <pyarrow.lib.StringArray object at 0x105076020>
          [
            "bbbbbbbbbb",
            "bbbbbbbbbb",
@@ -284,24 +312,24 @@ Subset by index
 
       ::
 
-         CPU times: user 53.8 ms, sys: 3.44 ms, total: 57.2 ms
-         Wall time: 57 ms
+         CPU times: user 54.8 ms, sys: 5.02 ms, total: 59.8 ms
+         Wall time: 59.7 ms
 
    .. container:: cell-output cell-output-display
 
       ::
 
-         0         vi
-         1         xs
-         2         kw
-         3         ub
-         4         uo
+         0         fr
+         1         ik
+         2         cy
+         3         id
+         4         nd
                    ..
-         599995    kp
-         599996    qq
-         599997    do
-         599998    kr
-         599999    rz
+         599995    mz
+         599996    ba
+         599997    pv
+         599998    jv
+         599999    uo
          Length: 600000, dtype: object
 
 .. container:: cell
@@ -315,36 +343,36 @@ Subset by index
 
       ::
 
-         CPU times: user 24.5 ms, sys: 6.09 ms, total: 30.6 ms
-         Wall time: 40.1 ms
+         CPU times: user 277 ms, sys: 4.52 ms, total: 282 ms
+         Wall time: 282 ms
 
    .. container:: cell-output cell-output-display
 
       ::
 
-         <pyarrow.lib.StringArray object at 0x14a1754e0>
+         <pyarrow.lib.StringArray object at 0x116902740>
          [
-           "vi",
-           "xs",
-           "kw",
-           "ub",
-           "uo",
-           "ua",
-           "jw",
-           "tv",
-           "qy",
-           "ll",
+           "fr",
+           "ik",
+           "cy",
+           "id",
+           "nd",
+           "so",
+           "yy",
+           "ut",
+           "dq",
+           "ss",
            ...
-           "hc",
-           "zu",
-           "cq",
-           "sr",
-           "rt",
-           "kp",
-           "qq",
-           "do",
-           "kr",
-           "rz"
+           "xq",
+           "lq",
+           "wz",
+           "lg",
+           "ez",
+           "mz",
+           "ba",
+           "pv",
+           "jv",
+           "uo"
          ]
 
 ::
@@ -360,23 +388,23 @@ Subset by index
 
    ::
 
-      CPU times: user 131 ms, sys: 4.68 ms, total: 136 ms
-      Wall time: 136 ms
+      CPU times: user 134 ms, sys: 2.67 ms, total: 137 ms
+      Wall time: 137 ms
 
 .. container:: cell-output cell-output-display
 
    ::
 
       0         0
-      1         0
+      1         1
       2         0
       3         0
-      4         0
+      4         3
                ..
-      599995    1
-      599996    0
+      599995    0
+      599996    1
       599997    0
-      599998    0
+      599998    1
       599999    0
       Length: 600000, dtype: int64
 
@@ -393,35 +421,35 @@ Subset by index
 
       ::
 
-         CPU times: user 35 ms, sys: 692 µs, total: 35.7 ms
-         Wall time: 35.7 ms
+         CPU times: user 430 ms, sys: 3.61 ms, total: 433 ms
+         Wall time: 433 ms
 
    .. container:: cell-output cell-output-display
 
       ::
 
-         <pyarrow.lib.Int32Array object at 0x14a175c60>
+         <pyarrow.lib.Int32Array object at 0x116903ac0>
          [
            0,
+           1,
            0,
            0,
+           3,
            0,
            0,
            1,
            0,
-           0,
-           0,
-           2,
+           1,
            ...
            0,
+           2,
+           0,
+           0,
+           0,
+           0,
            1,
            0,
-           0,
-           0,
            1,
-           0,
-           0,
-           0,
            0
          ]
 
@@ -473,11 +501,6 @@ part 2
 -  ☒ str_unique()
 -  ☒ str_remove_ascent()
 
-Optimize
---------
-
-Handle case when input is scalar or vector in Rust to improve speed
-
 Different type of i/o
 =====================
 
@@ -497,27 +520,27 @@ Rust
 
 1. vec in vec out
 
--  Use apply_utf8!() macro
+-  apply_utf8!()
 -  @export
 
 2. vec+ in vec out
 
--  Use apply_utf8!() macro
+-  apply_utf8!()
 -  @export2
 
 3. vec in vec out
 
--  Use apply_utf8_bool!() macro
+-  apply_utf8_bool!()
 -  @export
 
 4. vec in vec<vec> out
 
--  Use apply_utf8_lst!() macro
+-  apply_utf8_lst!()
 -  @export
 
 .. |doc| image:: https://readthedocs.org/projects/stringpy/badge/?version=latest.png
    :target: https://stringpy.readthedocs.io/en/latest/?badge=latest
-.. |image1| image:: https://github.com/vohai611/stringpy/actions/workflows/CI.yml/badge.svg?branch=main
+.. |build| image:: https://github.com/vohai611/stringpy/actions/workflows/CI.yml/badge.svg?branch=main
    :target: https://github.com/vohai611/stringpy/actions/workflows/CI.yml
-.. |codecov| image:: https://codecov.io/gh/vohai611/stringpy/branch/feat/rust-test/graph/badge.svg?token=5QNSE2HMHM
+.. |codecov| image:: https://codecov.io/gh/vohai611/stringpy/branch/main/graph/badge.svg?token=5QNSE2HMHM
    :target: https://codecov.io/gh/vohai611/stringpy

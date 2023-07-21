@@ -135,6 +135,7 @@ Ok(result?)
 }
 }
 
+#[allow(unused_macros)]
 macro_rules! assert_array_i32 {
         ($expect:expr =>  $element:expr => $func:expr, $($args:expr),*) => {{
             pyo3::prepare_freethreaded_python();
@@ -154,6 +155,7 @@ macro_rules! assert_array_i32 {
         }};
     }
 
+#[allow(unused_macros)]
 macro_rules! assert_array_utf8 {
         ($expect:expr =>  $element:expr => $func:expr, $($args:expr),*) => {{
             pyo3::prepare_freethreaded_python();
