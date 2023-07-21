@@ -135,7 +135,46 @@ Ok(result?)
 }
 }
 
+macro_rules! assert_array_i32 {
+        ($expect:expr =>  $element:expr => $func:expr, $($args:expr),*) => {{
+            pyo3::prepare_freethreaded_python();
+            let test_arr = arrow2::array::Utf8Array::<i32>::from($element);
+            let result = Python::with_gil(|py| arrow_in::to_py_array(Box::new(test_arr), py));
+            let a = result.unwrap();
+            let _actual = $func(a,$($args),*).unwrap();
+            let array = Python::with_gil(|py| arrow_in::to_rust_array(_actual, py)).unwrap();
+            let array2: Vec<Option<i32>> = array
+                .as_any()
+                .downcast_ref::<Int32Array>()
+                .unwrap()
+                .iter()
+                .map(|x| Some(*x?))
+                .collect();
+            assert_eq!($expect, array2)
+        }};
+    }
+
+macro_rules! assert_array_utf8 {
+        ($expect:expr =>  $element:expr => $func:expr, $($args:expr),*) => {{
+            pyo3::prepare_freethreaded_python();
+            let test_arr = arrow2::array::Utf8Array::<i32>::from($element);
+            let result = Python::with_gil(|py| arrow_in::to_py_array(Box::new(test_arr), py));
+            let a = result.unwrap();
+            let _actual = $func(a,$($args),*).unwrap();
+            let array = Python::with_gil(|py| arrow_in::to_rust_array(_actual, py)).unwrap();
+            let array2: Vec<Option<&str>> = array
+                .as_any()
+                .downcast_ref::<Utf8Array<i32>>()
+                .unwrap()
+                .iter()
+                .map(|x| Some(x?))
+                .collect();
+            assert_eq!($expect, array2)
+        }};
+    }
 
 pub(crate) use apply_utf8;
 pub(crate) use apply_utf8_bool;
 pub(crate) use apply_utf8_i32;
+pub(crate) use assert_array_i32;
+pub(crate) use assert_array_utf8;

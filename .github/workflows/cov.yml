@@ -13,17 +13,27 @@ jobs:
         with:
           python-version: '3.9'
           cache: 'pip' # caching pip dependencies
-      - run: pip install pyarrow
+      - run: |
+          pip install pyarrow
+          pip install maturin>=0.14.17
+          pip install pytest 
+          pip install pytest-cov
       - uses: actions/checkout@v3
       - name: Install Rust
         run: rustup update stable
       - name: Install cargo-llvm-cov
         uses: taiki-e/install-action@cargo-llvm-cov
       - name: Generate code coverage
-        run: cargo llvm-cov --all-features --workspace --lcov --output-path lcov.info
+        run: |
+          source <(cargo llvm-cov show-env --export-prefix)
+          cargo llvm-cov clean --workspace
+          cargo test
+          maturin develop
+          pytest tests --cov=. --cov-report xml
+          cargo llvm-cov report --lcov --output-path coverage.lcov
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }} # not required for public repos
-          files: lcov.info
+          files: coverage.lcov
           fail_ci_if_error: true
